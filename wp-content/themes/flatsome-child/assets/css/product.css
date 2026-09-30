@@ -1,0 +1,79 @@
+/*
+ * SAHA - product.css
+ * Product card + single product presentation.
+ */
+
+.saha-product-card__sku {
+	margin: 2px 0 4px;
+	color: var(--saha-color-muted);
+	font-size: 13px;
+}
+
+.saha-product-card__sku .saha-label {
+	color: var(--saha-color-muted);
+}
+
+.saha-product-card__sku .saha-value {
+	color: var(--saha-color-text);
+	font-weight: 600;
+}
+
+/* Tieu de card khong duoc pha layout (spec 53). */
+.woocommerce-loop-product__title,
+.saha-product-card__title {
+	display: -webkit-box;
+	-webkit-line-clamp: 2;
+	-webkit-box-orient: vertical;
+	overflow: hidden;
+	min-height: 2.6em;
+	font-size: 15px;
+	line-height: 1.3;
+}
+
+.saha-product-card__brand {
+	color: var(--saha-color-primary);
+	font-size: 12px;
+	text-transform: uppercase;
+	letter-spacing: .02em;
+}
+
+/* Single product: block noi dung ky thuat. */
+.saha-product-section {
+	margin: 24px 0;
+	padding-top: 20px;
+	border-top: 1px solid var(--saha-color-border);
+}
+
+.saha-product-section__title {
+	margin-bottom: 12px;
+	font-size: 18px;
+}
+
+.saha-specs-table {
+	width: 100%;
+	border-collapse: collapse;
+}
+
+.saha-specs-table th,
+.saha-specs-table td {
+	padding: 8px 10px;
+	border: 1px solid var(--saha-color-border);
+	text-align: left;
+	vertical-align: top;
+}
+
+.saha-specs-table th {
+	width: 34%;
+	background: var(--saha-color-surface-alt);
+	font-weight: 600;
+}
+
+.saha-docs-list {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.saha-docs-list li + li {
+	margin-top: 6px;
+}

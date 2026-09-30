@@ -1,0 +1,36 @@
+# WordPress core & config
+/wp-admin/
+/wp-includes/
+/wp-*.php
+/index.php
+/license.txt
+/readme.html
+wp-config.php
+wp-config-local.php
+.htaccess
+
+# Uploads / cache / backup
+wp-content/uploads/
+wp-content/cache/
+wp-content/backup*/
+wp-content/upgrade/
+wp-content/debug.log
+*.sql
+*.sql.gz
+*.zip
+
+# Themes/plugins do not belong to us
+wp-content/themes/*
+!wp-content/themes/flatsome-child/
+wp-content/plugins/*
+!wp-content/plugins/saha-core/
+
+# Tooling
+node_modules/
+vendor/
+.env
+.env.*
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/

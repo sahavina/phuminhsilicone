@@ -1,0 +1,153 @@
+/*
+ * SAHA — main.css
+ * Component dùng chung. Namespace .saha-, không !important tràn lan.
+ */
+
+:root {
+	--saha-color-primary: #0b5cab;
+	--saha-color-primary-dark: #084680;
+	--saha-color-accent: #f5a623;
+	--saha-color-text: #1f2328;
+	--saha-color-muted: #5b6570;
+	--saha-color-border: #e3e6ea;
+	--saha-color-surface: #ffffff;
+	--saha-color-surface-alt: #f6f8fa;
+	--saha-radius: 6px;
+	--saha-gap: 16px;
+	--saha-sticky-cta-height: 56px;
+}
+
+/* --- Hotline & Zalo ---------------------------------------------------- */
+
+.saha-hotline-group {
+	display: inline-flex;
+	flex-wrap: wrap;
+	gap: 12px;
+}
+
+.saha-hotline {
+	display: inline-flex;
+	align-items: baseline;
+	gap: 6px;
+	color: var(--saha-color-primary);
+	font-weight: 600;
+	text-decoration: none;
+}
+
+.saha-hotline:hover,
+.saha-hotline:focus-visible {
+	color: var(--saha-color-primary-dark);
+	text-decoration: underline;
+}
+
+.saha-hotline__label {
+	color: var(--saha-color-muted);
+	font-size: .85em;
+	font-weight: 400;
+}
+
+.saha-zalo {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+}
+
+/* --- Breadcrumb -------------------------------------------------------- */
+
+.saha-breadcrumb__list {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 6px;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+	color: var(--saha-color-muted);
+	font-size: 14px;
+}
+
+.saha-breadcrumb__item + .saha-breadcrumb__item::before {
+	content: "/";
+	margin-right: 6px;
+	color: var(--saha-color-border);
+}
+
+/* --- Empty state ------------------------------------------------------- */
+
+.saha-empty-state {
+	padding: 32px 16px;
+	text-align: center;
+	background: var(--saha-color-surface-alt);
+	border: 1px solid var(--saha-color-border);
+	border-radius: var(--saha-radius);
+}
+
+.saha-empty-state__title {
+	margin-bottom: 8px;
+	font-size: 20px;
+}
+
+.saha-empty-state__desc {
+	max-width: 46em;
+	margin: 0 auto 16px;
+	color: var(--saha-color-muted);
+}
+
+.saha-empty-state__cats {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
+	gap: 8px;
+	margin: 16px 0;
+	padding: 0;
+	list-style: none;
+}
+
+.saha-empty-state__cats a {
+	display: inline-block;
+	padding: 6px 12px;
+	background: var(--saha-color-surface);
+	border: 1px solid var(--saha-color-border);
+	border-radius: 999px;
+	font-size: 14px;
+	text-decoration: none;
+}
+
+/* --- Honeypot: ẩn khỏi mắt người dùng, vẫn tồn tại với bot -------------- */
+
+.saha-hp {
+	position: absolute;
+	left: -9999px;
+	width: 1px;
+	height: 1px;
+	overflow: hidden;
+}
+
+/* --- Sticky CTA mobile -------------------------------------------------- */
+
+.saha-sticky-cta {
+	display: none;
+}
+
+.saha-price-hidden {
+	color: var(--saha-color-accent);
+	font-weight: 600;
+}
+
+/* --- Accessibility ------------------------------------------------------ */
+
+.saha-site :focus-visible {
+	outline: 2px solid var(--saha-color-primary);
+	outline-offset: 2px;
+}
+
+.saha-visually-hidden {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	margin: -1px;
+	padding: 0;
+	overflow: hidden;
+	clip: rect(0 0 0 0);
+	white-space: nowrap;
+	border: 0;
+}

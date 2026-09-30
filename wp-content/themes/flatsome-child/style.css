@@ -1,0 +1,16 @@
+/*
+Theme Name:   Flatsome Child — SAHA
+Theme URI:    https://tongkhokeodan.com
+Description:  Child theme của Flatsome cho Tổng Kho Keo Dán SAHA. Chỉ chứa presentation layer; business logic nằm ở plugin saha-core.
+Author:       Công ty TNHH Thương mại Dịch vụ Trực tuyến SAHA
+Template:     flatsome
+Version:      1.0.0
+Text Domain:  flatsome-child
+License:      GPL-2.0-or-later
+*/
+
+/*
+ * KHÔNG viết CSS trong file này.
+ * CSS thật nằm ở assets/css/*.css và được enqueue trong inc/enqueue.php,
+ * để tận dụng cache-busting theo filemtime() và conditional loading.
+ */

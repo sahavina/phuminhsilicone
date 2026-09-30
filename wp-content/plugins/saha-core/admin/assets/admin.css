@@ -1,0 +1,55 @@
+/* SAHA Core — admin styles */
+
+.saha-admin .saha-section-title {
+	margin-top: 2em;
+	padding-bottom: .4em;
+	border-bottom: 1px solid #dcdcde;
+	font-size: 1.1em;
+}
+
+.saha-cards {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+	gap: 16px;
+	margin: 20px 0;
+}
+
+.saha-card {
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+	padding: 16px;
+	background: #fff;
+	border: 1px solid #dcdcde;
+	border-radius: 4px;
+}
+
+.saha-card__value {
+	font-size: 26px;
+	font-weight: 600;
+	line-height: 1.1;
+}
+
+.saha-card__label {
+	color: #50575e;
+	font-size: 13px;
+}
+
+.saha-status {
+	max-width: 640px;
+}
+
+.saha-stat-list {
+	margin: 0;
+}
+
+.saha-stat-list li {
+	display: flex;
+	gap: 8px;
+	padding: 4px 0;
+	border-bottom: 1px solid #f0f0f1;
+}
+
+.saha-stat-list li:last-child {
+	border-bottom: 0;
+}
