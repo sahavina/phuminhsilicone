@@ -145,6 +145,25 @@ final class Settings {
 				'default'     => '',
 				'description' => __( 'Mỗi dòng một quy tắc, dạng: keo kính = silicone, keo nhôm kính', 'saha-core' ),
 			),
+			'product_schema_source'    => array(
+				'type'        => 'select',
+				'label'       => __( 'Nguồn schema sản phẩm', 'saha-core' ),
+				'section'     => 'seo',
+				'default'     => 'auto',
+				'options'     => array(
+					'auto'        => __( 'Tự động (Rank Math nếu có, ngược lại WooCommerce)', 'saha-core' ),
+					'woocommerce' => __( 'WooCommerce', 'saha-core' ),
+					'seo_plugin'  => __( 'Plugin SEO (tắt schema Product của WooCommerce)', 'saha-core' ),
+				),
+				'description' => __( 'Chỉ một nguồn được xuất Product schema để tránh trùng lặp.', 'saha-core' ),
+			),
+			'blog_related_posts'       => array(
+				'type'        => 'bool',
+				'label'       => __( 'Bài viết liên quan cuối bài blog', 'saha-core' ),
+				'section'     => 'seo',
+				'default'     => true,
+				'description' => __( 'Tăng liên kết nội bộ giữa các bài cùng chuyên mục.', 'saha-core' ),
+			),
 			'log_to_database'          => array(
 				'type'        => 'bool',
 				'label'       => __( 'Ghi log hệ thống vào database', 'saha-core' ),
@@ -179,6 +198,7 @@ final class Settings {
 			'company'   => __( 'Thông tin công ty', 'saha-core' ),
 			'contact'   => __( 'Liên hệ & CTA', 'saha-core' ),
 			'behaviour' => __( 'Hành vi website', 'saha-core' ),
+			'seo'       => __( 'SEO', 'saha-core' ),
 			'system'    => __( 'Hệ thống', 'saha-core' ),
 		);
 	}
@@ -311,6 +331,13 @@ final class Settings {
 			}
 
 			if ( ! isset( $input[ $key ] ) ) {
+				continue;
+			}
+
+			if ( 'select' === $type ) {
+				$value         = sanitize_key( (string) $input[ $key ] );
+				$options       = (array) ( $field['options'] ?? array() );
+				$clean[ $key ] = array_key_exists( $value, $options ) ? $value : (string) ( $field['default'] ?? '' );
 				continue;
 			}
 

@@ -70,6 +70,10 @@ final class Catalog {
 			'created_' . Taxonomies::APPLICATION,
 			'edited_' . Taxonomies::APPLICATION,
 			'delete_' . Taxonomies::APPLICATION,
+			// Bài viết blog cho khối "bài viết liên quan".
+			'save_post_post',
+			'edited_category',
+			'delete_category',
 		);
 
 		foreach ( $events as $event ) {
@@ -442,6 +446,67 @@ final class Catalog {
 		set_transient( $key, $out, self::CACHE_TTL );
 
 		return $out;
+	}
+
+	/*
+	 * ---------------------------------------------------------------------
+	 * Blog
+	 * ---------------------------------------------------------------------
+	 */
+
+	/**
+	 * Bài viết liên quan: cùng chuyên mục, mới nhất trước (spec §21).
+	 *
+	 * @param int $post_id Bài hiện tại.
+	 * @param int $limit   Số bài.
+	 * @return int[]
+	 */
+	public static function related_post_ids( int $post_id, int $limit = 3 ): array {
+		if ( $post_id <= 0 || 'post' !== get_post_type( $post_id ) ) {
+			return array();
+		}
+
+		$limit = max( 1, min( 12, $limit ) );
+		$cats  = wp_get_post_categories( $post_id, array( 'fields' => 'ids' ) );
+		$cats  = array_values( array_filter( array_map( 'absint', (array) $cats ) ) );
+
+		$key    = self::cache_key( 'related', array( $post_id, $cats, $limit ) );
+		$cached = get_transient( $key );
+
+		if ( is_array( $cached ) ) {
+			return array_map( 'absint', $cached );
+		}
+
+		$query = array(
+			'post_type'              => 'post',
+			'post_status'            => 'publish',
+			'posts_per_page'         => $limit,
+			'post__not_in'           => array( $post_id ),
+			'fields'                 => 'ids',
+			'no_found_rows'          => true,
+			'ignore_sticky_posts'    => true,
+			'update_post_meta_cache' => false,
+			'update_post_term_cache' => false,
+		);
+
+		if ( $cats ) {
+			$query['category__in'] = $cats;
+		}
+
+		$ids = array_map( 'absint', (array) ( new \WP_Query( $query ) )->posts );
+
+		// Chuyên mục ít bài: bổ sung bài mới nhất để khối không bị thưa.
+		if ( count( $ids ) < $limit && $cats ) {
+			unset( $query['category__in'] );
+			$query['posts_per_page'] = $limit - count( $ids );
+			$query['post__not_in']   = array_merge( array( $post_id ), $ids );
+
+			$ids = array_merge( $ids, array_map( 'absint', (array) ( new \WP_Query( $query ) )->posts ) );
+		}
+
+		set_transient( $key, $ids, self::CACHE_TTL );
+
+		return $ids;
 	}
 
 	/*

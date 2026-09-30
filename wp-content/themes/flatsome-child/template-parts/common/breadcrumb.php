@@ -53,6 +53,20 @@ if ( is_singular( 'product' ) ) {
 			'url'   => '',
 		);
 	}
+} elseif ( is_singular( 'post' ) ) {
+	$saha_cats = get_the_category( get_queried_object_id() );
+
+	if ( $saha_cats ) {
+		$saha_items[] = array(
+			'label' => $saha_cats[0]->name,
+			'url'   => (string) get_category_link( $saha_cats[0] ),
+		);
+	}
+
+	$saha_items[] = array(
+		'label' => get_the_title(),
+		'url'   => '',
+	);
 } elseif ( is_singular() ) {
 	$saha_items[] = array(
 		'label' => get_the_title(),
