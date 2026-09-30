@@ -160,6 +160,53 @@ add_action(
 			)
 		);
 
+		add_ux_builder_shortcode(
+			'saha_quote_form',
+			array(
+				'name'     => __( 'SAHA Quote Form', 'flatsome-child' ),
+				'category' => __( 'SAHA', 'flatsome-child' ),
+				'priority' => 15,
+				'options'  => array(
+					'title'      => array(
+						'type'    => 'textfield',
+						'heading' => __( 'Tiêu đề', 'flatsome-child' ),
+						'default' => 'Yêu cầu báo giá',
+					),
+					'product_id' => array(
+						'type'    => 'textfield',
+						'heading' => __( 'ID sản phẩm (tuỳ chọn)', 'flatsome-child' ),
+						'default' => '0',
+					),
+				),
+			)
+		);
+
+		add_ux_builder_shortcode(
+			'saha_contact_form',
+			array(
+				'name'     => __( 'SAHA Contact Form', 'flatsome-child' ),
+				'category' => __( 'SAHA', 'flatsome-child' ),
+				'priority' => 16,
+				'options'  => array(
+					'title'  => array(
+						'type'    => 'textfield',
+						'heading' => __( 'Tiêu đề', 'flatsome-child' ),
+						'default' => 'Liên hệ tư vấn',
+					),
+					'source' => array(
+						'type'    => 'select',
+						'heading' => __( 'Nguồn lead', 'flatsome-child' ),
+						'default' => 'contact',
+						'options' => array(
+							'contact'      => __( 'Form liên hệ', 'flatsome-child' ),
+							'landing_page' => __( 'Landing page', 'flatsome-child' ),
+							'website'      => __( 'Website', 'flatsome-child' ),
+						),
+					),
+				),
+			)
+		);
+
 		/**
 		 * Cho phép phase sau đăng ký thêm UX element.
 		 */

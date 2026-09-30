@@ -21,6 +21,7 @@ add_action(
 			'saha-product'    => 'assets/css/product.css',
 			'saha-brand'      => 'assets/css/brand.css',
 			'saha-search'     => 'assets/css/search.css',
+			'saha-form'       => 'assets/css/form.css',
 		);
 
 		foreach ( $css as $handle => $relative ) {
@@ -43,7 +44,7 @@ add_action(
 			wp_register_script(
 				$handle,
 				SAHA_THEME_URI . '/' . $relative,
-				array(),
+				'saha-main' === $handle ? array() : array( 'saha-main' ),
 				saha_theme_asset_version( $relative ),
 				true
 			);
@@ -94,6 +95,7 @@ if ( ! function_exists( 'saha_theme_script_config' ) ) {
 			'nonce'    => function_exists( 'saha_public_nonce' ) ? saha_public_nonce() : '',
 			'locale'   => get_locale(),
 			'zaloUrl'  => saha_theme_zalo_url(),
+			'quoteUrl' => function_exists( 'saha_quote_page_url' ) ? saha_quote_page_url() : '',
 			'hotlines' => saha_theme_hotlines(),
 			'i18n'     => array(
 				'loading'   => __( 'Đang tải…', 'flatsome-child' ),

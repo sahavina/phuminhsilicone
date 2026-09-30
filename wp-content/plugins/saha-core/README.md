@@ -50,6 +50,9 @@ Action: `saha_core_loaded`, `saha_core_activated`, `saha_core_deactivated`,
 | GET | `/products?page=&per_page=&brand=&category=&search=` | 60/phút |
 | GET | `/products/{id}` | 60/phút |
 | GET | `/brands`, `/brands/{slug}` | 60/phút |
+| GET | `/nonce` | 20/phút |
+| POST | `/quote` | 5 / 10 phút |
+| POST | `/contact` | 5 / 10 phút |
 
 Envelope: `{success, message, data}` / `{success:false, message, errors}`.
 Thêm route mới: tạo file trong `api/routes/`, return closure nhận `$namespace`.

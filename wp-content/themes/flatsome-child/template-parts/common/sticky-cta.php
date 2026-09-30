@@ -42,13 +42,28 @@ if ( ! $saha_primary && '' === $saha_zalo ) {
 		</a>
 	<?php endif; ?>
 
-	<button
-		type="button"
+	<?php
+	// Có trang báo giá: dùng <a> để vẫn đi được khi JS lỗi hoặc trang không có modal.
+	$saha_quote_url = function_exists( 'saha_quote_page_url' ) ? saha_quote_page_url() : '';
+	$saha_product   = is_singular( 'product' ) && function_exists( 'wc_get_product' ) ? wc_get_product( get_the_ID() ) : null;
+	$saha_tag       = '' !== $saha_quote_url ? 'a' : 'button';
+	?>
+	<<?php echo esc_html( $saha_tag ); ?>
+		<?php if ( 'a' === $saha_tag ) : ?>
+			href="<?php echo esc_url( $saha_quote_url ); ?>"
+		<?php else : ?>
+			type="button"
+		<?php endif; ?>
 		class="saha-sticky-cta__item saha-sticky-cta__item--quote"
 		data-saha-open-quote="1"
+		<?php if ( $saha_product ) : ?>
+			data-saha-product-id="<?php echo esc_attr( (string) $saha_product->get_id() ); ?>"
+			data-saha-product-name="<?php echo esc_attr( $saha_product->get_name() ); ?>"
+			data-saha-sku="<?php echo esc_attr( (string) $saha_product->get_sku() ); ?>"
+		<?php endif; ?>
 		aria-haspopup="dialog"
 	>
 		<span class="saha-sticky-cta__icon" aria-hidden="true">&#9998;</span>
 		<span class="saha-sticky-cta__text"><?php echo esc_html( saha_theme_cta_label() ); ?></span>
-	</button>
+	</<?php echo esc_html( $saha_tag ); ?>>
 </nav>

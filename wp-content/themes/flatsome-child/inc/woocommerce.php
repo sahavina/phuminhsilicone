@@ -347,3 +347,18 @@ add_action(
 	},
 	20
 );
+
+/**
+ * Quote modal trên trang sản phẩm — chỉ render ở đây, không phải mọi trang (spec §73).
+ */
+add_action(
+	'wp_footer',
+	static function (): void {
+		if ( ! is_singular( 'product' ) ) {
+			return;
+		}
+
+		saha_theme_part( 'quote/modal', array( 'product_id' => get_the_ID() ) );
+	},
+	15
+);

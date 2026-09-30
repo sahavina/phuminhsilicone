@@ -234,3 +234,64 @@ add_shortcode(
 		return (string) ob_get_clean();
 	}
 );
+
+/**
+ * [saha_quote_form title="Yêu cầu báo giá" product_id="0"]
+ *
+ * Dùng cho trang /bao-gia/ hoặc landing page. Tự enqueue form.css + quote-form.js.
+ */
+add_shortcode(
+	'saha_quote_form',
+	static function ( $atts ): string {
+		$atts = shortcode_atts(
+			array(
+				'title'      => '',
+				'product_id' => '0',
+			),
+			is_array( $atts ) ? $atts : array(),
+			'saha_quote_form'
+		);
+
+		ob_start();
+
+		saha_theme_part(
+			'quote/form',
+			array(
+				'title'      => sanitize_text_field( (string) $atts['title'] ),
+				'product_id' => absint( $atts['product_id'] ),
+				'context'    => 'inline',
+			)
+		);
+
+		return (string) ob_get_clean();
+	}
+);
+
+/**
+ * [saha_contact_form title="Liên hệ tư vấn" source="contact"]
+ */
+add_shortcode(
+	'saha_contact_form',
+	static function ( $atts ): string {
+		$atts = shortcode_atts(
+			array(
+				'title'  => '',
+				'source' => 'contact',
+			),
+			is_array( $atts ) ? $atts : array(),
+			'saha_contact_form'
+		);
+
+		ob_start();
+
+		saha_theme_part(
+			'contact/form',
+			array(
+				'title'  => sanitize_text_field( (string) $atts['title'] ),
+				'source' => sanitize_key( (string) $atts['source'] ),
+			)
+		);
+
+		return (string) ob_get_clean();
+	}
+);

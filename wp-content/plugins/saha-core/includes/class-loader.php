@@ -76,6 +76,12 @@ final class Loader {
 			'search'     => Search::class,
 			'filter'     => Filter::class,
 			'api'        => Api::class,
+			'quote'      => Quote::class,
+			'lead'       => Lead::class,
+			'customer'   => Customer::class,
+			'mailer'     => Mailer::class,
+			'forms'      => Form_Handler::class,
+			'crm'        => Crm::class,
 			'admin'      => Admin::class,
 		);
 

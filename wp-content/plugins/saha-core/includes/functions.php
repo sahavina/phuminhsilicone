@@ -116,10 +116,26 @@ if ( ! function_exists( 'saha_log' ) ) {
 
 if ( ! function_exists( 'saha_public_nonce' ) ) {
 	/**
-	 * Nonce dùng cho form/REST frontend.
+	 * Nonce cho header X-WP-Nonce của REST.
+	 *
+	 * PHẢI là action `wp_rest`: core WordPress (rest_cookie_check_errors) kiểm tra
+	 * mọi X-WP-Nonce theo action này, kể cả với khách chưa đăng nhập — nonce
+	 * action khác sẽ bị trả 403 trước khi tới route của plugin.
 	 */
 	function saha_public_nonce(): string {
-		return wp_create_nonce( Saha\Core\Security::PUBLIC_NONCE_ACTION );
+		return wp_create_nonce( 'wp_rest' );
+	}
+}
+
+if ( ! function_exists( 'saha_form_nonce_field' ) ) {
+	/**
+	 * Field nonce cho form submit không qua JavaScript (admin-post.php).
+	 */
+	function saha_form_nonce_field(): string {
+		return sprintf(
+			'<input type="hidden" name="saha_nonce" value="%s">',
+			esc_attr( wp_create_nonce( Saha\Core\Security::PUBLIC_NONCE_ACTION ) )
+		);
 	}
 }
 
@@ -315,5 +331,39 @@ if ( ! function_exists( 'saha_availability_options' ) ) {
 	 */
 	function saha_availability_options(): array {
 		return Saha\Core\Product::availability_options();
+	}
+}
+
+if ( ! function_exists( 'saha_quote_page_url' ) ) {
+	/**
+	 * URL trang yêu cầu báo giá (cấu hình trong admin).
+	 */
+	function saha_quote_page_url(): string {
+		return (string) saha_get_setting( 'quote_page_url', '' );
+	}
+}
+
+if ( ! function_exists( 'saha_form_result' ) ) {
+	/**
+	 * Thông báo kết quả submit form không-JS, đọc từ query var.
+	 *
+	 * @return array{type: string, message: string}|null
+	 */
+	function saha_form_result(): ?array {
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- chỉ hiển thị thông báo.
+		$code = isset( $_GET[ Saha\Core\Form_Handler::RESULT_VAR ] ) ? sanitize_key( wp_unslash( (string) $_GET[ Saha\Core\Form_Handler::RESULT_VAR ] ) ) : '';
+
+		return '' === $code ? null : Saha\Core\Form_Handler::message_for( $code );
+	}
+}
+
+if ( ! function_exists( 'saha_quote_statuses' ) ) {
+	/**
+	 * Trạng thái báo giá.
+	 *
+	 * @return array<string, string>
+	 */
+	function saha_quote_statuses(): array {
+		return Saha\Core\Quote::statuses();
 	}
 }
