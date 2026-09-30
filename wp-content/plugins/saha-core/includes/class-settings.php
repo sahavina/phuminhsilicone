@@ -131,6 +131,13 @@ final class Settings {
 				'default'     => false,
 				'description' => __( 'Chỉ lưu từ khoá và số kết quả, không lưu người dùng/IP.', 'saha-core' ),
 			),
+			'search_synonyms'          => array(
+				'type'        => 'textarea',
+				'label'       => __( 'Từ đồng nghĩa tìm kiếm', 'saha-core' ),
+				'section'     => 'behaviour',
+				'default'     => '',
+				'description' => __( 'Mỗi dòng một quy tắc, dạng: keo kính = silicone, keo nhôm kính', 'saha-core' ),
+			),
 			'log_to_database'          => array(
 				'type'        => 'bool',
 				'label'       => __( 'Ghi log hệ thống vào database', 'saha-core' ),

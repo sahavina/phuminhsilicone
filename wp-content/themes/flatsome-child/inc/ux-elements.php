@@ -108,6 +108,58 @@ add_action(
 			)
 		);
 
+		add_ux_builder_shortcode(
+			'saha_search',
+			array(
+				'name'     => __( 'SAHA Search', 'flatsome-child' ),
+				'category' => __( 'SAHA', 'flatsome-child' ),
+				'priority' => 13,
+				'options'  => array(
+					'placeholder' => array(
+						'type'    => 'textfield',
+						'heading' => __( 'Placeholder', 'flatsome-child' ),
+						'default' => '',
+					),
+					'autofocus'   => array(
+						'type'    => 'checkbox',
+						'heading' => __( 'Tự động focus', 'flatsome-child' ),
+						'default' => '0',
+					),
+				),
+			)
+		);
+
+		add_ux_builder_shortcode(
+			'saha_product_filter',
+			array(
+				'name'     => __( 'SAHA Product Filter', 'flatsome-child' ),
+				'category' => __( 'SAHA', 'flatsome-child' ),
+				'priority' => 14,
+				'options'  => array(
+					'show_brand'        => array(
+						'type'    => 'checkbox',
+						'heading' => __( 'Lọc theo thương hiệu', 'flatsome-child' ),
+						'default' => '1',
+					),
+					'show_application'  => array(
+						'type'    => 'checkbox',
+						'heading' => __( 'Lọc theo ứng dụng', 'flatsome-child' ),
+						'default' => '1',
+					),
+					'show_availability' => array(
+						'type'    => 'checkbox',
+						'heading' => __( 'Lọc theo tình trạng', 'flatsome-child' ),
+						'default' => '1',
+					),
+					'show_price'        => array(
+						'type'    => 'checkbox',
+						'heading' => __( 'Lọc theo giá', 'flatsome-child' ),
+						'default' => '0',
+					),
+				),
+			)
+		);
+
 		/**
 		 * Cho phép phase sau đăng ký thêm UX element.
 		 */
