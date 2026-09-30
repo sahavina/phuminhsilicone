@@ -188,8 +188,8 @@ Product edit: field chia panel (Thông tin · Thông số · Ứng dụng/HDSD �
 | Phase | Nội dung | Trạng thái |
 |---|---|---|
 | 1 | Foundation: child theme, core plugin, loader, settings, roles, security, logger, migration | hoàn thành |
-| 2 | Catalogue: brand/application taxonomy, product meta panel, single product, archive, card | **hoàn thành** |
-| 3 | Search: service, REST, autocomplete, filter giữ URL | chờ |
+| 2 | Catalogue: brand/application taxonomy, product meta panel, single product, archive, card | hoàn thành |
+| 3 | Search: service, REST, autocomplete, filter giữ URL | **hoàn thành** |
 | 4 | Lead/Quote: form, service, admin list table, email | chờ |
 | 5 | Homepage: UX elements, shortcode, block | chờ |
 | 6 | SEO: Rank Math bridge, breadcrumb, brand SEO | chờ |

@@ -123,3 +123,21 @@
 	margin-bottom: 16px;
 	color: var(--saha-color-muted);
 }
+
+/* --- Form tìm kiếm ------------------------------------------------------ */
+
+.saha-search__form {
+	display: flex;
+	gap: 6px;
+	margin: 0;
+}
+
+.saha-search__input {
+	flex: 1 1 auto;
+	margin: 0;
+}
+
+.saha-search__submit {
+	flex: 0 0 auto;
+	margin: 0;
+}

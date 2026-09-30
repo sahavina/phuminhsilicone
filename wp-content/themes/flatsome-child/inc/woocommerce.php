@@ -285,3 +285,65 @@ add_filter(
 		return is_tax( 'product_brand' ) ? false : $show;
 	}
 );
+
+/**
+ * Bộ lọc trên sidebar archive sản phẩm.
+ *
+ * Dùng hook của WooCommerce thay vì override archive-product.php.
+ */
+add_action(
+	'woocommerce_before_shop_loop',
+	static function (): void {
+		if ( ! is_shop() && ! is_product_taxonomy() && ! is_search() ) {
+			return;
+		}
+
+		/**
+		 * Bật/tắt bộ lọc trên archive.
+		 *
+		 * @param bool $enabled Trạng thái.
+		 */
+		if ( ! apply_filters( 'saha_theme_show_archive_filter', true ) ) {
+			return;
+		}
+
+		saha_theme_part( 'common/filter' );
+	},
+	15
+);
+
+/**
+ * Empty state khi không có sản phẩm nào khớp (spec §82).
+ */
+add_action(
+	'woocommerce_no_products_found',
+	static function (): void {
+		$saha_filters = saha_theme_has_core() ? saha_filter_current() : array();
+
+		saha_theme_part(
+			'common/empty-state',
+			array(
+				'title'       => is_search()
+					? __( 'Không tìm thấy sản phẩm phù hợp', 'flatsome-child' )
+					: __( 'Chưa có sản phẩm trong mục này', 'flatsome-child' ),
+				'description' => $saha_filters
+					? __( 'Thử bỏ bớt điều kiện lọc, hoặc tìm theo mã sản phẩm.', 'flatsome-child' )
+					: __( 'Thử tìm theo tên hoặc mã sản phẩm, hoặc chọn danh mục khác.', 'flatsome-child' ),
+				'show_search' => true,
+				'show_cats'   => true,
+			)
+		);
+	},
+	5
+);
+
+/**
+ * Bỏ empty state mặc định của WooCommerce để không hiện 2 thông báo.
+ */
+add_action(
+	'init',
+	static function (): void {
+		remove_action( 'woocommerce_no_products_found', 'wc_no_products_found', 10 );
+	},
+	20
+);

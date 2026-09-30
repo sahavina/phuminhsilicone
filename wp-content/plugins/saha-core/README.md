@@ -42,7 +42,17 @@ Action: `saha_core_loaded`, `saha_core_activated`, `saha_core_deactivated`,
 
 ## API
 
-`/wp-json/saha/v1/` — khai báo ở `docs/ARCHITECTURE.md` mục I, triển khai từ Phase 3.
+`/wp-json/saha/v1/` — route nạp tự động từ `api/routes/*.php` theo thứ tự tên file.
+
+| Method | Route | Rate limit |
+|---|---|---|
+| GET | `/search?q=&limit=&page=` | 30/phút |
+| GET | `/products?page=&per_page=&brand=&category=&search=` | 60/phút |
+| GET | `/products/{id}` | 60/phút |
+| GET | `/brands`, `/brands/{slug}` | 60/phút |
+
+Envelope: `{success, message, data}` / `{success:false, message, errors}`.
+Thêm route mới: tạo file trong `api/routes/`, return closure nhận `$namespace`.
 
 ## Database
 

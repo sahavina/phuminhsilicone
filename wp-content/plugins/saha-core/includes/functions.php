@@ -260,3 +260,60 @@ if ( ! function_exists( 'saha_get_product_cta' ) ) {
 		);
 	}
 }
+
+if ( ! function_exists( 'saha_search' ) ) {
+	/**
+	 * Tìm sản phẩm theo tên, SKU, thương hiệu, danh mục, mô tả.
+	 *
+	 * @param string $term     Từ khoá.
+	 * @param int    $page     Trang.
+	 * @param int    $per_page Số kết quả mỗi trang.
+	 * @return array{items: array<int, array<string, mixed>>, total: int, page: int, per_page: int, query: string}
+	 */
+	function saha_search( string $term, int $page = 1, int $per_page = 10 ): array {
+		return Saha\Core\Search::search( $term, $page, $per_page );
+	}
+}
+
+if ( ! function_exists( 'saha_filter_current' ) ) {
+	/**
+	 * Filter đang áp dụng trên URL hiện tại, đã sanitize.
+	 *
+	 * @return array<string, mixed>
+	 */
+	function saha_filter_current(): array {
+		return Saha\Core\Filter::current();
+	}
+}
+
+if ( ! function_exists( 'saha_filter_url' ) ) {
+	/**
+	 * URL đã áp một filter, giữ nguyên các filter khác.
+	 *
+	 * @param string $var   Query var, ví dụ `saha_brand`.
+	 * @param string $value Giá trị; rỗng để bỏ filter.
+	 */
+	function saha_filter_url( string $var, string $value ): string {
+		return Saha\Core\Filter::build_url( $var, $value );
+	}
+}
+
+if ( ! function_exists( 'saha_filter_base_url' ) ) {
+	/**
+	 * URL archive hiện tại, đã bỏ filter và phân trang.
+	 */
+	function saha_filter_base_url(): string {
+		return Saha\Core\Filter::current_base_url();
+	}
+}
+
+if ( ! function_exists( 'saha_availability_options' ) ) {
+	/**
+	 * Danh sách tình trạng hàng.
+	 *
+	 * @return array<string, string>
+	 */
+	function saha_availability_options(): array {
+		return Saha\Core\Product::availability_options();
+	}
+}

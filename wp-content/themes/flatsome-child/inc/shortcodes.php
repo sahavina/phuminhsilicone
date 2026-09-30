@@ -170,3 +170,67 @@ add_shortcode(
 		return (string) ob_get_clean();
 	}
 );
+
+/**
+ * [saha_search placeholder="..." autofocus="0"]
+ *
+ * Ô tìm kiếm có autocomplete. Tự enqueue asset khi được render.
+ */
+add_shortcode(
+	'saha_search',
+	static function ( $atts ): string {
+		$atts = shortcode_atts(
+			array(
+				'placeholder' => '',
+				'autofocus'   => '0',
+			),
+			is_array( $atts ) ? $atts : array(),
+			'saha_search'
+		);
+
+		ob_start();
+
+		saha_theme_part(
+			'search/form',
+			array(
+				'placeholder' => sanitize_text_field( (string) $atts['placeholder'] ),
+				'autofocus'   => '1' === (string) $atts['autofocus'],
+			)
+		);
+
+		return (string) ob_get_clean();
+	}
+);
+
+/**
+ * [saha_product_filter show_brand="1" show_application="1" show_availability="1" show_price="0"]
+ */
+add_shortcode(
+	'saha_product_filter',
+	static function ( $atts ): string {
+		$atts = shortcode_atts(
+			array(
+				'show_brand'        => '1',
+				'show_application'  => '1',
+				'show_availability' => '1',
+				'show_price'        => '0',
+			),
+			is_array( $atts ) ? $atts : array(),
+			'saha_product_filter'
+		);
+
+		ob_start();
+
+		saha_theme_part(
+			'common/filter',
+			array(
+				'show_brand'        => '1' === (string) $atts['show_brand'],
+				'show_application'  => '1' === (string) $atts['show_application'],
+				'show_availability' => '1' === (string) $atts['show_availability'],
+				'show_price'        => '1' === (string) $atts['show_price'],
+			)
+		);
+
+		return (string) ob_get_clean();
+	}
+);
