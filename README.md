@@ -31,6 +31,8 @@ WordPress core, Flatsome, WooCommerce, uploads, cache, `wp-config.php` **không*
 | [docs/PHASE-5.md](docs/PHASE-5.md) | Homepage — UX elements, catalog service có cache, layout mẫu |
 | [docs/PHASE-6.md](docs/PHASE-6.md) | SEO — Rank Math/Yoast, robots/canonical URL lọc, schema & breadcrumb một nguồn |
 | [docs/PHASE-7.md](docs/PHASE-7.md) | Performance — cache hợp nhất, preload hero, bỏ cart fragments, dọn log định kỳ |
+| [docs/PHASE-8.md](docs/PHASE-8.md) | QA — kiểm tra hệ thống, HTTP smoke test, seeder, cách chạy nghiệm thu |
+| [docs/QA.md](docs/QA.md) | **Checklist QA tổng hợp** — 188 test, ma trận thiết bị, bảng nghiệm thu |
 | [docs/layouts/](docs/layouts/) | Layout UX Builder mẫu: trang chủ, footer |
 | [wp-content/plugins/saha-core/README.md](wp-content/plugins/saha-core/README.md) | module plugin |
 | [wp-content/themes/flatsome-child/README.md](wp-content/themes/flatsome-child/README.md) | module theme |
@@ -55,16 +57,18 @@ WordPress core, Flatsome, WooCommerce, uploads, cache, `wp-config.php` **không*
 | 5 | Homepage + UX elements | ✅ hoàn thành |
 | 6 | SEO | ✅ hoàn thành |
 | 7 | Performance | ✅ hoàn thành |
-| 8 | QA | ⏳ |
+| 8 | QA | 🟡 8A công cụ ✅ · 8B plugin ✅ (10 lỗi thật đã sửa) · 8B giao diện chờ Flatsome |
 
 ## Kiểm thử
 
-```bash
-php tests/smoke.php
-```
+| Lệnh | Cần gì | Kiểm tra |
+|---|---|---|
+| `php tests/smoke.php` | chỉ PHP | logic thuần: validate, sanitize, tokenizer, cache, SEO (64 case) |
+| `wp saha qa` | site WordPress | cấu hình, DB, quyền, REST, tìm kiếm, SEO, bảo mật, hiệu năng |
+| `php tests/http-smoke.php <url> [--write]` | PHP + curl, site đang chạy | REST, form, robots, noindex, no-cache từ ngoài vào |
+| `wp saha seed --with-crm` / `wp saha unseed` | site **local/staging** | tạo / gỡ dữ liệu mẫu |
 
-Smoke test logic thuần (validate, sanitize, search tokenizer) — không cần WordPress/MySQL.
-Checklist test trên site thật nằm ở mục 8 của từng `docs/PHASE-*.md`.
+Checklist đầy đủ: [docs/QA.md](docs/QA.md) (sinh bởi `python tests/build-qa-checklist.py`).
 
 ## Quy ước
 

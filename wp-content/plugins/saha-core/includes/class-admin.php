@@ -72,6 +72,29 @@ final class Admin {
 			self::MENU_SLUG . '-settings',
 			array( $this, 'render_settings' )
 		);
+
+		add_submenu_page(
+			self::MENU_SLUG,
+			__( 'Kiểm tra hệ thống', 'saha-core' ),
+			__( 'Kiểm tra hệ thống', 'saha-core' ),
+			Roles::CAP_SETTINGS,
+			self::MENU_SLUG . '-qa',
+			array( $this, 'render_qa' )
+		);
+	}
+
+	/**
+	 * Trang Kiểm tra hệ thống.
+	 */
+	public function render_qa(): void {
+		if ( ! current_user_can( Roles::CAP_SETTINGS ) ) {
+			wp_die( esc_html__( 'Bạn không có quyền truy cập trang này.', 'saha-core' ), 403 );
+		}
+
+		$results = ( new Qa() )->run();
+		$summary = Qa::summary( $results );
+
+		require SAHA_CORE_PATH . 'admin/views/qa.php';
 	}
 
 	/**

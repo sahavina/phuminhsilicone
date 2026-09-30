@@ -121,6 +121,10 @@ final class Loader {
 			}
 		}
 
+		if ( defined( 'WP_CLI' ) && WP_CLI && class_exists( '\WP_CLI' ) ) {
+			\WP_CLI::add_command( 'saha', Cli::class );
+		}
+
 		/**
 		 * Toàn bộ service đã sẵn sàng.
 		 *

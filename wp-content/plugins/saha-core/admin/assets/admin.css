@@ -179,3 +179,42 @@
 		grid-template-columns: 1fr;
 	}
 }
+
+/* --- Kiểm tra hệ thống -------------------------------------------------- */
+
+.saha-qa-table__status {
+	width: 110px;
+}
+
+.saha-qa-table__group th {
+	background: #f0f0f1;
+	font-weight: 600;
+}
+
+.saha-qa--pass {
+	background: #e6f4ea;
+	color: #1e6b34;
+}
+
+.saha-qa--warn {
+	background: #fcf0e3;
+	color: #8a4b00;
+}
+
+.saha-qa--fail {
+	background: #f6e5e5;
+	color: #8a1f1f;
+}
+
+.saha-qa--skip {
+	background: #f0f0f1;
+	color: #50575e;
+}
+
+.saha-card--fail .saha-card__value {
+	color: #8a1f1f;
+}
+
+.saha-card--warn .saha-card__value {
+	color: #8a4b00;
+}

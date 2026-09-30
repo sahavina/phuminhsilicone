@@ -207,24 +207,24 @@ final class Lead {
 	 * @param array<string, mixed> $data     Dữ liệu báo giá.
 	 */
 	public function create_from_quote( int $quote_id, array $data ): void {
-		$summary = (string) ( $data['product_name'] ?? '' );
+		$parts = array_filter(
+			array(
+				(string) ( $data['product_name'] ?? '' ),
+				'' !== (string) ( $data['quantity'] ?? '' )
+					/* translators: %s: số lượng */
+					? sprintf( __( 'SL: %s', 'saha-core' ), (string) $data['quantity'] )
+					: '',
+			)
+		);
 
-		if ( '' !== (string) ( $data['quantity'] ?? '' ) ) {
-			$summary .= ' — ' . sprintf(
-				/* translators: %s: số lượng */
-				__( 'SL: %s', 'saha-core' ),
-				(string) $data['quantity']
-			);
+		/* translators: %d: quote ID */
+		$heading = sprintf( __( 'Yêu cầu báo giá #%d', 'saha-core' ), $quote_id );
+
+		if ( $parts ) {
+			$heading .= ': ' . implode( ' — ', $parts );
 		}
 
-		$message = trim(
-			sprintf(
-				/* translators: 1: quote ID, 2: tóm tắt sản phẩm */
-				__( 'Yêu cầu báo giá #%1$d %2$s', 'saha-core' ),
-				$quote_id,
-				$summary
-			) . "\n" . (string) ( $data['message'] ?? '' )
-		);
+		$message = trim( $heading . "\n" . (string) ( $data['message'] ?? '' ) );
 
 		self::create(
 			array(

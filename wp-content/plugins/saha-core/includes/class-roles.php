@@ -45,6 +45,48 @@ final class Roles {
 	}
 
 	/**
+	 * Capability sản phẩm của WooCommerce.
+	 *
+	 * Role nền editor/author của WordPress KHÔNG có các quyền này — thiếu chúng
+	 * thì role nghiệp vụ không mở được màn hình sửa sản phẩm (phát hiện khi QA
+	 * trên WooCommerce thật).
+	 *
+	 * @param bool $can_delete Có quyền xoá / xuất bản / quản lý danh mục không.
+	 * @return string[]
+	 */
+	public static function woocommerce_product_caps( bool $can_delete ): array {
+		$caps = array(
+			'read_product',
+			'edit_product',
+			'edit_products',
+			'edit_others_products',
+			'edit_published_products',
+			'read_private_products',
+			'assign_product_terms',
+		);
+
+		if ( $can_delete ) {
+			$caps = array_merge(
+				$caps,
+				array(
+					'publish_products',
+					'edit_private_products',
+					'delete_product',
+					'delete_products',
+					'delete_others_products',
+					'delete_published_products',
+					'delete_private_products',
+					'manage_product_terms',
+					'edit_product_terms',
+					'delete_product_terms',
+				)
+			);
+		}
+
+		return $caps;
+	}
+
+	/**
 	 * Role tuỳ biến: slug => [ name, base_role, caps ].
 	 *
 	 * @return array<string, array<string, mixed>>
@@ -54,12 +96,20 @@ final class Roles {
 			'saha_seo_manager'     => array(
 				'name'      => __( 'SEO Manager', 'saha-core' ),
 				'base_role' => 'editor',
-				'caps'      => array( self::CAP_MANAGE, self::CAP_PRODUCTS, self::CAP_BRANDS, self::CAP_REPORTS ),
+				// Sửa nội dung/SEO sản phẩm và thương hiệu, không xoá sản phẩm.
+				'caps'      => array_merge(
+					array( self::CAP_MANAGE, self::CAP_PRODUCTS, self::CAP_BRANDS, self::CAP_REPORTS ),
+					self::woocommerce_product_caps( false ),
+					array( 'manage_product_terms', 'edit_product_terms' )
+				),
 			),
 			'saha_content_manager' => array(
 				'name'      => __( 'Content Manager', 'saha-core' ),
 				'base_role' => 'editor',
-				'caps'      => array( self::CAP_MANAGE, self::CAP_PRODUCTS, self::CAP_BRANDS ),
+				'caps'      => array_merge(
+					array( self::CAP_MANAGE, self::CAP_PRODUCTS, self::CAP_BRANDS ),
+					self::woocommerce_product_caps( true )
+				),
 			),
 			'saha_sales'           => array(
 				'name'      => __( 'Sales', 'saha-core' ),
@@ -69,7 +119,11 @@ final class Roles {
 			'saha_warehouse'       => array(
 				'name'      => __( 'Warehouse', 'saha-core' ),
 				'base_role' => 'author',
-				'caps'      => array( self::CAP_MANAGE, self::CAP_PRODUCTS ),
+				// Kho: cập nhật tồn kho / tình trạng hàng, không xoá, không sửa danh mục.
+				'caps'      => array_merge(
+					array( self::CAP_MANAGE, self::CAP_PRODUCTS ),
+					self::woocommerce_product_caps( false )
+				),
 			),
 		);
 

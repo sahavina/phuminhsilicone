@@ -39,7 +39,7 @@ final class Brand {
 	 * @return array<string, array<string, string>>
 	 */
 	public static function meta_schema(): array {
-		return array(
+		$schema = array(
 			'logo_id'           => array(
 				'type'  => 'attachment',
 				'label' => __( 'Logo', 'saha-core' ),
@@ -75,6 +75,13 @@ final class Brand {
 				'label' => __( 'Meta description', 'saha-core' ),
 			),
 		);
+
+		// WooCommerce đã có field ảnh thương hiệu → không tạo field Logo thứ hai.
+		if ( Taxonomies::brand_is_native() ) {
+			unset( $schema['logo_id'] );
+		}
+
+		return $schema;
 	}
 
 	/**
@@ -135,7 +142,7 @@ final class Brand {
 	 * @return array<string, mixed>
 	 */
 	public static function get_meta( int $term_id ): array {
-		$out = array();
+		$out = array( 'logo_id' => 0 );
 
 		foreach ( self::meta_schema() as $key => $field ) {
 			$raw = get_term_meta( $term_id, self::META_PREFIX . $key, true );
@@ -146,6 +153,14 @@ final class Brand {
 			}
 
 			$out[ $key ] = is_string( $raw ) ? $raw : '';
+		}
+
+		// Ảnh thương hiệu của WooCommerce là nguồn chính; logo SAHA cũ (nếu có) làm dự phòng.
+		if ( Taxonomies::brand_is_native() ) {
+			$native = (int) get_term_meta( $term_id, 'thumbnail_id', true );
+			$legacy = (int) get_term_meta( $term_id, self::META_PREFIX . 'logo_id', true );
+
+			$out['logo_id'] = $native > 0 ? $native : $legacy;
 		}
 
 		return $out;
@@ -390,6 +405,11 @@ final class Brand {
 	 * @return array<string, string>
 	 */
 	public function add_logo_column( array $columns ): array {
+		// WooCommerce đã có cột "Image" cho thương hiệu.
+		if ( Taxonomies::brand_is_native() ) {
+			return $columns;
+		}
+
 		$out = array();
 
 		foreach ( $columns as $key => $label ) {

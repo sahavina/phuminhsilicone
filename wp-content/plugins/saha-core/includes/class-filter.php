@@ -278,31 +278,66 @@ final class Filter {
 
 		$meta_query = (array) $query->get( 'meta_query', array() );
 
-		$stock_status = 'out' === $value ? 'outofstock' : 'instock';
+		$meta_query[] = self::availability_clause( $value );
 
-		$meta_query[] = array(
+		$query->set( 'meta_query', $meta_query ); // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query -- chỉ khi người dùng chủ động lọc.
+	}
+
+	/**
+	 * meta_query cho một giá trị tình trạng hàng.
+	 *
+	 * - Khớp field SAHA `_saha_availability` nếu sản phẩm có đặt.
+	 * - Sản phẩm KHÔNG đặt field (không có dòng meta — Product::save xoá meta
+	 *   rỗng) thì rơi về `_stock_status` của WooCommerce. Phải dùng NOT EXISTS:
+	 *   so sánh `= ''` không bao giờ khớp vì dòng meta không tồn tại.
+	 * - "Liên hệ" không có trạng thái tương ứng trong WooCommerce → không fallback,
+	 *   nếu không sẽ gộp nhầm mọi sản phẩm còn hàng.
+	 *
+	 * Cả hai lỗi trên được phát hiện khi QA trên WooCommerce thật.
+	 *
+	 * @param string $value in_stock | contact | out.
+	 * @return array<string|int, mixed>
+	 */
+	public static function availability_clause( string $value ): array {
+		$explicit = array(
+			'key'     => '_saha_availability',
+			'value'   => $value,
+			'compare' => '=',
+		);
+
+		$stock_map = array(
+			'in_stock' => 'instock',
+			'out'      => 'outofstock',
+		);
+
+		if ( ! isset( $stock_map[ $value ] ) ) {
+			return $explicit;
+		}
+
+		return array(
 			'relation' => 'OR',
-			array(
-				'key'     => '_saha_availability',
-				'value'   => $value,
-				'compare' => '=',
-			),
+			$explicit,
 			array(
 				'relation' => 'AND',
 				array(
-					'key'     => '_saha_availability',
-					'value'   => '',
-					'compare' => '=',
+					'relation' => 'OR',
+					array(
+						'key'     => '_saha_availability',
+						'compare' => 'NOT EXISTS',
+					),
+					array(
+						'key'     => '_saha_availability',
+						'value'   => '',
+						'compare' => '=',
+					),
 				),
 				array(
 					'key'     => '_stock_status',
-					'value'   => $stock_status,
+					'value'   => $stock_map[ $value ],
 					'compare' => '=',
 				),
 			),
 		);
-
-		$query->set( 'meta_query', $meta_query ); // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query -- chỉ khi người dùng chủ động lọc.
 	}
 
 	/**
