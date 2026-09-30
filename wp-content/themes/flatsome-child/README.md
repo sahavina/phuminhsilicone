@@ -47,6 +47,20 @@ JS CustomEvent trên `document`: `saha:click_phone`, `saha:click_zalo`,
 | `SAHA.track(name, payload)` | bắn event analytics (dataLayer + CustomEvent) |
 | `SAHA.config` | dữ liệu từ `SAHA_CONFIG` (restUrl, nonce, hotlines, i18n…) |
 
+## Shortcode / UX element
+
+Tất cả nằm trong nhóm **SAHA** của UX Builder. Danh sách đầy đủ + tham số: `docs/PHASE-5.md` mục 6.
+
+| Nhóm | Shortcode |
+|---|---|
+| Liên hệ | `[saha_hotline]` `[saha_zalo]` `[saha_company]` `[saha_social]` `[saha_copyright]` |
+| Sản phẩm | `[saha_products]` `[saha_featured_products]` `[saha_brand_products]` |
+| Danh mục | `[saha_category_grid]` `[saha_application_grid]` `[saha_brand_grid]` `[saha_term_links]` |
+| Tìm kiếm | `[saha_search]` `[saha_product_filter]` |
+| Form | `[saha_quote_form]` `[saha_contact_form]` `[saha_quote_cta]` |
+
+Layout mẫu: `docs/layouts/homepage.ux.txt`, `docs/layouts/footer-block.ux.txt`.
+
 ## Asset
 
 Mọi asset `wp_register_*` một lần, enqueue theo ngữ cảnh:

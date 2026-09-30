@@ -1,0 +1,107 @@
+[section padding="0px"]
+[ux_banner height="460px" height__sm="360px" bg="" bg_size="original" bg_overlay="rgba(0, 0, 0, 0.35)" bg_pos="50% 50%"]
+[text_box width="60" width__sm="90" position_x="5" position_x__sm="50" position_y="50" text_align="left" text_align__sm="center"]
+
+<h1 class="uppercase"><strong>Tổng kho keo dán chính hãng</strong></h1>
+<p class="lead">Keo silicone, PU Foam, keo công nghiệp Loctite, keo AB, keo 502… cho nhà thầu, xưởng sản xuất và đại lý toàn quốc.</p>
+
+[saha_search placeholder="Tìm theo tên hoặc mã sản phẩm, ví dụ: 243, A500…"]
+
+[/text_box]
+[/ux_banner]
+[/section]
+
+[section padding="30px"]
+[row]
+[col span="12" span__sm="12"]
+[saha_category_grid title="Danh mục chính" limit="8" columns="4" style="image" orderby="menu_order"]
+[/col]
+[/row]
+[/section]
+
+[section padding="30px" bg_color="rgb(246, 248, 250)"]
+[row]
+[col span="12" span__sm="12"]
+[saha_brand_grid title="Thương hiệu nổi bật" view_all="/thuong-hieu/" number="12" orderby="count" order="DESC" show_count="0"]
+[/col]
+[/row]
+[/section]
+
+[section padding="30px"]
+[row]
+[col span="12" span__sm="12"]
+[saha_featured_products title="Sản phẩm nổi bật" limit="8" columns="4" orderby="menu_order"]
+
+[saha_products source="latest" title="Sản phẩm mới" limit="8" columns="4"]
+[/col]
+[/row]
+[/section]
+
+[section padding="30px"]
+[row]
+[col span="12" span__sm="12"]
+[saha_products source="category" category="keo-silicone" title="Keo Silicone" subtitle="Apollo, Bamboo, Wacker, Dowsil" limit="8" columns="4" orderby="popularity"]
+
+[saha_products source="category" category="keo-cong-nghiep" title="Keo công nghiệp" subtitle="Khoá ren, kín ren, giữ đồng trục, dán nhanh, tạo gioăng" limit="8" columns="4" orderby="popularity"]
+
+[saha_quote_cta title="Cần báo giá số lượng lớn?" text="Giá sỉ cho nhà thầu, đại lý và xưởng sản xuất. Phản hồi trong giờ làm việc." style="primary"]
+
+[saha_products source="category" category="pu-foam" title="PU Foam" limit="8" columns="4" orderby="popularity"]
+
+[saha_brand_products brand="loctite" title="Keo Loctite" limit="8" columns="4" orderby="popularity"]
+[/col]
+[/row]
+[/section]
+
+[section padding="30px" bg_color="rgb(246, 248, 250)"]
+[row]
+[col span="12" span__sm="12"]
+[saha_application_grid title="Ứng dụng" subtitle="Chọn keo theo công việc của bạn" limit="8" columns="4" style="chip"]
+[/col]
+[/row]
+[/section]
+
+[section padding="40px"]
+[row]
+[col span="12" span__sm="12"]
+<h2 class="text-center">Vì sao chọn SAHA</h2>
+[/col]
+[col span="3" span__sm="12" span__md="6"]
+[featured_box pos="top" title="Hàng chính hãng" text_align="center"]
+<p>Nhập trực tiếp từ nhà sản xuất và nhà phân phối uỷ quyền, có đầy đủ chứng từ.</p>
+[/featured_box]
+[/col]
+[col span="3" span__sm="12" span__md="6"]
+[featured_box pos="top" title="Tư vấn kỹ thuật" text_align="center"]
+<p>Chọn đúng loại keo cho từng vật liệu và điều kiện thi công.</p>
+[/featured_box]
+[/col]
+[col span="3" span__sm="12" span__md="6"]
+[featured_box pos="top" title="Giá sỉ cạnh tranh" text_align="center"]
+<p>Chính sách giá riêng cho nhà thầu, đại lý, xưởng sản xuất.</p>
+[/featured_box]
+[/col]
+[col span="3" span__sm="12" span__md="6"]
+[featured_box pos="top" title="Giao hàng toàn quốc" text_align="center"]
+<p>Kho miền Bắc và miền Nam, giao nhanh tới công trình.</p>
+[/featured_box]
+[/col]
+[/row]
+[/section]
+
+[section padding="30px"]
+[row]
+[col span="12" span__sm="12"]
+<h2>Kiến thức &amp; hướng dẫn</h2>
+[blog_posts style="normal" columns="3" columns__md="2" columns__sm="1" posts="3" show_date="text" excerpt="visible" excerpt_length="20" image_height="56.25%" image_size="medium"]
+[/col]
+[/row]
+[/section]
+
+[section padding="0px 0px 30px 0px"]
+[row]
+[col span="12" span__sm="12"]
+[saha_quote_cta title="Chưa tìm thấy sản phẩm cần?" text="Gửi yêu cầu, đội ngũ SAHA sẽ tìm và báo giá giúp bạn." style="light"]
+[/col]
+[/row]
+[/section]

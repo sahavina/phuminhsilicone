@@ -73,6 +73,7 @@ final class Loader {
 			'taxonomies' => Taxonomies::class,
 			'brand'      => Brand::class,
 			'product'    => Product::class,
+			'catalog'    => Catalog::class,
 			'search'     => Search::class,
 			'filter'     => Filter::class,
 			'api'        => Api::class,

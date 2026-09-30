@@ -22,6 +22,7 @@ add_action(
 			'saha-brand'      => 'assets/css/brand.css',
 			'saha-search'     => 'assets/css/search.css',
 			'saha-form'       => 'assets/css/form.css',
+			'saha-sections'   => 'assets/css/sections.css',
 		);
 
 		foreach ( $css as $handle => $relative ) {
