@@ -55,7 +55,52 @@
 	 * @param {Object} options Tuỳ chọn fetch.
 	 * @returns {Promise<Object>}
 	 */
-	async function api(path, options) {
+	function restBase() {
+		return (config.restUrl || '/wp-json/saha/v1/').replace(/\/?$/, '/');
+	}
+
+	/**
+	 * Lấy nonce wp_rest mới. Gọi KHÔNG kèm X-WP-Nonce, vì nonce cũ đã hết hạn
+	 * sẽ khiến core WordPress trả 403 ngay cả với endpoint này.
+	 *
+	 * @returns {Promise<boolean>} Có lấy được nonce mới không.
+	 */
+	async function refreshNonce() {
+		try {
+			var response = await window.fetch(restBase() + 'nonce', {
+				headers: { Accept: 'application/json' },
+				credentials: 'same-origin',
+				cache: 'no-store'
+			});
+			var data = await response.json();
+
+			if (response.ok && data && data.data && data.data.nonce) {
+				config.nonce = data.data.nonce;
+				return true;
+			}
+		} catch (error) {
+			// Bỏ qua: request gốc sẽ báo lỗi thân thiện.
+		}
+
+		return false;
+	}
+
+	/**
+	 * Nonce trong trang có thể đã hết hạn khi trang được phục vụ từ page cache.
+	 *
+	 * @param {Response} response Response.
+	 * @param {Object|null} data JSON đã parse.
+	 * @returns {boolean}
+	 */
+	function isNonceError(response, data) {
+		if (response.status !== 403 || !data) {
+			return false;
+		}
+
+		return data.code === 'rest_cookie_invalid_nonce' || data.success === false;
+	}
+
+	async function api(path, options, isRetry) {
 		var opts = options || {};
 		var headers = Object.assign({ Accept: 'application/json' }, opts.headers || {});
 
@@ -67,8 +112,7 @@
 			headers['X-WP-Nonce'] = config.nonce;
 		}
 
-		var base = (config.restUrl || '/wp-json/saha/v1/').replace(/\/?$/, '/');
-		var response = await window.fetch(base + String(path).replace(/^\//, ''), {
+		var response = await window.fetch(restBase() + String(path).replace(/^\//, ''), {
 			method: opts.method || 'GET',
 			headers: headers,
 			body: opts.body ? JSON.stringify(opts.body) : undefined,
@@ -82,6 +126,10 @@
 			data = await response.json();
 		} catch (error) {
 			data = null;
+		}
+
+		if (!isRetry && isNonceError(response, data) && (await refreshNonce())) {
+			return api(path, options, true);
 		}
 
 		if (!response.ok) {
@@ -116,7 +164,26 @@
 	}
 
 	/**
-	 * Nút mở form báo giá. Module quote-form.js (Phase 4) sẽ lắng nghe event này.
+	 * Địa chỉ dự phòng khi trang không có quote modal: trang báo giá, rồi tới hotline.
+	 *
+	 * @returns {string}
+	 */
+	function quoteFallbackUrl() {
+		if (config.quoteUrl) {
+			return config.quoteUrl;
+		}
+
+		var hotline = (config.hotlines || [])[0];
+
+		return hotline && hotline.href ? hotline.href : '';
+	}
+
+	/**
+	 * Nút mở form báo giá.
+	 *
+	 * quote-form.js lắng nghe 'saha:quote:open' và gọi preventDefault() trên
+	 * click gốc nếu nó mở được modal. Nếu không (trang không có modal), link
+	 * <a> đi tiếp bình thường, còn <button> dẫn tới trang báo giá / hotline.
 	 */
 	function bindQuoteTriggers() {
 		document.addEventListener('click', function (event) {
@@ -126,17 +193,26 @@
 				return;
 			}
 
-			event.preventDefault();
-
 			document.dispatchEvent(
 				new CustomEvent('saha:quote:open', {
 					detail: {
 						productId: parseInt(trigger.getAttribute('data-saha-product-id') || '0', 10),
 						productName: trigger.getAttribute('data-saha-product-name') || '',
-						sku: trigger.getAttribute('data-saha-sku') || ''
+						sku: trigger.getAttribute('data-saha-sku') || '',
+						originalEvent: event
 					}
 				})
 			);
+
+			if (event.defaultPrevented || trigger.tagName === 'A') {
+				return;
+			}
+
+			var fallback = quoteFallbackUrl();
+
+			if (fallback) {
+				window.location.href = fallback;
+			}
 		});
 	}
 

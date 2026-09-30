@@ -53,3 +53,129 @@
 .saha-stat-list li:last-child {
 	border-bottom: 0;
 }
+
+/* --- CRM ---------------------------------------------------------------- */
+
+.saha-crm-filters select,
+.saha-crm-filters input[type="date"] {
+	max-width: 170px;
+}
+
+.saha-status {
+	display: inline-block;
+	padding: 2px 8px;
+	border-radius: 999px;
+	background: #f0f0f1;
+	font-size: 12px;
+	font-weight: 600;
+	white-space: nowrap;
+}
+
+.saha-status--new {
+	background: #fcf0e3;
+	color: #8a4b00;
+}
+
+.saha-status--contacted,
+.saha-status--qualified {
+	background: #e5f0fa;
+	color: #0b5cab;
+}
+
+.saha-status--quoted {
+	background: #efe7fb;
+	color: #5b2fa0;
+}
+
+.saha-status--won,
+.saha-status--converted {
+	background: #e6f4ea;
+	color: #1e6b34;
+}
+
+.saha-status--lost {
+	background: #f6e5e5;
+	color: #8a1f1f;
+}
+
+.saha-panel {
+	margin-bottom: 20px;
+	padding: 16px 20px;
+	background: #fff;
+	border: 1px solid #dcdcde;
+	border-radius: 4px;
+}
+
+.saha-panel h2 {
+	margin-top: 0;
+	font-size: 15px;
+}
+
+.saha-crm-detail__grid {
+	display: grid;
+	grid-template-columns: minmax(0, 2fr) minmax(260px, 1fr);
+	gap: 20px;
+	align-items: start;
+}
+
+.saha-crm-detail .widefat th {
+	width: 140px;
+}
+
+.saha-crm-message {
+	padding: 12px;
+	background: #f6f7f7;
+	border-radius: 4px;
+	line-height: 1.6;
+	white-space: normal;
+}
+
+.saha-notes {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.saha-notes li {
+	padding: 10px 0;
+	border-bottom: 1px solid #f0f0f1;
+}
+
+.saha-notes li:last-child {
+	border-bottom: 0;
+}
+
+.saha-notes__meta {
+	margin-bottom: 4px;
+	color: #50575e;
+	font-size: 12px;
+}
+
+.saha-history {
+	margin: 0;
+}
+
+.saha-history li {
+	margin-bottom: 6px;
+}
+
+.saha-report-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+	gap: 20px;
+}
+
+.saha-num {
+	width: 90px;
+	text-align: right;
+}
+
+.saha-row-warning td {
+	background: #fcf9e8;
+}
+
+@media (max-width: 960px) {
+	.saha-crm-detail__grid {
+		grid-template-columns: 1fr;
+	}
+}

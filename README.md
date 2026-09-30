@@ -27,6 +27,7 @@ WordPress core, Flatsome, WooCommerce, uploads, cache, `wp-config.php` **không*
 | [docs/PHASE-1.md](docs/PHASE-1.md) | Foundation — goal, files, DB, hooks, security, testing, acceptance |
 | [docs/PHASE-2.md](docs/PHASE-2.md) | Catalogue — taxonomy, term meta, product fields, frontend sản phẩm & thương hiệu |
 | [docs/PHASE-3.md](docs/PHASE-3.md) | Search & Filter — relevance, REST API, autocomplete, bộ lọc giữ state URL |
+| [docs/PHASE-4.md](docs/PHASE-4.md) | Quote & Lead — form, REST POST, email, admin CRM mini, báo cáo |
 | [wp-content/plugins/saha-core/README.md](wp-content/plugins/saha-core/README.md) | module plugin |
 | [wp-content/themes/flatsome-child/README.md](wp-content/themes/flatsome-child/README.md) | module theme |
 
@@ -46,11 +47,20 @@ WordPress core, Flatsome, WooCommerce, uploads, cache, `wp-config.php` **không*
 | 1 | Foundation | ✅ hoàn thành |
 | 2 | Catalogue (brand, product fields, frontend) | ✅ hoàn thành |
 | 3 | Search + filter | ✅ hoàn thành |
-| 4 | Quote + Lead + admin CRM | ⏳ |
+| 4 | Quote + Lead + admin CRM | ✅ hoàn thành |
 | 5 | Homepage + UX elements | ⏳ |
 | 6 | SEO | ⏳ |
 | 7 | Performance | ⏳ |
 | 8 | QA | ⏳ |
+
+## Kiểm thử
+
+```bash
+php tests/smoke.php
+```
+
+Smoke test logic thuần (validate, sanitize, search tokenizer) — không cần WordPress/MySQL.
+Checklist test trên site thật nằm ở mục 8 của từng `docs/PHASE-*.md`.
 
 ## Quy ước
 

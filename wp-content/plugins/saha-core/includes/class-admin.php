@@ -80,7 +80,9 @@ final class Admin {
 	 * @param string $hook_suffix Hook hiện tại.
 	 */
 	public function enqueue( string $hook_suffix ): void {
-		$on_saha_page = false !== strpos( $hook_suffix, self::MENU_SLUG );
+		// toplevel_page_saha-core cho Dashboard, saha_page_* cho mọi submenu (CRM, cấu hình…).
+		$on_saha_page = 0 === strpos( $hook_suffix, 'toplevel_page_' . self::MENU_SLUG )
+			|| 0 === strpos( $hook_suffix, 'saha_page_' );
 		$needs_editor = $this->screen_needs_field_ui();
 
 		if ( ! $on_saha_page && ! $needs_editor ) {

@@ -110,6 +110,13 @@ final class Settings {
 				'section' => 'behaviour',
 				'default' => 'Yêu cầu báo giá',
 			),
+			'quote_page_url'           => array(
+				'type'        => 'url',
+				'label'       => __( 'Trang yêu cầu báo giá', 'saha-core' ),
+				'section'     => 'behaviour',
+				'default'     => '',
+				'description' => __( 'URL trang có form báo giá. Nút "Báo giá" ở trang không có form sẽ dẫn tới đây; để trống sẽ dẫn tới hotline.', 'saha-core' ),
+			),
 			'catalogue_mode'           => array(
 				'type'        => 'bool',
 				'label'       => __( 'Chế độ catalogue', 'saha-core' ),
