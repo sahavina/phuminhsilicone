@@ -193,8 +193,8 @@ Product edit: field chia panel (Thông tin · Thông số · Ứng dụng/HDSD �
 | 4 | Lead/Quote: form, service, admin list table, email | hoàn thành |
 | 5 | Homepage: UX elements, shortcode, block | hoàn thành |
 | 6 | SEO: Rank Math bridge, breadcrumb, brand SEO | hoàn thành |
-| 7 | Performance: cache layer, invalidation, asset | **hoàn thành** |
-| 8 | QA: responsive, browser, security, SEO, performance | chờ |
+| 7 | Performance: cache layer, invalidation, asset | hoàn thành |
+| 8 | QA: responsive, browser, security, SEO, performance | **8A công cụ xong** · 8B chờ staging |
 
 ## P. File sẽ tạo (Phase 1)
 
