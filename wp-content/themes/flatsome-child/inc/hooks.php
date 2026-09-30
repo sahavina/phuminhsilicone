@@ -78,13 +78,21 @@ if ( ! function_exists( 'saha_theme_breadcrumb' ) ) {
 
 		$rendered = true;
 
-		if ( function_exists( 'rank_math_the_breadcrumbs' ) ) {
+		// Cùng một nguồn với woocommerce_breadcrumb() (inc/woocommerce.php).
+		$provider = function_exists( 'saha_breadcrumb_provider' ) ? saha_breadcrumb_provider() : 'none';
+
+		if ( 'rank_math' === $provider ) {
 			rank_math_the_breadcrumbs();
 			return;
 		}
 
-		if ( function_exists( 'yoast_breadcrumb' ) ) {
+		if ( 'yoast' === $provider ) {
 			yoast_breadcrumb( '<nav class="saha-breadcrumb" aria-label="' . esc_attr__( 'Đường dẫn', 'flatsome-child' ) . '">', '</nav>' );
+			return;
+		}
+
+		// Trang WooCommerce đã có breadcrumb của Flatsome/WooCommerce — không render thêm.
+		if ( 'woocommerce' === $provider && function_exists( 'is_woocommerce' ) && is_woocommerce() ) {
 			return;
 		}
 
@@ -110,4 +118,54 @@ add_action(
 			)
 		);
 	}
+);
+
+/*
+ * -------------------------------------------------------------------------
+ * PHASE 6 — Trang bài viết (spec §21): breadcrumb + bài viết liên quan
+ * -------------------------------------------------------------------------
+ */
+
+/**
+ * Breadcrumb đầu nội dung bài viết + bài viết liên quan cuối bài.
+ *
+ * Dùng the_content (chỉ main query, trong loop) thay vì hook riêng của
+ * Flatsome để không phụ thuộc phiên bản theme cha.
+ */
+add_filter(
+	'the_content',
+	static function ( $content ) {
+		if ( ! is_singular( 'post' ) || ! in_the_loop() || ! is_main_query() ) {
+			return $content;
+		}
+
+		/**
+		 * Bật/tắt breadcrumb chèn đầu bài (tắt nếu Flatsome/plugin khác đã hiện).
+		 *
+		 * @param bool $enabled Có chèn không.
+		 */
+		$show_breadcrumb = (bool) apply_filters( 'saha_theme_post_breadcrumb', true );
+		$show_related    = (bool) saha_theme_setting( 'blog_related_posts', true );
+
+		$before = '';
+		$after  = '';
+
+		if ( $show_breadcrumb ) {
+			ob_start();
+			saha_theme_breadcrumb();
+			$before = (string) ob_get_clean();
+		}
+
+		if ( $show_related && function_exists( 'saha_related_post_ids' ) ) {
+			ob_start();
+			saha_theme_part(
+				'blog/related',
+				array( 'ids' => saha_related_post_ids( (int) get_the_ID(), 3 ) )
+			);
+			$after = (string) ob_get_clean();
+		}
+
+		return $before . $content . $after;
+	},
+	20
 );

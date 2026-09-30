@@ -61,6 +61,17 @@ $option = Settings::OPTION;
 									>
 									<?php esc_html_e( 'Bật', 'saha-core' ); ?>
 								</label>
+							<?php elseif ( 'select' === $type ) : ?>
+								<select
+									id="<?php echo esc_attr( $field_id ); ?>"
+									name="<?php echo esc_attr( $field_name ); ?>"
+								>
+									<?php foreach ( (array) ( $field['options'] ?? array() ) as $opt_value => $opt_label ) : ?>
+										<option value="<?php echo esc_attr( (string) $opt_value ); ?>" <?php selected( (string) $value, (string) $opt_value ); ?>>
+											<?php echo esc_html( (string) $opt_label ); ?>
+										</option>
+									<?php endforeach; ?>
+								</select>
 							<?php elseif ( 'textarea' === $type ) : ?>
 								<textarea
 									id="<?php echo esc_attr( $field_id ); ?>"

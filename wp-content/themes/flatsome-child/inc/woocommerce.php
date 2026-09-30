@@ -366,3 +366,72 @@ add_action(
 	},
 	15
 );
+
+/*
+ * -------------------------------------------------------------------------
+ * PHASE 6 — Breadcrumb một nguồn (spec §71)
+ * -------------------------------------------------------------------------
+ */
+
+if ( ! function_exists( 'woocommerce_breadcrumb' ) ) {
+	/**
+	 * Override hàm pluggable của WooCommerce.
+	 *
+	 * WooCommerce khai báo woocommerce_breadcrumb() trong `if ( ! function_exists() )`
+	 * và chỉ nạp template functions ở after_setup_theme — sau khi child theme đã
+	 * nạp — nên đây là cách override chính thức, không sửa core.
+	 *
+	 * Mọi chỗ Flatsome/WooCommerce gọi breadcrumb sẽ đi qua đây và chỉ render
+	 * MỘT nguồn: Rank Math → Yoast → WooCommerce. Khi dùng Rank Math/Yoast,
+	 * BreadcrumbList schema của WooCommerce cũng không được sinh (nó được bắn
+	 * trong luồng WooCommerce bên dưới), tránh schema trùng.
+	 *
+	 * @param array<string, mixed> $args Tham số breadcrumb của WooCommerce.
+	 */
+	function woocommerce_breadcrumb( $args = array() ) {
+		$provider = function_exists( 'saha_breadcrumb_provider' ) ? saha_breadcrumb_provider() : 'woocommerce';
+
+		if ( 'rank_math' === $provider ) {
+			rank_math_the_breadcrumbs();
+			return;
+		}
+
+		if ( 'yoast' === $provider ) {
+			yoast_breadcrumb( '<nav class="woocommerce-breadcrumb saha-breadcrumb" aria-label="' . esc_attr__( 'Đường dẫn', 'flatsome-child' ) . '">', '</nav>' );
+			return;
+		}
+
+		// Giữ nguyên hành vi mặc định của WooCommerce — dùng text domain
+		// "woocommerce" có chủ đích để tái dùng bản dịch sẵn có của WooCommerce.
+		$args = wp_parse_args(
+			$args,
+			apply_filters(
+				'woocommerce_breadcrumb_defaults',
+				array(
+					'delimiter'   => '&nbsp;&#47;&nbsp;',
+					'wrap_before' => '<nav class="woocommerce-breadcrumb" aria-label="' . esc_attr__( 'Breadcrumb', 'woocommerce' ) . '">',
+					'wrap_after'  => '</nav>',
+					'before'      => '',
+					'after'       => '',
+					'home'        => _x( 'Home', 'breadcrumb', 'woocommerce' ),
+				)
+			)
+		);
+
+		$breadcrumbs = new WC_Breadcrumb();
+
+		if ( ! empty( $args['home'] ) ) {
+			$breadcrumbs->add_crumb( $args['home'], apply_filters( 'woocommerce_breadcrumb_home_url', home_url() ) );
+		}
+
+		$args['breadcrumb'] = $breadcrumbs->generate();
+
+		/**
+		 * Hook gốc của WooCommerce — WC_Structured_Data dùng hook này để sinh
+		 * BreadcrumbList schema.
+		 */
+		do_action( 'woocommerce_breadcrumb', $breadcrumbs, $args );
+
+		wc_get_template( 'global/breadcrumb.php', $args );
+	}
+}

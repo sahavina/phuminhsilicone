@@ -404,3 +404,34 @@ if ( ! function_exists( 'saha_catalog_sources' ) ) {
 		return Saha\Core\Catalog::sources();
 	}
 }
+
+if ( ! function_exists( 'saha_seo_provider' ) ) {
+	/**
+	 * Plugin SEO đang hoạt động: rank_math | yoast | none.
+	 */
+	function saha_seo_provider(): string {
+		return Saha\Core\Seo::provider();
+	}
+}
+
+if ( ! function_exists( 'saha_breadcrumb_provider' ) ) {
+	/**
+	 * Nguồn breadcrumb duy nhất: rank_math | yoast | woocommerce | none (spec §71).
+	 */
+	function saha_breadcrumb_provider(): string {
+		return Saha\Core\Seo::breadcrumb_provider();
+	}
+}
+
+if ( ! function_exists( 'saha_related_post_ids' ) ) {
+	/**
+	 * Bài viết liên quan (có cache).
+	 *
+	 * @param int $post_id Bài hiện tại.
+	 * @param int $limit   Số bài.
+	 * @return int[]
+	 */
+	function saha_related_post_ids( int $post_id, int $limit = 3 ): array {
+		return Saha\Core\Catalog::related_post_ids( $post_id, $limit );
+	}
+}

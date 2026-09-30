@@ -142,5 +142,53 @@ check( 'limit bị chặn ở 24', $saha_n['limit'], Saha\Core\Catalog::MAX_LIMI
 check( 'orderby lạ → date', $saha_n['orderby'], 'date' );
 check( 'ids chỉ giữ số dương', $saha_n['ids'], array( 3, 5 ) );
 
+echo "Seo (spec §22, §51)\n";
+if ( ! function_exists( 'trailingslashit' ) ) {
+	function trailingslashit( $s ) { return rtrim( (string) $s, '/\\' ) . '/'; }
+}
+if ( ! function_exists( 'is_admin' ) ) {
+	function is_admin() { return false; }
+}
+if ( ! function_exists( 'is_search' ) ) {
+	function is_search() { return ! empty( $GLOBALS['__is_search'] ); }
+}
+
+check( 'không có Rank Math/Yoast → provider none', Saha\Core\Seo::provider(), 'none' );
+check( 'auto + không có Rank Math → schema WooCommerce', Saha\Core\Seo::product_schema_source(), 'woocommerce' );
+
+$saha_trim = new ReflectionMethod( Saha\Core\Seo::class, 'trim_description' );
+$saha_trim->setAccessible( true );
+$saha_long = str_repeat( 'Keo silicone trung tính chống nấm mốc ', 10 );
+$saha_cut  = $saha_trim->invoke( null, $saha_long );
+check( 'description ≤ 160 ký tự', mb_strlen( $saha_cut ) <= 160, true );
+check( 'description không cắt giữa từ', 1 === preg_match( '/\S…$/u', $saha_cut ) && false === strpos( $saha_cut, ' …' ), true );
+check( 'description ngắn giữ nguyên', $saha_trim->invoke( null, 'Keo Apollo A500' ), 'Keo Apollo A500' );
+
+$saha_seo   = new Saha\Core\Seo();
+$saha_txt   = "User-agent: *\nDisallow: /wp-admin/\nAllow: /wp-admin/admin-ajax.php\n\nSitemap: https://tongkhokeodan.com/wp-sitemap.xml\n";
+$saha_robot = $saha_seo->filter_robots_txt( $saha_txt, true );
+check( 'robots.txt chặn ?s=', false !== strpos( $saha_robot, 'Disallow: /?s=' ), true );
+check( 'robots.txt chặn admin-post.php', false !== strpos( $saha_robot, 'Disallow: /wp-admin/admin-post.php' ), true );
+check( 'robots.txt KHÔNG chặn URL lọc saha_', false === strpos( $saha_robot, 'saha_brand' ), true );
+check( 'robots.txt KHÔNG chặn CSS/JS/uploads', 0 === preg_match( '#Disallow: .*(\.css|\.js|uploads|wp-content)#', $saha_robot ), true );
+check( 'dòng SAHA nằm trong nhóm User-agent: *, trước Sitemap', strpos( $saha_robot, '# SAHA' ) < strpos( $saha_robot, 'Sitemap:' ), true );
+check( 'site không public → giữ nguyên', $saha_seo->filter_robots_txt( $saha_txt, false ), $saha_txt );
+
+$_GET = array( 'saha_brand' => 'loctite' );
+check( 'URL lọc → noindex, follow', $saha_seo->filter_wp_robots( array( 'max-image-preview' => 'large' ) ), array( 'max-image-preview' => 'large', 'noindex' => true, 'follow' => true ) );
+check( 'Rank Math robots cho URL lọc', $saha_seo->filter_rank_math_robots( array( 'index' => 'index' ) ), array( 'index' => 'noindex', 'follow' => 'follow' ) );
+$_GET = array();
+check( 'URL sạch → robots giữ nguyên', $saha_seo->filter_wp_robots( array( 'max-image-preview' => 'large' ) ), array( 'max-image-preview' => 'large' ) );
+$GLOBALS['__is_search'] = true;
+check( 'trang tìm kiếm → noindex', isset( $saha_seo->filter_wp_robots( array() )['noindex'] ), true );
+$GLOBALS['__is_search'] = false;
+check( 'sitemap core bỏ provider users', $saha_seo->filter_core_sitemap_providers( 'x', 'users' ), false );
+
+echo "Settings select (sanitize)\n";
+$saha_clean = Saha\Core\Settings::sanitize( array( 'product_schema_source' => 'evil<script>' ) );
+check( 'giá trị select lạ → mặc định', $saha_clean['product_schema_source'], 'auto' );
+$saha_clean = Saha\Core\Settings::sanitize( array( 'product_schema_source' => 'seo_plugin' ) );
+check( 'giá trị select hợp lệ giữ nguyên', $saha_clean['product_schema_source'], 'seo_plugin' );
+
 echo "\n$pass passed, $fail failed\n";
 exit( $fail > 0 ? 1 : 0 );

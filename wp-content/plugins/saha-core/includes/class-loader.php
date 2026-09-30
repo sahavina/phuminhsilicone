@@ -83,6 +83,7 @@ final class Loader {
 			'mailer'     => Mailer::class,
 			'forms'      => Form_Handler::class,
 			'crm'        => Crm::class,
+			'seo'        => Seo::class,
 			'admin'      => Admin::class,
 		);
 

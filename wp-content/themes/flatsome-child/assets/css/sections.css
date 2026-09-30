@@ -298,3 +298,73 @@
 		text-align: center;
 	}
 }
+
+/* --- Bài viết liên quan (spec §21) --------------------------------------- */
+
+.saha-related-posts {
+	margin: 40px 0 0;
+	padding-top: 24px;
+	border-top: 1px solid var(--saha-color-border);
+}
+
+.saha-related-posts__title {
+	margin: 0 0 16px;
+	font-size: 20px;
+}
+
+.saha-related-posts__list {
+	display: grid;
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+	gap: var(--saha-gap);
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.saha-related-posts__item {
+	margin: 0;
+}
+
+.saha-related-posts__link {
+	display: flex;
+	flex-direction: column;
+	gap: 6px;
+	color: var(--saha-color-text);
+	text-decoration: none;
+}
+
+.saha-related-posts__media {
+	display: block;
+	aspect-ratio: 16 / 9;
+	overflow: hidden;
+	background: var(--saha-color-surface-alt);
+	border-radius: var(--saha-radius);
+}
+
+.saha-related-posts__media img {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+}
+
+.saha-related-posts__name {
+	font-weight: 600;
+	line-height: 1.35;
+}
+
+.saha-related-posts__link:hover .saha-related-posts__name,
+.saha-related-posts__link:focus-visible .saha-related-posts__name {
+	color: var(--saha-color-primary);
+	text-decoration: underline;
+}
+
+.saha-related-posts__date {
+	color: var(--saha-color-muted);
+	font-size: 13px;
+}
+
+@media (max-width: 767px) {
+	.saha-related-posts__list {
+		grid-template-columns: 1fr;
+	}
+}
