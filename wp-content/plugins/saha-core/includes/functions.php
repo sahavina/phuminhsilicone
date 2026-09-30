@@ -367,3 +367,40 @@ if ( ! function_exists( 'saha_quote_statuses' ) ) {
 		return Saha\Core\Quote::statuses();
 	}
 }
+
+if ( ! function_exists( 'saha_catalog_product_ids' ) ) {
+	/**
+	 * ID sản phẩm cho một khối trang chủ (có cache, tự vô hiệu khi dữ liệu đổi).
+	 *
+	 * @param array<string, mixed> $args source (featured|latest|sale|category|brand|application|ids),
+	 *                                   category, brand, application, ids, limit, orderby, hide_out_of_stock.
+	 * @return int[]
+	 */
+	function saha_catalog_product_ids( array $args ): array {
+		return Saha\Core\Catalog::product_ids( $args );
+	}
+}
+
+if ( ! function_exists( 'saha_catalog_terms' ) ) {
+	/**
+	 * Term cho grid danh mục / ứng dụng.
+	 *
+	 * @param string               $taxonomy product_cat | product_application.
+	 * @param array<string, mixed> $args     parent, include, limit, hide_empty, orderby.
+	 * @return array<int, array<string, mixed>>
+	 */
+	function saha_catalog_terms( string $taxonomy, array $args = array() ): array {
+		return Saha\Core\Catalog::terms( $taxonomy, $args );
+	}
+}
+
+if ( ! function_exists( 'saha_catalog_sources' ) ) {
+	/**
+	 * Các nguồn sản phẩm cho khối trang chủ.
+	 *
+	 * @return array<string, string>
+	 */
+	function saha_catalog_sources(): array {
+		return Saha\Core\Catalog::sources();
+	}
+}

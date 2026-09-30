@@ -349,16 +349,20 @@ add_action(
 );
 
 /**
- * Quote modal trên trang sản phẩm — chỉ render ở đây, không phải mọi trang (spec §73).
+ * Quote modal: chỉ render ở trang sản phẩm và trang có khối Quote CTA,
+ * không phải mọi trang (spec §73).
  */
 add_action(
 	'wp_footer',
 	static function (): void {
-		if ( ! is_singular( 'product' ) ) {
+		if ( is_singular( 'product' ) ) {
+			saha_theme_part( 'quote/modal', array( 'product_id' => get_the_ID() ) );
 			return;
 		}
 
-		saha_theme_part( 'quote/modal', array( 'product_id' => get_the_ID() ) );
+		if ( saha_theme_content_has_shortcode( 'saha_quote_cta' ) ) {
+			saha_theme_part( 'quote/modal' );
+		}
 	},
 	15
 );

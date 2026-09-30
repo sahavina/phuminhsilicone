@@ -151,3 +151,31 @@
 	white-space: nowrap;
 	border: 0;
 }
+
+/* --- Footer: link danh mục / thương hiệu, social, copyright ------------- */
+
+.saha-term-links {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.saha-term-links li {
+	margin: 0 0 6px;
+}
+
+.saha-social {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 10px;
+}
+
+.saha-social__item {
+	display: inline-flex;
+	align-items: center;
+	padding: 6px 12px;
+	border: 1px solid currentColor;
+	border-radius: 999px;
+	font-size: 14px;
+	text-decoration: none;
+}

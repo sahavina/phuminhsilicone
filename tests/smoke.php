@@ -124,5 +124,23 @@ check( 'tokenize 2 từ', Search::tokenize( 'apollo a500' ), array( 'apollo', 'a
 check( 'synonym mở rộng token', Search::tokenize( 'keo kính' ), array( 'keo', 'kính', 'silicone', 'keo nhôm kính' ) );
 check( 'synonym không áp khi không khớp', Search::tokenize( 'loctite' ), array( 'loctite' ) );
 
+echo "Catalog (spec §35, §36)\n";
+if ( ! function_exists( 'sanitize_title' ) ) {
+	function sanitize_title( $s ) { return trim( preg_replace( '/[^a-z0-9\-]+/', '-', strtolower( (string) $s ) ), '-' ); }
+}
+
+$saha_clause = new ReflectionMethod( Saha\Core\Catalog::class, 'tax_clause' );
+$saha_clause->setAccessible( true );
+check( 'slug → field slug', $saha_clause->invoke( null, 'product_cat', 'keo-silicone', true ), array( 'taxonomy' => 'product_cat', 'field' => 'slug', 'terms' => 'keo-silicone', 'include_children' => true ) );
+check( 'ID từ termSelect → field term_id', $saha_clause->invoke( null, 'product_brand', '15' ), array( 'taxonomy' => 'product_brand', 'field' => 'term_id', 'terms' => 15 ) );
+
+$saha_norm = new ReflectionMethod( Saha\Core\Catalog::class, 'normalize_product_args' );
+$saha_norm->setAccessible( true );
+$saha_n = $saha_norm->invoke( null, array( 'source' => 'DROP TABLE', 'limit' => 99999, 'orderby' => 'meta_value; --', 'ids' => '3, 5,abc,0' ) );
+check( 'source lạ → latest', $saha_n['source'], 'latest' );
+check( 'limit bị chặn ở 24', $saha_n['limit'], Saha\Core\Catalog::MAX_LIMIT );
+check( 'orderby lạ → date', $saha_n['orderby'], 'date' );
+check( 'ids chỉ giữ số dương', $saha_n['ids'], array( 3, 5 ) );
+
 echo "\n$pass passed, $fail failed\n";
 exit( $fail > 0 ? 1 : 0 );

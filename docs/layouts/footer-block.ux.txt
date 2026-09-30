@@ -1,0 +1,39 @@
+[row style="small" v_align="top"]
+
+[col span="4" span__sm="12" span__md="6"]
+<h3 class="uppercase">[saha_company field="site_brand"]</h3>
+<p>[saha_company field="company_name"]</p>
+<p>[saha_company field="address"]</p>
+<p><strong>Hotline:</strong><br>[saha_hotline region="all" label="1"]</p>
+<p><strong>Email:</strong> [saha_company field="email"]</p>
+<p><strong>Website:</strong> [saha_company field="website"]</p>
+[/col]
+
+[col span="2" span__sm="6" span__md="6"]
+<h3 class="uppercase">Danh mục</h3>
+[saha_term_links taxonomy="product_cat" limit="8" orderby="count"]
+[/col]
+
+[col span="2" span__sm="6" span__md="6"]
+<h3 class="uppercase">Thương hiệu</h3>
+[saha_term_links taxonomy="product_brand" limit="8" orderby="count"]
+[/col]
+
+[col span="2" span__sm="6" span__md="6"]
+<h3 class="uppercase">Chính sách</h3>
+[ux_menu menu="chinh-sach"]
+[/col]
+
+[col span="2" span__sm="6" span__md="6"]
+<h3 class="uppercase">Kết nối</h3>
+[saha_social]
+[saha_zalo text="Chat Zalo"]
+[/col]
+
+[/row]
+
+[row style="collapse"]
+[col span="12" span__sm="12"]
+<p class="text-center">[saha_copyright]</p>
+[/col]
+[/row]

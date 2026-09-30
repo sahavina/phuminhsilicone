@@ -1,0 +1,300 @@
+/*
+ * SAHA — sections.css
+ * Khối trang chủ / landing: tiêu đề khối, grid danh mục, dải CTA.
+ * Chỉ load khi một trong các khối được render (enqueue trong template part).
+ */
+
+/* --- Khoảng cách khối --------------------------------------------------- */
+
+.saha-section {
+	margin: 0 0 32px;
+}
+
+/* --- Tiêu đề khối ------------------------------------------------------- */
+
+.saha-section-heading {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: flex-end;
+	justify-content: space-between;
+	gap: 8px 16px;
+	margin-bottom: 16px;
+	padding-bottom: 10px;
+	border-bottom: 2px solid var(--saha-color-border);
+}
+
+.saha-section-heading__title {
+	position: relative;
+	margin: 0;
+	font-size: 22px;
+	line-height: 1.25;
+}
+
+.saha-section-heading__title::after {
+	position: absolute;
+	bottom: -12px;
+	left: 0;
+	width: 56px;
+	height: 2px;
+	background: var(--saha-color-primary);
+	content: "";
+}
+
+.saha-section-heading__subtitle {
+	margin: 6px 0 0;
+	color: var(--saha-color-muted);
+	font-size: 14px;
+}
+
+.saha-section-heading__more {
+	flex: 0 0 auto;
+	color: var(--saha-color-primary);
+	font-size: 14px;
+	font-weight: 600;
+	text-decoration: none;
+	white-space: nowrap;
+}
+
+.saha-section-heading__more:hover,
+.saha-section-heading__more:focus-visible {
+	text-decoration: underline;
+}
+
+/* --- Grid danh mục / ứng dụng ------------------------------------------- */
+
+.saha-term-grid {
+	display: grid;
+	grid-template-columns: repeat(4, minmax(0, 1fr));
+	gap: var(--saha-gap);
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.saha-term-grid.saha-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.saha-term-grid.saha-cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.saha-term-grid.saha-cols-5 { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+.saha-term-grid.saha-cols-6 { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+.saha-term-grid.saha-cols-7 { grid-template-columns: repeat(7, minmax(0, 1fr)); }
+.saha-term-grid.saha-cols-8 { grid-template-columns: repeat(8, minmax(0, 1fr)); }
+
+.saha-term-card {
+	margin: 0;
+}
+
+.saha-term-card__link {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 8px;
+	height: 100%;
+	padding: 12px;
+	background: var(--saha-color-surface);
+	border: 1px solid var(--saha-color-border);
+	border-radius: var(--saha-radius);
+	color: var(--saha-color-text);
+	text-align: center;
+	text-decoration: none;
+	transition: border-color .15s ease, box-shadow .15s ease;
+}
+
+.saha-term-card__link:hover,
+.saha-term-card__link:focus-visible {
+	border-color: var(--saha-color-primary);
+	box-shadow: 0 2px 10px rgba(11, 92, 171, .08);
+}
+
+/* Khung ảnh cố định tỉ lệ để không gây layout shift (CLS — spec §25). */
+.saha-term-card__media {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 100%;
+	aspect-ratio: 1 / 1;
+	overflow: hidden;
+	background: var(--saha-color-surface-alt);
+	border-radius: 4px;
+}
+
+.saha-term-card__media img {
+	width: 100%;
+	height: 100%;
+	object-fit: contain;
+}
+
+.saha-term-card__placeholder {
+	color: var(--saha-color-primary);
+	font-size: 32px;
+	font-weight: 700;
+	text-transform: uppercase;
+}
+
+.saha-term-card__name {
+	font-size: 15px;
+	font-weight: 600;
+	line-height: 1.3;
+}
+
+.saha-term-card__count {
+	color: var(--saha-color-muted);
+	font-size: 12px;
+}
+
+/* Kiểu chip: gọn, phù hợp khối "Ứng dụng". */
+.saha-term-grid--chip .saha-term-card__link {
+	flex-direction: row;
+	justify-content: center;
+	padding: 10px 14px;
+	border-radius: 999px;
+}
+
+.saha-term-grid--chip .saha-term-card__name {
+	font-size: 14px;
+}
+
+/* --- Dải CTA báo giá ---------------------------------------------------- */
+
+.saha-quote-cta {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	justify-content: space-between;
+	gap: 16px 24px;
+	margin: 0 0 32px;
+	padding: 24px 28px;
+	border-radius: var(--saha-radius);
+}
+
+.saha-quote-cta--primary {
+	background: var(--saha-color-primary);
+	color: #fff;
+}
+
+.saha-quote-cta--light {
+	background: var(--saha-color-surface-alt);
+	border: 1px solid var(--saha-color-border);
+	color: var(--saha-color-text);
+}
+
+.saha-quote-cta__text {
+	flex: 1 1 320px;
+}
+
+.saha-quote-cta__title {
+	margin: 0 0 6px;
+	color: inherit;
+	font-size: 22px;
+}
+
+.saha-quote-cta__desc {
+	margin: 0;
+	opacity: .9;
+}
+
+.saha-quote-cta__actions {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 12px 20px;
+}
+
+.saha-quote-cta__button {
+	margin: 0;
+	background: var(--saha-color-accent);
+	border-color: var(--saha-color-accent);
+	color: #1f2328;
+	font-weight: 700;
+}
+
+.saha-quote-cta__button:hover,
+.saha-quote-cta__button:focus-visible {
+	filter: brightness(.95);
+	color: #1f2328;
+}
+
+.saha-quote-cta__phone,
+.saha-quote-cta__zalo {
+	display: inline-flex;
+	flex-direction: column;
+	color: inherit;
+	line-height: 1.2;
+	text-decoration: none;
+}
+
+.saha-quote-cta__phone-label {
+	font-size: 12px;
+	opacity: .85;
+}
+
+.saha-quote-cta__phone-number {
+	font-size: 18px;
+	font-weight: 700;
+}
+
+.saha-quote-cta__zalo {
+	font-weight: 600;
+	text-decoration: underline;
+}
+
+/* --- Responsive (spec §54) ---------------------------------------------- */
+
+@media (max-width: 991px) {
+	.saha-term-grid.saha-cols-5,
+	.saha-term-grid.saha-cols-6,
+	.saha-term-grid.saha-cols-7,
+	.saha-term-grid.saha-cols-8 {
+		grid-template-columns: repeat(4, minmax(0, 1fr));
+	}
+}
+
+@media (max-width: 767px) {
+	.saha-term-grid,
+	.saha-term-grid.saha-cols-4,
+	.saha-term-grid.saha-cols-5,
+	.saha-term-grid.saha-cols-6,
+	.saha-term-grid.saha-cols-7,
+	.saha-term-grid.saha-cols-8 {
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+	}
+
+	.saha-section-heading__title {
+		font-size: 19px;
+	}
+
+	.saha-quote-cta {
+		padding: 20px;
+	}
+}
+
+@media (max-width: 575px) {
+	.saha-term-grid,
+	.saha-term-grid[class*="saha-cols-"] {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		gap: 10px;
+	}
+
+	.saha-term-grid--chip,
+	.saha-term-grid--chip[class*="saha-cols-"] {
+		display: flex;
+		flex-wrap: nowrap;
+		overflow-x: auto;
+		padding-bottom: 4px;
+		scroll-snap-type: x proximity;
+	}
+
+	.saha-term-grid--chip .saha-term-card {
+		flex: 0 0 auto;
+		scroll-snap-align: start;
+	}
+
+	.saha-quote-cta__actions {
+		flex-direction: column;
+		align-items: stretch;
+		width: 100%;
+	}
+
+	.saha-quote-cta__button {
+		width: 100%;
+		text-align: center;
+	}
+}

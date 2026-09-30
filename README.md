@@ -28,6 +28,8 @@ WordPress core, Flatsome, WooCommerce, uploads, cache, `wp-config.php` **không*
 | [docs/PHASE-2.md](docs/PHASE-2.md) | Catalogue — taxonomy, term meta, product fields, frontend sản phẩm & thương hiệu |
 | [docs/PHASE-3.md](docs/PHASE-3.md) | Search & Filter — relevance, REST API, autocomplete, bộ lọc giữ state URL |
 | [docs/PHASE-4.md](docs/PHASE-4.md) | Quote & Lead — form, REST POST, email, admin CRM mini, báo cáo |
+| [docs/PHASE-5.md](docs/PHASE-5.md) | Homepage — UX elements, catalog service có cache, layout mẫu |
+| [docs/layouts/](docs/layouts/) | Layout UX Builder mẫu: trang chủ, footer |
 | [wp-content/plugins/saha-core/README.md](wp-content/plugins/saha-core/README.md) | module plugin |
 | [wp-content/themes/flatsome-child/README.md](wp-content/themes/flatsome-child/README.md) | module theme |
 
@@ -48,7 +50,7 @@ WordPress core, Flatsome, WooCommerce, uploads, cache, `wp-config.php` **không*
 | 2 | Catalogue (brand, product fields, frontend) | ✅ hoàn thành |
 | 3 | Search + filter | ✅ hoàn thành |
 | 4 | Quote + Lead + admin CRM | ✅ hoàn thành |
-| 5 | Homepage + UX elements | ⏳ |
+| 5 | Homepage + UX elements | ✅ hoàn thành |
 | 6 | SEO | ⏳ |
 | 7 | Performance | ⏳ |
 | 8 | QA | ⏳ |
