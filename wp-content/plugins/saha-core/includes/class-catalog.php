@@ -15,22 +15,9 @@ defined( 'ABSPATH' ) || exit;
  * Catalog.
  *
  * UX element / shortcode KHÔNG query trực tiếp (spec §36) — chỉ gọi service này
- * rồi render. Kết quả được cache theo "thế hệ" (generation): mọi thay đổi sản
- * phẩm/danh mục/thương hiệu tăng số thế hệ, toàn bộ cache cũ tự vô hiệu mà
- * không phải xoá từng key (spec §80). Tương thích object cache (Redis) vì chỉ
- * dùng transient API.
+ * rồi render. Kết quả được cache qua Cache (vô hiệu theo thế hệ — spec §80).
  */
 final class Catalog {
-
-	/**
-	 * Option giữ số thế hệ cache.
-	 */
-	private const GENERATION_OPTION = 'saha_catalog_cache_gen';
-
-	/**
-	 * TTL cache.
-	 */
-	private const CACHE_TTL = 6 * HOUR_IN_SECONDS;
 
 	/**
 	 * Giới hạn số sản phẩm một khối.
@@ -55,34 +42,9 @@ final class Catalog {
 	}
 
 	/**
-	 * Gắn hook invalidation.
+	 * Invalidation do Cache đảm nhiệm — module này không cần hook riêng.
 	 */
-	public function register(): void {
-		$events = array(
-			'save_post_product',
-			'woocommerce_update_product',
-			'created_product_cat',
-			'edited_product_cat',
-			'delete_product_cat',
-			'created_' . Taxonomies::BRAND,
-			'edited_' . Taxonomies::BRAND,
-			'delete_' . Taxonomies::BRAND,
-			'created_' . Taxonomies::APPLICATION,
-			'edited_' . Taxonomies::APPLICATION,
-			'delete_' . Taxonomies::APPLICATION,
-			// Bài viết blog cho khối "bài viết liên quan".
-			'save_post_post',
-			'edited_category',
-			'delete_category',
-		);
-
-		foreach ( $events as $event ) {
-			add_action( $event, array( __CLASS__, 'bump_generation' ) );
-		}
-
-		add_action( 'deleted_post', array( __CLASS__, 'bump_on_product_delete' ), 10, 2 );
-		add_action( 'woocommerce_product_set_stock_status', array( __CLASS__, 'bump_generation' ) );
-	}
+	public function register(): void {}
 
 	/*
 	 * ---------------------------------------------------------------------
@@ -102,19 +64,14 @@ final class Catalog {
 		}
 
 		$args = self::normalize_product_args( $args );
-		$key  = self::cache_key( 'products', $args );
 
-		$cached = get_transient( $key );
+		$ids = Cache::remember(
+			'products',
+			$args,
+			static fn(): array => self::query_product_ids( $args )
+		);
 
-		if ( is_array( $cached ) ) {
-			return array_map( 'absint', $cached );
-		}
-
-		$ids = self::query_product_ids( $args );
-
-		set_transient( $key, $ids, self::CACHE_TTL );
-
-		return $ids;
+		return array_map( 'absint', (array) $ids );
 	}
 
 	/**
@@ -376,13 +333,21 @@ final class Catalog {
 			'orderby'    => in_array( $orderby, array( 'menu_order', 'name', 'count' ), true ) ? $orderby : 'menu_order',
 		);
 
-		$key    = self::cache_key( 'terms', $norm );
-		$cached = get_transient( $key );
+		return (array) Cache::remember(
+			'terms',
+			$norm,
+			static fn(): array => self::query_terms( $taxonomy, $norm )
+		);
+	}
 
-		if ( is_array( $cached ) ) {
-			return $cached;
-		}
-
+	/**
+	 * Truy vấn term thật.
+	 *
+	 * @param string               $taxonomy Taxonomy.
+	 * @param array<string, mixed> $norm     Tham số đã chuẩn hoá.
+	 * @return array<int, array<string, mixed>>
+	 */
+	private static function query_terms( string $taxonomy, array $norm ): array {
 		$query = array(
 			'taxonomy'   => $taxonomy,
 			'hide_empty' => $norm['hide_empty'],
@@ -410,7 +375,6 @@ final class Catalog {
 		$terms = get_terms( $query );
 
 		if ( is_wp_error( $terms ) || ! $terms ) {
-			set_transient( $key, array(), self::CACHE_TTL );
 			return array();
 		}
 
@@ -441,11 +405,7 @@ final class Catalog {
 		 * @param array<int, array<string, mixed>> $out      Term.
 		 * @param string                           $taxonomy Taxonomy.
 		 */
-		$out = (array) apply_filters( 'saha_catalog_terms', $out, $taxonomy );
-
-		set_transient( $key, $out, self::CACHE_TTL );
-
-		return $out;
+		return (array) apply_filters( 'saha_catalog_terms', $out, $taxonomy );
 	}
 
 	/*
@@ -470,13 +430,24 @@ final class Catalog {
 		$cats  = wp_get_post_categories( $post_id, array( 'fields' => 'ids' ) );
 		$cats  = array_values( array_filter( array_map( 'absint', (array) $cats ) ) );
 
-		$key    = self::cache_key( 'related', array( $post_id, $cats, $limit ) );
-		$cached = get_transient( $key );
+		$ids = Cache::remember(
+			'related',
+			array( $post_id, $cats, $limit ),
+			static fn(): array => self::query_related_posts( $post_id, $cats, $limit )
+		);
 
-		if ( is_array( $cached ) ) {
-			return array_map( 'absint', $cached );
-		}
+		return array_map( 'absint', (array) $ids );
+	}
 
+	/**
+	 * Truy vấn bài viết liên quan.
+	 *
+	 * @param int   $post_id Bài hiện tại.
+	 * @param int[] $cats    Chuyên mục của bài.
+	 * @param int   $limit   Số bài.
+	 * @return int[]
+	 */
+	private static function query_related_posts( int $post_id, array $cats, int $limit ): array {
 		$query = array(
 			'post_type'              => 'post',
 			'post_status'            => 'publish',
@@ -504,59 +475,6 @@ final class Catalog {
 			$ids = array_merge( $ids, array_map( 'absint', (array) ( new \WP_Query( $query ) )->posts ) );
 		}
 
-		set_transient( $key, $ids, self::CACHE_TTL );
-
 		return $ids;
-	}
-
-	/*
-	 * ---------------------------------------------------------------------
-	 * Cache
-	 * ---------------------------------------------------------------------
-	 */
-
-	/**
-	 * Key cache gồm số thế hệ hiện tại.
-	 *
-	 * @param string               $group Nhóm.
-	 * @param array<string, mixed> $args  Tham số.
-	 */
-	private static function cache_key( string $group, array $args ): string {
-		$generation = (int) get_option( self::GENERATION_OPTION, 1 );
-
-		// Transient key tối đa 172 ký tự; md5 giữ key ngắn và cố định.
-		return 'saha_cat_' . $group . '_' . $generation . '_' . md5( (string) wp_json_encode( $args ) );
-	}
-
-	/**
-	 * Vô hiệu toàn bộ cache catalog bằng cách tăng thế hệ.
-	 *
-	 * Transient cũ tự hết hạn theo TTL — không cần xoá tay.
-	 */
-	public static function bump_generation(): void {
-		static $bumped = false;
-
-		// Một request lưu sản phẩm bắn nhiều hook — chỉ tăng một lần.
-		if ( $bumped ) {
-			return;
-		}
-
-		$bumped = true;
-
-		update_option( self::GENERATION_OPTION, (int) get_option( self::GENERATION_OPTION, 1 ) + 1, false );
-	}
-
-	/**
-	 * Tăng thế hệ khi xoá sản phẩm.
-	 *
-	 * @param int           $post_id Post ID.
-	 * @param \WP_Post|null $post    Post.
-	 */
-	public static function bump_on_product_delete( int $post_id, $post = null ): void {
-		$type = $post instanceof \WP_Post ? $post->post_type : get_post_type( $post_id );
-
-		if ( 'product' === $type ) {
-			self::bump_generation();
-		}
 	}
 }

@@ -55,7 +55,7 @@ final class Crm {
 			add_submenu_page( $parent, __( 'Thương hiệu', 'saha-core' ), __( 'Thương hiệu', 'saha-core' ), Roles::CAP_BRANDS, 'edit-tags.php?taxonomy=' . Taxonomies::BRAND . '&post_type=product' );
 		}
 
-		$new_quotes = Quote::count_by_status()['new'] ?? 0;
+		$new_quotes = Quote::new_count();
 
 		$quotes_hook = add_submenu_page(
 			$parent,

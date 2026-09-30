@@ -26,6 +26,7 @@ $saha_theme_modules = array(
 	'woocommerce',
 	'shortcodes',
 	'ux-elements',
+	'performance',
 );
 
 foreach ( $saha_theme_modules as $saha_theme_module ) {

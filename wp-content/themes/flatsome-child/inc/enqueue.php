@@ -47,7 +47,12 @@ add_action(
 				SAHA_THEME_URI . '/' . $relative,
 				'saha-main' === $handle ? array() : array( 'saha-main' ),
 				saha_theme_asset_version( $relative ),
-				true
+				// defer: không chặn render, vẫn giữ đúng thứ tự phụ thuộc (WP ≥ 6.3).
+				// WP cũ hơn hiểu mảng này là in_footer = true — vẫn an toàn.
+				array(
+					'in_footer' => true,
+					'strategy'  => 'defer',
+				)
 			);
 		}
 

@@ -60,6 +60,35 @@ final class Quote {
 	 */
 	public function register(): void {
 		add_filter( 'saha_core_dashboard_stats', array( $this, 'add_dashboard_stats' ) );
+
+		// Số báo giá mới hiện trên menu ở MỌI trang admin → cache, xoá khi dữ liệu đổi.
+		foreach ( array( 'saha_quote_created', 'saha_quote_status_changed' ) as $event ) {
+			add_action( $event, array( __CLASS__, 'flush_new_count' ) );
+		}
+	}
+
+	/**
+	 * Số báo giá trạng thái "Mới", có cache ngắn.
+	 */
+	public static function new_count(): int {
+		$cached = get_transient( 'saha_quote_new_count' );
+
+		if ( false !== $cached ) {
+			return (int) $cached;
+		}
+
+		$count = self::count_by_status()['new'] ?? 0;
+
+		set_transient( 'saha_quote_new_count', $count, 10 * MINUTE_IN_SECONDS );
+
+		return $count;
+	}
+
+	/**
+	 * Xoá cache số báo giá mới.
+	 */
+	public static function flush_new_count(): void {
+		delete_transient( 'saha_quote_new_count' );
 	}
 
 	/*

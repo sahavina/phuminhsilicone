@@ -174,6 +174,6 @@ Checklist thủ công:
 
 ## 11. Giới hạn đã biết
 
-- `pre_get_posts` của trang kết quả dùng `post__in` giới hạn **200 sản phẩm** đầu theo relevance. Với catalogue vài nghìn SKU thì đủ cho trang 1–8; nếu cần sâu hơn phải chuyển sang `posts_clauses` (ghi chú lại cho Phase 7).
+- ~~`pre_get_posts` của trang kết quả dùng `post__in` giới hạn **200 sản phẩm**~~ → **đã xử lý ở Phase 7**: nâng lên 1000 và cache danh sách ID. Ghi chú gốc: giới hạn **200 sản phẩm** đầu theo relevance. Với catalogue vài nghìn SKU thì đủ cho trang 1–8; nếu cần sâu hơn phải chuyển sang `posts_clauses` (ghi chú lại cho Phase 7).
 - Relevance dựa trên `LIKE`, không dùng FULLTEXT index. Với ~5.000 sản phẩm vẫn nhanh nhờ cache 5 phút; vượt ngưỡng đó nên cân nhắc FULLTEXT hoặc bảng index riêng.
 - Accent-insensitive phụ thuộc collation của database. Nếu site dùng `utf8mb4_bin` thì "keo" sẽ không khớp "kéo" — cần kiểm tra ở test 4.

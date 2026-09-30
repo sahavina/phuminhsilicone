@@ -34,11 +34,6 @@ final class Brand {
 	private const NONCE_FIELD = 'saha_brand_nonce';
 
 	/**
-	 * Prefix transient cache.
-	 */
-	private const CACHE_PREFIX = 'saha_brands_';
-
-	/**
 	 * Schema term meta: key => [ type, label, description ].
 	 *
 	 * @return array<string, array<string, string>>
@@ -96,13 +91,7 @@ final class Brand {
 		add_filter( 'manage_edit-' . $taxonomy . '_columns', array( $this, 'add_logo_column' ) );
 		add_filter( 'manage_' . $taxonomy . '_custom_column', array( $this, 'render_logo_column' ), 10, 3 );
 
-		// Cache invalidation (spec §80).
-		foreach ( array( 'created_', 'edited_', 'delete_' ) as $event ) {
-			add_action( $event . $taxonomy, array( __CLASS__, 'flush_cache' ) );
-		}
-
-		add_action( 'save_post_product', array( __CLASS__, 'flush_cache' ) );
-		add_action( 'deleted_post', array( __CLASS__, 'flush_cache_on_product_delete' ), 10, 2 );
+		// Cache invalidation do Cache đảm nhiệm (spec §80).
 
 		add_filter( 'saha_core_dashboard_stats', array( $this, 'add_dashboard_stat' ) );
 	}
@@ -226,13 +215,20 @@ final class Brand {
 			)
 		);
 
-		$cache_key = self::CACHE_PREFIX . md5( (string) wp_json_encode( $args ) );
-		$cached    = get_transient( $cache_key );
+		return (array) Cache::remember(
+			'brands',
+			$args,
+			static fn(): array => self::query_all( $args )
+		);
+	}
 
-		if ( is_array( $cached ) ) {
-			return $cached;
-		}
-
+	/**
+	 * Truy vấn danh sách thương hiệu.
+	 *
+	 * @param array<string, mixed> $args Tham số đã merge mặc định.
+	 * @return array<int, array<string, mixed>>
+	 */
+	private static function query_all( array $args ): array {
 		$query = array(
 			'taxonomy'   => Taxonomies::BRAND,
 			'orderby'    => in_array( $args['orderby'], array( 'name', 'count', 'slug', 'term_order' ), true ) ? $args['orderby'] : 'name',
@@ -261,9 +257,6 @@ final class Brand {
 				$out[] = self::get( $term );
 			}
 		}
-
-		set_transient( $cache_key, $out, HOUR_IN_SECONDS );
-		self::remember_cache_key( $cache_key );
 
 		return $out;
 	}
@@ -438,47 +431,12 @@ final class Brand {
 	 */
 
 	/**
-	 * Ghi nhớ cache key để xoá chính xác, không cần flush toàn bộ transient.
+	 * Vô hiệu cache thương hiệu.
 	 *
-	 * @param string $key Transient key.
-	 */
-	private static function remember_cache_key( string $key ): void {
-		$keys = (array) get_option( 'saha_brand_cache_keys', array() );
-
-		if ( in_array( $key, $keys, true ) ) {
-			return;
-		}
-
-		$keys[] = $key;
-
-		update_option( 'saha_brand_cache_keys', array_slice( $keys, -50 ), false );
-	}
-
-	/**
-	 * Chỉ xoá cache khi post bị xoá là sản phẩm.
-	 *
-	 * @param int       $post_id Post ID.
-	 * @param \WP_Post|null $post Post object (WP ≥ 5.5).
-	 */
-	public static function flush_cache_on_product_delete( int $post_id, $post = null ): void {
-		$post_type = $post instanceof \WP_Post ? $post->post_type : get_post_type( $post_id );
-
-		if ( 'product' !== $post_type ) {
-			return;
-		}
-
-		self::flush_cache();
-	}
-
-	/**
-	 * Xoá cache danh sách thương hiệu.
+	 * Giữ lại tên hàm cũ để code/add-on đang gọi không vỡ; nay chỉ chuyển sang Cache.
 	 */
 	public static function flush_cache(): void {
-		foreach ( (array) get_option( 'saha_brand_cache_keys', array() ) as $key ) {
-			delete_transient( (string) $key );
-		}
-
-		update_option( 'saha_brand_cache_keys', array(), false );
+		Cache::bump();
 	}
 
 	/**
