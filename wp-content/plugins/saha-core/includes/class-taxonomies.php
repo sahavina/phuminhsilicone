@@ -29,6 +29,53 @@ final class Taxonomies {
 	public function register(): void {
 		// Ưu tiên 11: sau khi WooCommerce đăng ký taxonomy của nó ở priority 10.
 		add_action( 'init', array( $this, 'register_taxonomies' ), 11 );
+
+		add_filter( 'register_taxonomy_args', array( $this, 'filter_native_brand_args' ), 10, 2 );
+	}
+
+	/**
+	 * WooCommerce ≥ 9.6 tự đăng ký product_brand với URL /brand/.
+	 *
+	 * Spec §7 yêu cầu /thuong-hieu/ → đổi slug khi WooCommerce đang dùng slug
+	 * mặc định. Nếu admin đã tự đặt "Brand base" khác trong Settings → Permalinks
+	 * thì tôn trọng lựa chọn đó, không ghi đè.
+	 *
+	 * @param array<string, mixed> $args     Args taxonomy.
+	 * @param string               $taxonomy Tên taxonomy.
+	 * @return array<string, mixed>
+	 */
+	public function filter_native_brand_args( $args, $taxonomy ): array {
+		$args = is_array( $args ) ? $args : array();
+
+		if ( self::BRAND !== $taxonomy || ! isset( $args['rewrite'] ) || ! is_array( $args['rewrite'] ) ) {
+			return $args;
+		}
+
+		$slug = (string) ( $args['rewrite']['slug'] ?? '' );
+
+		/**
+		 * Slug URL của trang thương hiệu.
+		 *
+		 * @param string $slug Slug.
+		 */
+		$ours = (string) apply_filters( 'saha_brand_rewrite_slug', 'thuong-hieu' );
+
+		if ( in_array( $slug, array( '', 'brand' ), true ) ) {
+			$args['rewrite']['slug']       = $ours;
+			$args['rewrite']['with_front'] = false;
+		}
+
+		return $args;
+	}
+
+	/**
+	 * product_brand do WooCommerce (≥ 9.6) đăng ký và quản lý?
+	 *
+	 * Khi đúng, WooCommerce đã có sẵn field ảnh thương hiệu (term meta
+	 * `thumbnail_id`) và cột "Image" — SAHA dùng chung, không tạo field trùng.
+	 */
+	public static function brand_is_native(): bool {
+		return class_exists( 'WC_Brands' );
 	}
 
 	/**

@@ -166,6 +166,13 @@ $r = http( 'GET', $api . '/search?q=' . rawurlencode( 'zzqxyw-khong-ton-tai' ) )
 ok( 'không có kết quả → items rỗng', 200 === $r['status'] && 0 === (int) ( $r['json']['data']['total'] ?? -1 ) );
 
 echo "REST — sản phẩm & thương hiệu (spec §31, §79)\n";
+$r = http( 'GET', $api . '/products' );
+ok( 'GET /products (không tham số) → 200', 200 === $r['status'], 'status ' . $r['status'] );
+
+$r = http( 'GET', $api . '/products?brand=loctite&per_page=5' );
+$items = (array) ( $r['json']['data']['items'] ?? array() );
+ok( 'GET /products?brand=loctite → chỉ sản phẩm Loctite', 200 === $r['status'] && ( ! $items || count( array_filter( $items, static fn( $i ) => 'Loctite' === ( $i['brand'] ?? '' ) ) ) === count( $items ) ), 'status ' . $r['status'] );
+
 $r        = http( 'GET', $api . '/products?per_page=99999' );
 $per_page = (int) ( $r['json']['data']['per_page'] ?? 0 );
 ok( 'per_page=99999 bị từ chối hoặc bị chặn ≤ 50', 400 === $r['status'] || ( 200 === $r['status'] && $per_page <= 50 ), 'status ' . $r['status'] . ', per_page ' . $per_page );
@@ -187,8 +194,23 @@ ok( 'thương hiệu không tồn tại → 404', 404 === $r['status'], 'status 
  */
 echo "SEO & cache\n";
 $r = http( 'GET', $base . '/robots.txt' );
-ok( 'robots.txt chặn ?s=', false !== strpos( $r['body'], 'Disallow: /?s=' ) || false !== strpos( $r['body'], '?s=' ) );
-ok( 'robots.txt KHÔNG chặn CSS/JS/wp-content', ! preg_match( '#Disallow:\s*\S*(wp-content|wp-includes|\.css|\.js)#', $r['body'] ) );
+
+if ( 404 === $r['status'] && '' !== (string) parse_url( $base, PHP_URL_PATH ) ) {
+	// WordPress chỉ phục vụ robots.txt ở gốc domain.
+	skip( 'robots.txt', 'site nằm trong thư mục con — robots.txt chỉ có ở gốc domain (dùng `wp saha qa` để kiểm)' );
+	$r['body'] = '';
+} else {
+	ok( 'robots.txt chặn ?s=', false !== strpos( $r['body'], '?s=' ) );
+}
+$blocks = false;
+foreach ( preg_split( '/\r?\n/', $r['body'] ) as $line ) {
+	if ( preg_match( '#^\s*Disallow:\s*(\S+)#i', $line, $m )
+		&& ! preg_match( '#/uploads/(wc-logs|woocommerce_uploads|woocommerce_transient_files)/#', $m[1] )
+		&& preg_match( '#(\.css|\.js)(\$|\*)?$|/wp-includes/?$|/wp-content/?$|/wp-content/(themes|plugins|uploads)/?$#', $m[1] ) ) {
+		$blocks = true;
+	}
+}
+ok( 'robots.txt KHÔNG chặn CSS/JS/theme/plugin/uploads', ! $blocks );
 
 $r = http( 'GET', $base . '/?s=keo&post_type=product' );
 ok( 'trang tìm kiếm có noindex', (bool) preg_match( '/<meta[^>]+name=["\']robots["\'][^>]+noindex/i', $r['body'] ), 'status ' . $r['status'] );
@@ -196,10 +218,18 @@ ok( 'trang tìm kiếm có noindex', (bool) preg_match( '/<meta[^>]+name=["\']ro
 $r = http( 'GET', $base . '/' );
 ok( 'trang chủ → 200', 200 === $r['status'], 'status ' . $r['status'] );
 ok( 'không in lỗi PHP ra trang (spec §40)', ! preg_match( '/(Fatal error|Warning|Notice|Deprecated)<\/b>:/', $r['body'] ) );
-ok( 'không còn wp-emoji-release (Phase 7)', false === strpos( $r['body'], 'wp-emoji-release' ) );
+$theme_active = false !== strpos( $r['body'], 'saha-site' );
+
+if ( $theme_active ) {
+	ok( 'không còn wp-emoji-release (Phase 7)', false === strpos( $r['body'], 'wp-emoji-release' ) );
+} else {
+	skip( 'không còn wp-emoji-release', 'child theme SAHA chưa bật (cần Flatsome)' );
+}
 ok( 'trang chủ có đúng 1 thẻ H1', 1 === preg_match_all( '/<h1[\s>]/i', $r['body'] ), 'số H1: ' . preg_match_all( '/<h1[\s>]/i', $r['body'] ) );
 
-if ( preg_match( '/<link[^>]+rel=["\']preload["\'][^>]+as=["\']image["\']/i', $r['body'] ) ) {
+if ( ! $theme_active ) {
+	skip( 'trang chủ preload ảnh hero', 'child theme SAHA chưa bật (cần Flatsome)' );
+} elseif ( preg_match( '/<link[^>]+rel=["\']preload["\'][^>]+as=["\']image["\']/i', $r['body'] ) ) {
 	ok( 'trang chủ preload ảnh hero (Phase 7)', true );
 } else {
 	skip( 'trang chủ preload ảnh hero', 'trang chủ chưa có [ux_banner] chọn ảnh' );

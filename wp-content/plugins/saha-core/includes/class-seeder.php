@@ -512,6 +512,9 @@ final class Seeder {
 	private function seed_crm(): void {
 		$product_id = (int) wc_get_product_id_by_sku( 'LOCTITE-243' );
 
+		// Idempotent theo tên: chống trùng của Quote/Lead chỉ có cửa sổ 10 phút,
+		// chạy lại seed sau đó sẽ tạo trùng nếu không kiểm tra ở đây.
+
 		$quotes = array(
 			array( 'Anh Nam', '0900000001', 'Xưởng cơ khí Minh Phát', '2 thùng' ),
 			array( 'Chị Hoa', '0900000002', 'Nhôm kính Hoàng Gia', '50 chai' ),
@@ -519,6 +522,10 @@ final class Seeder {
 		);
 
 		foreach ( $quotes as [ $name, $phone, $company, $qty ] ) {
+			if ( self::crm_exists( Quote::table(), 'customer_name', self::CRM_PREFIX . $name ) ) {
+				continue;
+			}
+
 			$check = Quote::validate(
 				array(
 					'name'       => self::CRM_PREFIX . $name,
@@ -530,23 +537,59 @@ final class Seeder {
 				)
 			);
 
-			if ( ! $check['errors'] && Quote::create( $check['data'] )['id'] > 0 ) {
+			if ( $check['errors'] ) {
+				continue;
+			}
+
+			$created = Quote::create( $check['data'] );
+
+			if ( $created['id'] > 0 && ! $created['duplicate'] ) {
 				$this->count( 'quote' );
 			}
 		}
 
+		$lead_name = self::CRM_PREFIX . 'Công ty Xây dựng An Phú';
+
+		if ( self::crm_exists( Lead::table(), 'name', $lead_name ) ) {
+			return;
+		}
+
 		$check = Lead::validate(
 			array(
-				'name'    => self::CRM_PREFIX . 'Công ty Xây dựng An Phú',
+				'name'    => $lead_name,
 				'phone'   => '0900000004',
 				'message' => 'Cần tư vấn keo chống thấm cho công trình. Dữ liệu mẫu.',
 				'source'  => 'contact',
 			)
 		);
 
-		if ( ! $check['errors'] && Lead::create( $check['data'] )['id'] > 0 ) {
+		if ( $check['errors'] ) {
+			return;
+		}
+
+		$created = Lead::create( $check['data'] );
+
+		if ( $created['id'] > 0 && ! $created['duplicate'] ) {
 			$this->count( 'lead' );
 		}
+	}
+
+	/**
+	 * Bản ghi CRM mẫu đã tồn tại chưa.
+	 *
+	 * @param string $table  Tên bảng (nội bộ).
+	 * @param string $column Cột tên (nội bộ).
+	 * @param string $name   Tên cần tìm.
+	 */
+	private static function crm_exists( string $table, string $column, string $name ): bool {
+		global $wpdb;
+
+		if ( ! Migrator::table_exists( $table ) ) {
+			return false;
+		}
+
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- tên bảng/cột nội bộ.
+		return (bool) $wpdb->get_var( $wpdb->prepare( "SELECT 1 FROM `{$table}` WHERE `{$column}` = %s LIMIT 1", $name ) );
 	}
 
 	/*

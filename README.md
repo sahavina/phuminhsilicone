@@ -57,7 +57,7 @@ WordPress core, Flatsome, WooCommerce, uploads, cache, `wp-config.php` **không*
 | 5 | Homepage + UX elements | ✅ hoàn thành |
 | 6 | SEO | ✅ hoàn thành |
 | 7 | Performance | ✅ hoàn thành |
-| 8 | QA | 🟡 8A công cụ xong · 8B chạy trên staging đang chờ |
+| 8 | QA | 🟡 8A công cụ ✅ · 8B plugin ✅ (10 lỗi thật đã sửa) · 8B giao diện chờ Flatsome |
 
 ## Kiểm thử
 

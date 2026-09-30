@@ -239,5 +239,46 @@ check( 'banner chưa chọn ảnh → 0', saha_theme_find_hero_image_id( '[ux_ba
 check( 'không có banner → 0', saha_theme_find_hero_image_id( '[row][col]Nội dung[/col][/row]' ), 0 );
 check( 'không nhầm thuộc tính bg_color', saha_theme_find_hero_image_id( '[ux_banner bg_color="123"]' ), 0 );
 
+echo "REST — hồi quy lỗi phát hiện khi QA trên WordPress thật\n";
+if ( ! class_exists( 'WP_Error' ) ) {
+	class WP_Error { public function __construct( ...$a ) {} }
+}
+if ( ! class_exists( 'WP_REST_Request' ) ) {
+	class WP_REST_Request {}
+}
+if ( ! function_exists( 'wp_salt' ) ) {
+	function wp_salt( $s = '' ) { return 'test-salt'; }
+}
+if ( ! function_exists( 'wp_unslash' ) ) {
+	function wp_unslash( $v ) { return is_string( $v ) ? stripslashes( $v ) : $v; }
+}
+
+// Lỗi 1: REST gọi sanitize_callback( $value, $request, $param ); sanitize_title()
+// hiểu tham số 2 là $fallback_title → trả về chính WP_REST_Request khi giá trị rỗng.
+$saha_req = new WP_REST_Request();
+check( 'sanitize_slug với giá trị rỗng + request object → chuỗi rỗng', Saha\Core\Api::sanitize_slug( '', $saha_req, 'brand' ), '' );
+check( 'sanitize_slug giữ slug hợp lệ', Saha\Core\Api::sanitize_slug( 'Loctite', $saha_req, 'brand' ), 'loctite' );
+check( 'sanitize_slug với mảng → rỗng', Saha\Core\Api::sanitize_slug( array( 'x' ) ), '' );
+
+// Lỗi 2: WordPress gọi permission_callback 2 lần / request (kiểm quyền + header Allow).
+$_SERVER['REMOTE_ADDR'] = '203.0.113.7';
+$GLOBALS['__transients'] = array();
+Saha\Core\Api::reset_request_state();
+$saha_perm = Saha\Core\Api::public_permission( 'quote', 5, 600 );
+$saha_perm( $saha_req );
+$saha_perm( $saha_req );
+$saha_counter = array_values( array_filter( $GLOBALS['__transients'], 'is_int' ) );
+check( 'rate limit chỉ đếm 1 lần dù permission_callback bị gọi 2 lần', $saha_counter, array( 1 ) );
+
+// Lỗi 3: lọc tình trạng hàng — sản phẩm không đặt field không có dòng meta.
+$saha_contact = Saha\Core\Filter::availability_clause( 'contact' );
+check( '"Liên hệ" không fallback sang _stock_status (tránh gộp nhầm hàng có sẵn)', $saha_contact, array( 'key' => '_saha_availability', 'value' => 'contact', 'compare' => '=' ) );
+
+$saha_out  = Saha\Core\Filter::availability_clause( 'out' );
+$saha_json = json_encode( $saha_out );
+check( '"Hết hàng" fallback dùng NOT EXISTS', false !== strpos( $saha_json, 'NOT EXISTS' ), true );
+check( '"Hết hàng" fallback so với outofstock', false !== strpos( $saha_json, 'outofstock' ), true );
+check( '"Sẵn hàng" fallback so với instock', false !== strpos( (string) json_encode( Saha\Core\Filter::availability_clause( 'in_stock' ) ), '"instock"' ), true );
+
 echo "\n$pass passed, $fail failed\n";
 exit( $fail > 0 ? 1 : 0 );

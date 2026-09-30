@@ -25,6 +25,13 @@ final class Api {
 	public const NAMESPACE = 'saha/v1';
 
 	/**
+	 * Kết quả rate limit đã tính trong request này, theo scope.
+	 *
+	 * @var array<string, true|\WP_Error>
+	 */
+	private static array $rate_checked = array();
+
+	/**
 	 * Gắn hook.
 	 */
 	public function register(): void {
@@ -133,16 +140,49 @@ final class Api {
 	 */
 	public static function public_permission( string $scope, int $limit = 60, int $window = MINUTE_IN_SECONDS ): callable {
 		return static function () use ( $scope, $limit, $window ) {
+			// WordPress gọi permission_callback NHIỀU lần trong một request: lần đầu
+			// để kiểm quyền, lần nữa trong rest_send_allow_header() để dựng header
+			// Allow. Không nhớ kết quả thì mỗi request bị đếm 2 lần và giới hạn thực
+			// tế chỉ còn một nửa (phát hiện khi QA trên WordPress thật).
+			if ( isset( self::$rate_checked[ $scope ] ) ) {
+				return self::$rate_checked[ $scope ];
+			}
+
 			if ( Security::check_rate_limit( $scope, $limit, $window ) ) {
+				self::$rate_checked[ $scope ] = true;
+
 				return true;
 			}
 
-			return new \WP_Error(
+			self::$rate_checked[ $scope ] = new \WP_Error(
 				'saha_rate_limited',
 				__( 'Bạn thao tác quá nhanh, vui lòng thử lại sau ít phút.', 'saha-core' ),
 				array( 'status' => 429 )
 			);
+
+			return self::$rate_checked[ $scope ];
 		};
+	}
+
+	/**
+	 * sanitize_callback cho slug.
+	 *
+	 * KHÔNG truyền thẳng 'sanitize_title': REST gọi sanitize_callback( $value,
+	 * $request, $param ), mà tham số thứ 2 của sanitize_title() là
+	 * $fallback_title → khi giá trị rỗng, nó trả về chính WP_REST_Request và
+	 * gây fatal "could not be converted to string".
+	 *
+	 * @param mixed $value Giá trị thô.
+	 */
+	public static function sanitize_slug( $value ): string {
+		return sanitize_title( is_scalar( $value ) ? (string) $value : '' );
+	}
+
+	/**
+	 * Chỉ dùng cho test: xoá bộ nhớ rate limit trong request.
+	 */
+	public static function reset_request_state(): void {
+		self::$rate_checked = array();
 	}
 
 	/**

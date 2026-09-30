@@ -26,12 +26,12 @@ return static function ( string $namespace ): void {
 					'brand'    => array(
 						'type'              => 'string',
 						'default'           => '',
-						'sanitize_callback' => 'sanitize_title',
+						'sanitize_callback' => array( Api::class, 'sanitize_slug' ),
 					),
 					'category' => array(
 						'type'              => 'string',
 						'default'           => '',
-						'sanitize_callback' => 'sanitize_title',
+						'sanitize_callback' => array( Api::class, 'sanitize_slug' ),
 					),
 					'search'   => array(
 						'type'              => 'string',

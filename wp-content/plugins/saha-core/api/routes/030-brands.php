@@ -85,7 +85,7 @@ return static function ( string $namespace ): void {
 				'slug' => array(
 					'type'              => 'string',
 					'required'          => true,
-					'sanitize_callback' => 'sanitize_title',
+					'sanitize_callback' => array( Api::class, 'sanitize_slug' ),
 				),
 			),
 			'callback'            => static function ( WP_REST_Request $request ): WP_REST_Response {

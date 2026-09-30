@@ -253,6 +253,14 @@ final class Qa {
 			$this->expect( $g, 'Sales có quyền báo giá + lead', $sales->has_cap( Roles::CAP_QUOTES ) && $sales->has_cap( Roles::CAP_LEADS ), 'Role Sales thiếu quyền báo giá/lead.' );
 		}
 
+		foreach ( array( 'saha_content_manager', 'saha_seo_manager', 'saha_warehouse' ) as $slug ) {
+			$role = get_role( $slug );
+
+			if ( $role && class_exists( 'WooCommerce' ) ) {
+				$this->expect( $g, "{$slug} sửa được sản phẩm WooCommerce", $role->has_cap( 'edit_products' ) && $role->has_cap( 'edit_others_products' ), 'Thiếu edit_products — role không mở được màn hình sản phẩm.' );
+			}
+		}
+
 		$assignable = Repository::assignable_users( Roles::CAP_QUOTES );
 		$this->expect( $g, 'Có ít nhất 1 người nhận phân công báo giá', count( $assignable ) > 0, 'Tạo user role Sales để gán báo giá.', self::WARN, count( $assignable ) . ' người' );
 	}
@@ -287,7 +295,8 @@ final class Qa {
 			$this->expect(
 				$g,
 				'Trang yêu cầu báo giá có form',
-				$page_id > 0 && 'publish' === get_post_status( $page_id ) && has_shortcode( $content, 'saha_quote_form' ),
+				// Không dùng has_shortcode(): shortcode do theme đăng ký — plugin-only / CLI sẽ báo sai.
+				$page_id > 0 && 'publish' === get_post_status( $page_id ) && false !== strpos( $content, '[saha_quote_form' ),
 				'URL ' . $quote_url . ' không phải trang đã xuất bản có [saha_quote_form].',
 				self::WARN,
 				$quote_url
@@ -355,6 +364,11 @@ final class Qa {
 		$missing = array();
 
 		foreach ( $routes as $route => $handlers ) {
+			// Route index của namespace do WordPress core tự tạo — không phải route của SAHA.
+			if ( '/' . Api::NAMESPACE === $route ) {
+				continue;
+			}
+
 			foreach ( (array) $handlers as $handler ) {
 				if ( is_array( $handler ) && empty( $handler['permission_callback'] ) ) {
 					$missing[] = $route;
@@ -402,6 +416,8 @@ final class Qa {
 		);
 
 		foreach ( $cases as $query => $needle ) {
+			// PHP tự đổi key '243' thành int 243 — phải ép lại string (strict_types).
+			$query  = (string) $query;
 			$result = Search::search( $query, 1, 5 );
 			$first  = (string) ( $result['items'][0]['name'] ?? '' );
 			$sku    = (string) ( $result['items'][0]['sku'] ?? '' );
@@ -443,7 +459,7 @@ final class Qa {
 		$robots = (string) apply_filters( 'robots_txt', "User-agent: *\nDisallow: /wp-admin/\nAllow: /wp-admin/admin-ajax.php\n", true );
 
 		$this->expect( $g, 'robots.txt chặn tìm kiếm nội bộ (?s=)', false !== strpos( $robots, '?s=' ), 'Thiếu dòng Disallow cho ?s=' );
-		$this->expect( $g, 'robots.txt KHÔNG chặn CSS/JS/uploads', ! preg_match( '#Disallow:\s*\S*(wp-content|wp-includes|\.css|\.js)#', $robots ), 'robots.txt đang chặn tài nguyên Google cần để render.' );
+		$this->expect( $g, 'robots.txt KHÔNG chặn CSS/JS/theme/plugin/uploads', ! self::robots_blocks_assets( $robots ), 'robots.txt đang chặn tài nguyên Google cần để render.' );
 
 		$source = Seo::product_schema_source();
 		$this->add( $g, 'Nguồn Product schema', self::PASS, 'seo_plugin' === $source ? 'Plugin SEO (WooCommerce schema tắt)' : 'WooCommerce' );
@@ -464,6 +480,34 @@ final class Qa {
 
 			$this->expect( $g, 'Thương hiệu có mô tả / meta description', ! $missing, 'Thiếu: ' . implode( ', ', array_slice( $missing, 0, 10 ) ), self::WARN );
 		}
+	}
+
+	/**
+	 * robots.txt có chặn tài nguyên cần để render không.
+	 *
+	 * Không tính các thư mục riêng tư mà WooCommerce chủ động chặn
+	 * (wc-logs, woocommerce_uploads, woocommerce_transient_files) — chặn chúng là đúng.
+	 *
+	 * @param string $robots Nội dung robots.txt.
+	 */
+	public static function robots_blocks_assets( string $robots ): bool {
+		foreach ( preg_split( '/\r?\n/', $robots ) ?: array() as $line ) {
+			if ( ! preg_match( '#^\s*Disallow:\s*(\S+)#i', $line, $m ) ) {
+				continue;
+			}
+
+			$path = $m[1];
+
+			if ( preg_match( '#/uploads/(wc-logs|woocommerce_uploads|woocommerce_transient_files)/#', $path ) ) {
+				continue;
+			}
+
+			if ( preg_match( '#(\.css|\.js)(\$|\*)?$|/wp-includes/?$|/wp-content/?$|/wp-content/(themes|plugins|uploads)/?$#', $path ) ) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	/*

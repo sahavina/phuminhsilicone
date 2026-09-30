@@ -91,7 +91,7 @@ Quy tắc chọn nơi lưu:
 | `pa_color / pa_volume / pa_origin / pa_packaging` | Woo attribute | — | — | 2 |
 
 `product_material` chỉ bật qua setting khi thật sự dùng để filter (spec §69).
-Nếu WooCommerce đã có `product_brand` native → saha-core **phát hiện và dùng lại**, chỉ bổ sung term meta.
+Nếu WooCommerce đã có `product_brand` native (≥ 9.6) → saha-core **dùng lại**: bổ sung term meta, đổi URL `/brand/` → `/thuong-hieu/` (trừ khi admin tự đặt slug khác), dùng chung ảnh thương hiệu `thumbnail_id` của WooCommerce thay vì field Logo riêng (xác minh trên WooCommerce 11.1 — PHASE-8 §12).
 
 ## F. Custom table strategy
 
@@ -194,7 +194,7 @@ Product edit: field chia panel (Thông tin · Thông số · Ứng dụng/HDSD �
 | 5 | Homepage: UX elements, shortcode, block | hoàn thành |
 | 6 | SEO: Rank Math bridge, breadcrumb, brand SEO | hoàn thành |
 | 7 | Performance: cache layer, invalidation, asset | hoàn thành |
-| 8 | QA: responsive, browser, security, SEO, performance | **8A công cụ xong** · 8B chờ staging |
+| 8 | QA: responsive, browser, security, SEO, performance | **8A xong · 8B plugin xong** · giao diện chờ Flatsome |
 
 ## P. File sẽ tạo (Phase 1)
 
