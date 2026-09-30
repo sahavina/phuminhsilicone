@@ -317,7 +317,7 @@ Users → Add New → chọn role. Mỗi người một tài khoản riêng; kh�
 | Lệnh | Chạy ở đâu | Kiểm tra gì |
 |---|---|---|
 | **SAHA → Kiểm tra hệ thống** hoặc `wp saha qa` | trên site | môi trường, bảng + index, quyền, cấu hình, REST, tìm kiếm, SEO, bảo mật, cron — chỉ đọc, an toàn trên production |
-| `php tests/smoke.php` | máy dev, chỉ cần PHP | 92 case logic: validate, sanitize, tìm kiếm, cache, SEO, rate limit, Theme Options |
+| `php tests/smoke.php` | máy dev, chỉ cần PHP | 132 case logic: validate, sanitize, tìm kiếm, cache, SEO, rate limit, Theme Options, builder |
 | `npm run lint:js` · `npm run lint:css` | máy dev có Node | chuẩn code JS/SCSS của WordPress |
 | `php tests/http-smoke.php <url>` | máy bất kỳ có PHP + curl | REST, mã HTTP, robots, noindex, no-cache từ ngoài vào — chỉ GET |
 | `php tests/http-smoke.php <url> --write` | **chỉ local/staging** | thêm test form báo giá/liên hệ (tạo 2–3 bản ghi `[Mẫu] QA`) |
@@ -328,7 +328,7 @@ Kết quả mong đợi trên site local có dữ liệu mẫu:
 
 ```
 wp saha qa                                    → Lỗi: 0
-php tests/smoke.php                           → 92 passed, 0 failed
+php tests/smoke.php                           → 132 passed, 0 failed
 php tests/http-smoke.php http://localhost/saha --write → 0 failed
 ```
 
@@ -423,12 +423,12 @@ Sửa checklist test của một phase → sửa trong `docs/PHASE-*.md`, rồi 
 | [docs/PHASE-1.md](docs/PHASE-1.md) … [docs/PHASE-8.md](docs/PHASE-8.md) | từng phase: mục tiêu, file, database, hook, bảo mật, test, cài đặt, nghiệm thu |
 | [docs/QA.md](docs/QA.md) | checklist QA tổng hợp: 188 test, ma trận thiết bị, bảng nghiệm thu |
 | [docs/scc/TECHNICAL-DESIGN.md](docs/scc/TECHNICAL-DESIGN.md) | SAHA Commerce Core: kiến trúc theme + builder riêng, quyết định, lộ trình |
-| [docs/scc/PHASE-1.0.md](docs/scc/PHASE-1.0.md), [PHASE-1.1.md](docs/scc/PHASE-1.1.md) | từng mốc SCC: mục tiêu, file, hook, bảo mật, test, nghiệm thu |
+| [docs/scc/PHASE-1.0.md](docs/scc/PHASE-1.0.md), [PHASE-1.1.md](docs/scc/PHASE-1.1.md), [PHASE-1.2.md](docs/scc/PHASE-1.2.md) | từng mốc SCC: mục tiêu, file, hook, bảo mật, test, nghiệm thu |
 | [docs/layouts/](docs/layouts/) | layout UX Builder mẫu: trang chủ, footer |
 | [saha-core/README.md](wp-content/plugins/saha-core/README.md) | plugin: file, hook, REST API, database, capability |
 | [flatsome-child/README.md](wp-content/themes/flatsome-child/README.md) | theme: file, shortcode, UX element, JS API, asset |
 
-REST API: `/wp-json/saha/v1/` — `search`, `products`, `brands`, `quote`, `contact`, `nonce`, `settings` (Theme Options, cần quyền `edit_theme_options`). Chi tiết ở [saha-core/README.md](wp-content/plugins/saha-core/README.md#api).
+REST API: `/wp-json/saha/v1/` — `search`, `products`, `brands`, `quote`, `contact`, `nonce`, `settings` (Theme Options, cần quyền `edit_theme_options`), `builder/*` (layout builder, cần `edit_saha_builder`). Chi tiết ở [saha-core/README.md](wp-content/plugins/saha-core/README.md#api).
 
 WP-CLI: `wp saha qa [--strict]` · `wp saha seed [--with-crm] [--homepage-layout=<file>] [--set-front]` · `wp saha unseed` · `wp saha maintenance` · `wp help saha`.
 
@@ -461,12 +461,12 @@ Chuyển từ Flatsome sang theme + builder riêng. Thiết kế: [docs/scc/TECH
 | Mốc | Nội dung | Trạng thái |
 |---|---|---|
 | 1.0 | PHP 8.2, build `@wordpress/scripts`, CI | ✅ |
-| 1.1 | `saha-theme`, capability builder, Theme Options | ✅ chờ review |
-| 1.2 | Builder runtime (schema, renderer, REST) | ⏳ |
+| 1.1 | `saha-theme`, capability builder, Theme Options | ✅ |
+| 1.2 | Builder runtime (schema, renderer, REST) | ✅ chờ review |
 | 1.3 | Ứng dụng builder (React) | ⏳ |
 | 1.4 | Element + Reusable Blocks | ⏳ |
 | 1.5 | Header/Footer Builder | ⏳ |
 | 1.6 | WooCommerce trên `saha-theme` | ⏳ |
 | 1.7 | QA Phase 1 | ⏳ |
 
-Plugin: **SAHA Core 1.8.0** · **SAHA Builder 0.1.0** · Theme **SAHA Theme 0.1.0** · Database schema **1.2.0**.
+Plugin: **SAHA Core 1.9.0** · **SAHA Builder 0.1.0** · Theme **SAHA Theme 0.1.0** · Database schema **1.2.0**.

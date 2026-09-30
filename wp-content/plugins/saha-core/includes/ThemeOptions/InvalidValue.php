@@ -14,5 +14,5 @@ defined( 'ABSPATH' ) || exit;
 /**
  * Ném bởi Sanitizer; thông điệp hiển thị được cho người dùng (đã dịch).
  */
-final class InvalidValue extends \InvalidArgumentException {
+class InvalidValue extends \InvalidArgumentException {
 }

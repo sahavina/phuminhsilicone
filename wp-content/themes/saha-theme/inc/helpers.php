@@ -151,3 +151,14 @@ if ( ! function_exists( 'saha_theme_copyright' ) ) {
 		);
 	}
 }
+
+if ( ! function_exists( 'saha_theme_builder_active' ) ) {
+	/**
+	 * Post hiện tại hiển thị bằng layout SAHA Builder (saha-core ≥ 1.8).
+	 *
+	 * Khi đúng, template bỏ tiêu đề, breadcrumb và khung nội dung — layout tự lo.
+	 */
+	function saha_theme_builder_active(): bool {
+		return function_exists( 'saha_builder_is_active' ) && saha_builder_is_active();
+	}
+}

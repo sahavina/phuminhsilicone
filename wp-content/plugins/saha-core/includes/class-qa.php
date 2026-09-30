@@ -47,6 +47,7 @@ final class Qa {
 		$this->check_settings();
 		$this->check_taxonomies();
 		$this->check_rest_routes();
+		$this->check_builder();
 		$this->check_search();
 		$this->check_seo();
 		$this->check_security();
@@ -341,6 +342,67 @@ final class Qa {
 	 * ---------------------------------------------------------------------
 	 */
 
+	/**
+	 * Builder runtime: quyền, ghi CSS, render thử (SCC mốc 1.2).
+	 */
+	private function check_builder(): void {
+		$g = 'Builder';
+
+		foreach ( array( 'administrator', 'editor' ) as $slug ) {
+			$role = get_role( $slug );
+			$this->expect( $g, "{$slug} có quyền " . Roles::CAP_BUILDER, $role && $role->has_cap( Roles::CAP_BUILDER ), 'Thiếu — vào wp-admin bằng admin một lần để role tự cập nhật.' );
+		}
+
+		$uploads = wp_upload_dir( null, false );
+		$dir     = empty( $uploads['error'] ) ? trailingslashit( $uploads['basedir'] ) . 'saha/css' : '';
+		$this->expect(
+			$g,
+			'Ghi được file CSS (uploads/saha/css)',
+			'' !== $dir && wp_is_writable( is_dir( $dir ) ? $dir : $uploads['basedir'] ),
+			'Không ghi được — CSS layout sẽ in inline (chậm hơn, không cache trình duyệt).',
+			self::WARN
+		);
+
+		// Render thử một tài liệu mẫu qua đúng đường sanitize → render → CSS của production.
+		$sample = ( new Builder\Sanitizer() )->document(
+			array(
+				'elements' => array(
+					array(
+						'type'     => 'section',
+						'children' => array(
+							array(
+								'type'  => 'heading',
+								'props' => array(
+									'text'  => 'QA <script>',
+									'color' => '#123456',
+								),
+							),
+						),
+					),
+				),
+			)
+		);
+		$html    = null === $sample['document'] ? '' : ( new Builder\Renderer() )->document( $sample['document'], new Builder\RenderContext( 0, false, false ) );
+		$css     = null === $sample['document'] ? '' : ( new Builder\CssGenerator() )->document( $sample['document'] );
+
+		$this->expect( $g, 'Render thử layout mẫu', false !== strpos( $html, '<h2' ) && false === strpos( $html, '<script' ) && false !== strpos( $css, '#123456' ), 'Kết quả render không như mong đợi: ' . wp_strip_all_tags( $html ) );
+
+		$pages = get_posts(
+			array(
+				'post_type'      => Builder\LayoutRepository::postTypes(),
+				'post_status'    => 'any',
+				'posts_per_page' => -1,
+				'fields'         => 'ids',
+				'meta_key'       => Builder\LayoutRepository::META_ENABLED, // phpcs:ignore WordPress.DB.SlowDBQuery -- công cụ QA, chạy tay.
+				'meta_value'     => '1', // phpcs:ignore WordPress.DB.SlowDBQuery
+			)
+		);
+		$this->add( $g, 'Trang dùng builder', self::PASS, count( $pages ) . ' trang' );
+	}
+
+	/**
+	 * REST route đã đăng ký và đều có permission_callback.
+	 */
 	private function check_rest_routes(): void {
 		$g      = 'REST API';
 		$routes = rest_get_server()->get_routes( Api::NAMESPACE );
@@ -354,6 +416,12 @@ final class Qa {
 			'/saha/v1/brands/(?P<slug>[a-z0-9\-_]+)',
 			'/saha/v1/quote',
 			'/saha/v1/contact',
+			'/saha/v1/settings',
+			'/saha/v1/builder/elements',
+			'/saha/v1/builder/(?P<id>\d+)',
+			'/saha/v1/builder/save',
+			'/saha/v1/builder/render',
+			'/saha/v1/builder/lock/(?P<id>\d+)',
 		);
 
 		foreach ( $expected as $route ) {

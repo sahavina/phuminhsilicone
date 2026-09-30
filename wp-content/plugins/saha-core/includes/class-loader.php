@@ -88,6 +88,7 @@ final class Loader {
 			'seo'        => Seo::class,
 			// SCC (PSR-4).
 			'theme_options' => ThemeOptions\Module::class,
+			'builder'       => Builder\Module::class,
 			'admin'      => Admin::class,
 		);
 

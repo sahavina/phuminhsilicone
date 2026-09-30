@@ -30,7 +30,7 @@ saha-theme: frontend.css dùng var(--saha-*), mặc định trong :where(:root)
 ```
 
 - **Một nguồn schema**: thêm field ở `Schema::groups()` là form admin tự có control, REST tự validate, CSS tự có biến (nếu field khai báo `cssVar`). Không sửa JS.
-- **Server sanitize mọi giá trị**; UI chỉ giúp nhập đúng. Lưu từng phần: field sai → 422 kèm `errors` theo `nhóm.field`, không field nào được lưu (tránh trạng thái nửa vời).
+- **Server sanitize mọi giá trị**; UI chỉ giúp nhập đúng. Lưu từng phần: field hợp lệ được lưu, field sai giữ giá trị cũ và trả 422 kèm `errors` theo `nhóm.field`; UI giữ nguyên giá trị đang nhập ở field lỗi để sửa tiếp.
 - **CSS file có hash trong tên** → cache trình duyệt vĩnh viễn, không cần `?ver`. Ghi nguyên tử (file tạm + rename), giữ file mới nhất, xoá file cũ. Không ghi được uploads → in CSS inline (vẫn chạy).
 - CSS tự sinh lại khi: lưu Theme Options, phiên bản plugin đổi, hoặc file bị xoá.
 - **Theme luôn thắng quyền ưu tiên đúng chiều**: giá trị mặc định của theme khai báo trong `:where(:root)` (specificity 0) nên `:root` của `global.css` luôn đè được, bất kể thứ tự nạp.
@@ -157,7 +157,7 @@ Thủ công (đã chạy trên local, WordPress 7.1.2 + WooCommerce 11.1.2, PHP 
 - [ ] Appearance → SAHA Theme Options mở được, đủ 10 tab, chuyển tab không mất giá trị đang nhập.
 - [ ] Đổi **Màu chính** → Lưu → "Đã lưu Theme Options" → trang chủ: link, nút, hotline đổi màu.
 - [ ] Đổi **Chữ → Nội dung → Font** → Lưu → frontend đổi font; tiếng Việt có dấu hiển thị liền (ế, ộ, ữ).
-- [ ] Nhập độ rộng khung `5000px` → Lưu → báo lỗi ngay dưới field, tab có dấu ⚠, không giá trị nào được lưu.
+- [ ] Nhập độ rộng khung `5000px` → Lưu → báo lỗi ngay dưới field, tab có dấu ⚠, field đó giữ giá trị cũ; các field hợp lệ khác sửa cùng lúc vẫn được lưu.
 - [ ] Rời trang khi còn thay đổi chưa lưu → trình duyệt hỏi xác nhận.
 - [ ] Đổi khoảng cách lề mobile → chỉ đổi ở màn hình ≤ 767px.
 - [ ] Nhập `</style><script>alert(1)</script>` vào CSS tuỳ chỉnh → Lưu → xem nguồn trang: không có thẻ script.
@@ -190,7 +190,7 @@ Không cần Node trên server: `build/` đã commit. Sửa `src/` thì chạy `
 
 - [x] Đổi màu chính trong admin (`#c0392b` → `#127a3f`) → frontend `--saha-primary: #127a3f`, link đổi màu (kiểm bằng trình duyệt).
 - [x] Đổi font body → CSS `--saha-type-body-font` đổi, frontend đổi font.
-- [x] Lỗi validate hiện đúng field, không lưu nửa vời (422).
+- [x] Lỗi validate hiện đúng field (422); field lỗi giữ giá trị cũ, field hợp lệ được lưu.
 - [x] Mọi trang chính (chủ, bài, trang, lưu trữ, tìm kiếm, 404, shop, danh mục, sản phẩm) → 200/404 đúng, có header/footer, không lỗi PHP.
 - [x] Hồi quy: `php -l` 0 lỗi · smoke 92/92 · `wp saha qa` 63 đạt / 4 cảnh báo / 0 lỗi · `http-smoke --write` 33 đạt / 0 lỗi / 2 bỏ qua · `debug.log` chỉ có lỗi mail (local không có SMTP, như trước).
 

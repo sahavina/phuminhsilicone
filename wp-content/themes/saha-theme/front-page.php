@@ -19,6 +19,11 @@ get_header();
 
 while ( have_posts() ) {
 	the_post();
+
+	if ( saha_theme_builder_active() ) {
+		the_content();
+		continue;
+	}
 	?>
 	<div class="saha-front">
 		<h1 class="screen-reader-text"><?php bloginfo( 'name' ); ?></h1>

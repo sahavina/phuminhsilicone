@@ -435,3 +435,18 @@ if ( ! function_exists( 'saha_related_post_ids' ) ) {
 		return Saha\Core\Catalog::related_post_ids( $post_id, $limit );
 	}
 }
+
+if ( ! function_exists( 'saha_builder_is_active' ) ) {
+	/**
+	 * Post có đang hiển thị bằng layout SAHA Builder không.
+	 *
+	 * Theme dùng để bỏ khung nội dung/tiêu đề mặc định (layout tự lo).
+	 *
+	 * @param int $post_id Post ID; 0 = post hiện tại.
+	 */
+	function saha_builder_is_active( int $post_id = 0 ): bool {
+		$post_id = $post_id > 0 ? $post_id : (int) get_the_ID();
+
+		return Saha\Core\Builder\LayoutRepository::isEnabled( $post_id ) && ! post_password_required( $post_id );
+	}
+}

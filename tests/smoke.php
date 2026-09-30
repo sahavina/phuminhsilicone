@@ -32,12 +32,39 @@ function sanitize_text_field( $s ) { return trim( preg_replace( '/[\r\n\t ]+/', 
 function sanitize_textarea_field( $s ) { return trim( strip_tags( (string) $s ) ); }
 function sanitize_email( $s ) { return preg_replace( '/[^a-z0-9@._+\-]/i', '', (string) $s ); }
 function is_email( $s ) { return (bool) filter_var( $s, FILTER_VALIDATE_EMAIL ); }
-function esc_url_raw( $s ) { return filter_var( $s, FILTER_VALIDATE_URL ) ? $s : ''; }
+function esc_url_raw( $s, $protocols = null ) {
+	$s = trim( (string) $s );
+	if ( '' === $s ) { return ''; }
+	if ( '/' === $s[0] && ( ! isset( $s[1] ) || '/' !== $s[1] ) ) { return $s; }
+	if ( ! preg_match( '/^([a-z][a-z0-9+.-]*):/i', $s, $m ) ) { return ''; }
+	$allowed = $protocols ?? array( 'http', 'https', 'mailto', 'tel' );
+	if ( ! in_array( strtolower( $m[1] ), $allowed, true ) ) { return ''; }
+	return in_array( strtolower( $m[1] ), array( 'http', 'https' ), true ) && ! filter_var( $s, FILTER_VALIDATE_URL ) ? '' : $s;
+}
 function wp_parse_url( $u, $c = -1 ) { return parse_url( $u, $c ); }
 function home_url( $p = '' ) { return 'https://tongkhokeodan.com' . $p; }
 function sanitize_key( $s ) { return preg_replace( '/[^a-z0-9_\-]/', '', strtolower( (string) $s ) ); }
 function absint( $v ) { return abs( (int) $v ); }
-function wp_kses_post( $s ) { return (string) $s; }
+// Gần với kses thật ở những điểm test quan tâm: bỏ script/style/iframe, thuộc tính on*, javascript:.
+function wp_kses_post( $s ) {
+	$s = preg_replace( '#<(script|style|iframe)\b[^>]*>.*?</\1>#is', '', (string) $s );
+	$s = preg_replace( '#<(script|style|iframe)\b[^>]*>#i', '', $s );
+	$s = preg_replace( '#\son\w+\s*=\s*("[^"]*"|\'[^\']*\'|[^\s>]+)#i', '', $s );
+	return preg_replace( '#javascript:#i', '', $s );
+}
+function esc_html( $s ) { return htmlspecialchars( (string) $s, ENT_QUOTES, 'UTF-8' ); }
+function esc_attr( $s ) { return htmlspecialchars( (string) $s, ENT_QUOTES, 'UTF-8' ); }
+function esc_html__( $s, $d = null ) { return esc_html( $s ); }
+function esc_url( $u, $p = null ) { return esc_attr( esc_url_raw( $u, $p ) ); }
+function sanitize_html_class( $c ) { return preg_replace( '/[^A-Za-z0-9_-]/', '', (string) $c ); }
+function get_intermediate_image_sizes() { return array( 'thumbnail', 'medium', 'medium_large', 'large' ); }
+function wp_get_attachment_image( $id, $size = 'thumbnail', $icon = false, $attr = array() ) {
+	if ( 99 !== (int) $id ) { return ''; }
+	$html = '<img src="https://tongkhokeodan.com/wp-content/uploads/img-' . (int) $id . '-' . $size . '.jpg" width="800" height="600"';
+	foreach ( (array) $attr as $k => $v ) { $html .= ' ' . $k . '="' . esc_attr( $v ) . '"'; }
+	return $html . '>';
+}
+function wp_get_attachment_image_url( $id, $size = 'thumbnail' ) { return 99 === (int) $id ? 'https://tongkhokeodan.com/wp-content/uploads/img-99.jpg' : false; }
 function get_post_type( $id ) { return $GLOBALS['__posts'][ $id ]['type'] ?? false; }
 function get_post_status( $id ) { return $GLOBALS['__posts'][ $id ]['status'] ?? false; }
 function get_the_title( $id ) { return $GLOBALS['__posts'][ $id ]['title'] ?? ''; }
@@ -326,6 +353,152 @@ check( 'breakpoint mobile 767px chứa gutter mobile', (bool) preg_match( '/@med
 check( 'typography sinh biến --saha-type-body-font', false !== strpos( $saha_out, '--saha-type-body-font:' ), true );
 $saha_vals['colors']['primary'] = 'red;}body{display:none';
 check( 'giá trị bẩn trong DB không thoát khỏi khai báo', false === strpos( CssVariables::build( $saha_vals ), 'display:none' ), true );
+
+// ---- SCC mốc 1.2: Builder runtime --------------------------------------
+if ( ! defined( 'SAHA_CORE_VERSION' ) ) { define( 'SAHA_CORE_VERSION', 'test' ); }
+
+use Saha\Core\Builder\CssGenerator;
+use Saha\Core\Builder\RenderContext;
+use Saha\Core\Builder\Renderer;
+use Saha\Core\Builder\Sanitizer as BuilderSanitizer;
+use Saha\Core\Builder\Schema\Document;
+
+/** Tài liệu mẫu: section > row > 2 column > heading/text/button/image. */
+function saha_doc( array $override = array() ): array {
+	return array_replace_recursive(
+		array(
+			'version'  => 1,
+			'elements' => array(
+				array(
+					'id'       => 'sec00001',
+					'type'     => 'section',
+					'props'    => array( 'background' => array( 'color' => '#F5F5F5' ), 'minHeight' => array( 'desktop' => '480px', 'mobile' => '320px' ) ),
+					'advanced' => array( 'padding' => array( 'desktop' => array( 'top' => '64px', 'bottom' => '64px' ) ) ),
+					'children' => array(
+						array(
+							'id'       => 'row00001',
+							'type'     => 'row',
+							'props'    => array( 'gap' => array( 'desktop' => '32px', 'mobile' => '16px' ) ),
+							'children' => array(
+								array(
+									'id'       => 'col00001',
+									'type'     => 'column',
+									'props'    => array( 'width' => array( 'desktop' => '60%' ) ),
+									'children' => array(
+										array( 'id' => 'hea00001', 'type' => 'heading', 'props' => array( 'text' => 'Tổng kho <keo> & dán', 'tag' => 'h1', 'color' => 'var(--saha-heading)', 'typography' => array( 'fontSize' => array( 'desktop' => '40px', 'mobile' => '26px' ), 'fontWeight' => '700' ) ) ),
+										array( 'id' => 'txt00001', 'type' => 'text', 'props' => array( 'content' => '<p>Keo <strong>chính hãng</strong></p><script>alert(1)</script><p onclick="x()">b</p>' ) ),
+										array( 'id' => 'btn00001', 'type' => 'button', 'props' => array( 'text' => 'Báo giá', 'link' => array( 'url' => '/bao-gia/', 'newTab' => true ) ) ),
+									),
+								),
+								array(
+									'id'       => 'col00002',
+									'type'     => 'column',
+									'children' => array(
+										array( 'id' => 'img00001', 'type' => 'image', 'props' => array( 'image' => array( 'id' => 99, 'size' => 'large' ), 'alt' => 'Keo "243"' ) ),
+									),
+								),
+							),
+						),
+					),
+				),
+			),
+		),
+		$override
+	);
+}
+
+/** Sanitize nhanh. */
+function saha_bs( $input ): array { return ( new BuilderSanitizer() )->document( $input ); }
+
+echo "Builder\\Sanitizer\n";
+$saha_ok = saha_bs( saha_doc() );
+check( 'tài liệu hợp lệ không lỗi', $saha_ok['errors'], array() );
+$saha_arr = $saha_ok['document']->toArray();
+$saha_h1  = $saha_arr['elements'][0]['children'][0]['children'][0]['children'][0]['props'];
+check( 'màu hex chuẩn hoá chữ thường', $saha_arr['elements'][0]['props']['background']['color'], '#f5f5f5' );
+check( 'rich text: bỏ <script>', false === strpos( $saha_arr['elements'][0]['children'][0]['children'][0]['children'][1]['props']['content'], '<script' ), true );
+check( 'rich text: bỏ onclick', false === strpos( $saha_arr['elements'][0]['children'][0]['children'][0]['children'][1]['props']['content'], 'onclick' ), true );
+check( 'rich text: giữ <strong>', false !== strpos( $saha_arr['elements'][0]['children'][0]['children'][0]['children'][1]['props']['content'], '<strong>' ), true );
+check( 'heading text: bỏ thẻ HTML', $saha_h1['text'], 'Tổng kho & dán' );
+
+$saha_bad = saha_doc();
+$saha_bad['elements'][0]['children'][0]['children'][0]['children'][0]['props']['unknownProp'] = 'x';
+$saha_r = saha_bs( $saha_bad );
+check( 'prop lạ bị bỏ im lặng', array_key_exists( 'unknownProp', $saha_r['document']->toArray()['elements'][0]['children'][0]['children'][0]['children'][0]['props'] ), false );
+
+$saha_bad = saha_doc();
+$saha_bad['elements'][0]['children'][0]['children'][0]['children'][2]['props']['link']['url'] = 'javascript:alert(1)';
+$saha_r = saha_bs( $saha_bad );
+check( 'link javascript: bị từ chối (lỗi theo node.prop)', isset( $saha_r['errors']['btn00001.link'] ) && null === $saha_r['document'], true );
+
+$saha_bad = saha_doc();
+$saha_bad['elements'][0]['props']['background']['color'] = 'red;}body{display:none';
+check( 'màu chèn CSS bị từ chối', isset( saha_bs( $saha_bad )['errors']['sec00001.background'] ), true );
+
+$saha_bad = saha_doc();
+$saha_bad['elements'][0]['props']['minHeight'] = array( 'desktop' => '99999px' );
+check( 'kích thước ngoài khoảng bị từ chối', isset( saha_bs( $saha_bad )['errors']['sec00001.minHeight'] ), true );
+
+check( 'heading ở cấp gốc bị từ chối (allowedParents)', isset( saha_bs( array( 'elements' => array( array( 'id' => 'hhhhhhhh', 'type' => 'heading' ) ) ) )['errors']['hhhhhhhh'] ), true );
+check( 'heading trong row bị từ chối (allowedChildren)', count( saha_bs( array( 'elements' => array( array( 'id' => 'ssssssss', 'type' => 'section', 'children' => array( array( 'id' => 'rrrrrrrr', 'type' => 'row', 'children' => array( array( 'id' => 'hhhhhhhh', 'type' => 'heading' ) ) ) ) ) ) ) )['errors'] ) > 0, true );
+check( 'element lá có con bị từ chối', isset( saha_bs( array( 'elements' => array( array( 'id' => 'ssssssss', 'type' => 'section', 'children' => array( array( 'id' => 'hhhhhhhh', 'type' => 'heading', 'children' => array( array( 'type' => 'text' ) ) ) ) ) ) ) )['errors']['hhhhhhhh'] ), true );
+
+$saha_dup = saha_doc();
+$saha_dup['elements'][0]['children'][0]['children'][1]['id'] = 'col00001';
+$saha_dup['elements'][0]['children'][0]['id']                = 'BAD ID!';
+$saha_r   = saha_bs( $saha_dup )['document']->toArray();
+$saha_ids = array( $saha_r['elements'][0]['children'][0]['id'], $saha_r['elements'][0]['children'][0]['children'][0]['id'], $saha_r['elements'][0]['children'][0]['children'][1]['id'] );
+check( 'ID sai định dạng được cấp mới', (bool) preg_match( '/^[a-z0-9]{8}$/', $saha_ids[0] ) && 'BAD ID!' !== $saha_ids[0], true );
+check( 'ID trùng được cấp mới', $saha_ids[1] !== $saha_ids[2], true );
+
+$saha_unknown = saha_bs( array( 'elements' => array( array( 'id' => 'xxxxxxxx', 'type' => 'addon-slider', 'props' => array( 'speed' => 3 ), 'custom' => array( 'a' => 1 ) ) ) ) );
+check( 'type không đăng ký: giữ nguyên dữ liệu', $saha_unknown['document']->toArray()['elements'][0], array( 'id' => 'xxxxxxxx', 'type' => 'addon-slider', 'props' => array( 'speed' => 3 ), 'custom' => array( 'a' => 1 ) ) );
+
+$saha_deep = array( 'id' => 'deep0000', 'type' => 'column' );
+for ( $i = 0; $i < 14; $i++ ) {
+	$saha_deep = array( 'type' => 'row', 'children' => array( array( 'type' => 'column', 'children' => array( $saha_deep ) ) ) );
+}
+check( 'lồng quá sâu bị từ chối', isset( saha_bs( array( 'elements' => array( array( 'type' => 'section', 'children' => array( $saha_deep ) ) ) ) )['errors']['document'] ), true );
+
+$saha_many = array();
+for ( $i = 0; $i < 2001; $i++ ) { $saha_many[] = array( 'type' => 'section' ); }
+check( 'quá 2000 element bị từ chối', isset( saha_bs( array( 'elements' => $saha_many ) )['errors']['document'] ), true );
+check( 'JSON quá 1 MB bị từ chối', isset( saha_bs( str_repeat( ' ', 1048577 ) )['errors']['document'] ), true );
+check( 'tài liệu từ phiên bản mới hơn bị từ chối', isset( saha_bs( array( 'version' => 99, 'elements' => array() ) )['errors']['document'] ), true );
+check( 'chuỗi JSON hợp lệ được nhận', saha_bs( json_encode( saha_doc() ) )['errors'], array() );
+
+echo "Builder\\Renderer\n";
+$saha_docobj = saha_ok_doc();
+function saha_ok_doc(): Document { return saha_bs( saha_doc() )['document']; }
+$saha_html = ( new Renderer() )->document( $saha_docobj, new RenderContext( 0, false, false ) );
+check( 'heading render đúng thẻ h1', (bool) preg_match( '#<h1 class="saha-e saha-e-hea00001 saha-heading">Tổng kho &amp; dán</h1>#u', $saha_html ), true );
+check( 'text không còn script khi render', false === stripos( $saha_html, '<script' ), true );
+check( 'button link newTab có rel=noopener', false !== strpos( $saha_html, 'href="/bao-gia/" target="_blank" rel="noopener"' ), true );
+check( 'ảnh render qua wp_get_attachment_image, alt được escape', false !== strpos( $saha_html, 'alt="Keo &quot;243&quot;"' ), true );
+check( 'frontend không có data-saha-id', false === strpos( $saha_html, 'data-saha-id' ), true );
+$saha_ed = ( new Renderer() )->document( $saha_docobj, new RenderContext( 0, true, false ) );
+check( 'editor có data-saha-id', false !== strpos( $saha_ed, 'data-saha-id="hea00001"' ), true );
+$saha_miss = saha_bs( array( 'elements' => array( array( 'type' => 'section', 'children' => array( array( 'type' => 'image', 'props' => array() ) ) ) ) ) )['document'];
+check( 'ảnh chưa chọn: frontend không in gì', false === strpos( ( new Renderer() )->document( $saha_miss, new RenderContext( 0, false, false ) ), 'saha-image' ), true );
+check( 'type không đăng ký: không render', ( new Renderer() )->document( $saha_unknown['document'], new RenderContext( 0, false, false ) ), '' );
+$saha_evil = new Document( array( Saha\Core\Builder\Schema\Node::fromArray( array( 'id' => 'eeeeeeee', 'type' => 'section', 'props' => array( 'tag' => 'script' ), 'children' => array( array( 'id' => 'ffffffff', 'type' => 'heading', 'props' => array( 'text' => '<img src=x onerror=alert(1)>', 'tag' => 'script' ) ) ) ) ) ) );
+$saha_evil_html = ( new Renderer() )->document( $saha_evil, new RenderContext( 0, false, false ) );
+check( 'dữ liệu bẩn trong DB: tag lạ thành mặc định, text được escape', false === stripos( $saha_evil_html, '<script' ) && false === strpos( $saha_evil_html, '<img' ), true );
+
+echo "Builder\\CssGenerator\n";
+$saha_css = ( new CssGenerator() )->document( $saha_docobj );
+check( 'padding nâng cao → .saha-e-{id}', false !== strpos( $saha_css, '.saha-e-sec00001{padding-top:64px;padding-bottom:64px' ), true );
+check( 'min-height responsive vào @media mobile', (bool) preg_match( '/@media \(max-width:767px\)\{[^@]*\.saha-e-sec00001\{min-height:320px/', $saha_css ), true );
+check( 'typography: font-size mobile', (bool) preg_match( '/@media \(max-width:767px\)\{[^@]*\.saha-e-hea00001\{font-size:26px/', $saha_css ), true );
+check( 'màu dùng biến Theme Options', false !== strpos( $saha_css, 'color:var(--saha-heading)' ), true );
+check( 'cột 60% → --saha-col:0.6', false !== strpos( $saha_css, '.saha-e-col00001{--saha-col:0.6}' ), true );
+check( 'cột không đặt độ rộng chia phần còn lại (0.4)', false !== strpos( $saha_css, '.saha-e-row00001 > .saha-e-col00002{--saha-col:0.4}' ), true );
+check( 'xếp chồng mobile → --saha-col:1', (bool) preg_match( '/@media \(max-width:767px\)\{[^@]*\.saha-e-row00001 > \.saha-e-col00001\{--saha-col:1\}/', $saha_css ), true );
+$saha_dirty = new Document( array( Saha\Core\Builder\Schema\Node::fromArray( array( 'id' => 'dddddddd', 'type' => 'heading', 'props' => array( 'color' => 'red;}body{display:none', 'align' => '</style><script>' ) ) ) ) );
+$saha_dirty_css = ( new CssGenerator() )->document( $saha_dirty );
+check( 'giá trị CSS bẩn trong DB bị bỏ', false === strpos( $saha_dirty_css, 'display:none' ) && false === strpos( $saha_dirty_css, '<' ), true );
+check( 'url() lạ trong giá trị bị bỏ', Saha\Core\Builder\CssRules::cleanValue( 'url("javascript:alert(1)")' ), '' );
+check( 'url() ảnh hợp lệ được giữ', Saha\Core\Builder\CssRules::cleanValue( 'url("https://tongkhokeodan.com/a.jpg")' ), 'url("https://tongkhokeodan.com/a.jpg")' );
 
 echo "\n$pass passed, $fail failed\n";
 exit( $fail > 0 ? 1 : 0 );

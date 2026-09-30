@@ -1,0 +1,196 @@
+/*
+ * SAHA Builder — CSS nền cho layout ở frontend.
+ *
+ * Chỉ nạp ở trang dùng builder. Style riêng của từng element nằm trong
+ * uploads/saha/css/post-{id}-{hash}.css (.saha-e-{id}).
+ * Mặc định bọc trong :where() (specificity 0) để CSS layout và theme đè dễ dàng.
+ * Biến --saha-* lấy từ Theme Options, có giá trị dự phòng cho theme khác.
+ */
+
+:where(.saha-builder-content) {
+	display: flow-root;
+}
+
+:where(.saha-builder-content) *,
+:where(.saha-builder-content) *::before,
+:where(.saha-builder-content) *::after {
+	box-sizing: border-box;
+}
+
+/* Section */
+:where(.saha-section) {
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	justify-content: flex-start;
+	padding-block: var(--saha-space, 48px);
+}
+
+:where(.saha-section__inner) {
+	position: relative;
+	z-index: 1;
+	width: 100%;
+	max-width: calc(var(--saha-section-width, var(--saha-container, 1200px)) + 2 * var(--saha-gutter, 16px));
+	margin-inline: auto;
+	padding-inline: var(--saha-gutter, 16px);
+}
+
+:where(.saha-section--full) > :where(.saha-section__inner) {
+	max-width: none;
+}
+
+:where(.saha-section--overlay, .saha-column--overlay)::before {
+	content: "";
+	position: absolute;
+	inset: 0;
+	pointer-events: none;
+}
+
+:where(.saha-column--overlay) {
+	position: relative;
+}
+
+:where(.saha-column--overlay) > * {
+	position: relative;
+}
+
+/* Row + Column: cột = col × 100% − gap × (1 − col) → tổng đúng 100% (xem Builder\Elements\Row) */
+:where(.saha-row) {
+	display: flex;
+	flex-wrap: wrap;
+	gap: var(--saha-gap, 24px);
+	width: 100%;
+}
+
+:where(.saha-column) {
+	display: flex;
+	flex: 0 0 calc(var(--saha-col, 1) * 100% - var(--saha-gap, 24px) * (1 - var(--saha-col, 1)));
+	flex-direction: column;
+	min-width: 0;
+}
+
+/* Nội dung */
+:where(.saha-heading) {
+	margin-block: 0 0.5em;
+}
+
+:where(.saha-text) > :first-child {
+	margin-top: 0;
+}
+
+:where(.saha-text) > :last-child {
+	margin-bottom: 0;
+}
+
+:where(.saha-image) {
+	margin: 0;
+}
+
+:where(.saha-image) img {
+	display: inline-block;
+	max-width: 100%;
+	height: auto;
+	vertical-align: middle;
+}
+
+:where(.saha-image__caption) {
+	margin-top: 8px;
+	font-size: 0.875em;
+	opacity: 0.8;
+}
+
+:where(.saha-image--empty) {
+	display: grid;
+	place-items: center;
+	min-height: 120px;
+	border: 1px dashed currentcolor;
+	opacity: 0.5;
+}
+
+/* Button */
+:where(.saha-btn) {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: 8px;
+	padding: 10px 20px;
+	border: 2px solid var(--saha-primary, #0b5cab);
+	border-radius: var(--saha-radius, 6px);
+	background: var(--saha-primary, #0b5cab);
+	color: #fff;
+	font-family: var(--saha-type-button-font, inherit);
+	font-weight: var(--saha-type-button-weight, 600);
+	line-height: 1.2;
+	text-decoration: none;
+	cursor: pointer;
+	transition: filter 0.15s ease, background-color 0.15s ease, color 0.15s ease;
+}
+
+:where(a.saha-btn):hover,
+:where(a.saha-btn):focus-visible {
+	color: #fff;
+	filter: brightness(0.92);
+}
+
+:where(.saha-btn--secondary) {
+	border-color: var(--saha-secondary, #1f2937);
+	background: var(--saha-secondary, #1f2937);
+}
+
+:where(.saha-btn--outline) {
+	background: transparent;
+	color: var(--saha-primary, #0b5cab);
+}
+
+:where(a.saha-btn--outline):hover,
+:where(a.saha-btn--outline):focus-visible {
+	background: var(--saha-primary, #0b5cab);
+	color: #fff;
+	filter: none;
+}
+
+:where(.saha-btn--link) {
+	padding-inline: 0;
+	border-color: transparent;
+	background: transparent;
+	color: var(--saha-primary, #0b5cab);
+	text-decoration: underline;
+}
+
+:where(a.saha-btn--link):hover {
+	color: var(--saha-secondary, #1f2937);
+	filter: none;
+}
+
+:where(.saha-btn--sm) {
+	padding: 6px 14px;
+	font-size: 0.875em;
+}
+
+:where(.saha-btn--lg) {
+	padding: 14px 28px;
+	font-size: 1.125em;
+}
+
+:where(.saha-button-wrap--full) :where(.saha-btn) {
+	width: 100%;
+}
+
+/* Ẩn theo thiết bị — cùng breakpoint với Theme Options */
+@media (min-width: 1025px) {
+	.saha-hide-desktop {
+		display: none !important;
+	}
+}
+
+@media (min-width: 768px) and (max-width: 1024px) {
+	.saha-hide-tablet {
+		display: none !important;
+	}
+}
+
+@media (max-width: 767px) {
+	.saha-hide-mobile {
+		display: none !important;
+	}
+}

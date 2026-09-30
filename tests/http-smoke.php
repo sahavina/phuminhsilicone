@@ -223,12 +223,12 @@ $theme_active = false !== strpos( $r['body'], 'saha-site' );
 if ( $theme_active ) {
 	ok( 'không còn wp-emoji-release (Phase 7)', false === strpos( $r['body'], 'wp-emoji-release' ) );
 } else {
-	skip( 'không còn wp-emoji-release', 'child theme SAHA chưa bật (cần Flatsome)' );
+	skip( 'không còn wp-emoji-release', 'theme SAHA (saha-theme hoặc flatsome-child) chưa bật' );
 }
 ok( 'trang chủ có đúng 1 thẻ H1', 1 === preg_match_all( '/<h1[\s>]/i', $r['body'] ), 'số H1: ' . preg_match_all( '/<h1[\s>]/i', $r['body'] ) );
 
 if ( ! $theme_active ) {
-	skip( 'trang chủ preload ảnh hero', 'child theme SAHA chưa bật (cần Flatsome)' );
+	skip( 'trang chủ preload ảnh hero', 'theme SAHA (saha-theme hoặc flatsome-child) chưa bật' );
 } elseif ( preg_match( '/<link[^>]+rel=["\']preload["\'][^>]+as=["\']image["\']/i', $r['body'] ) ) {
 	ok( 'trang chủ preload ảnh hero (Phase 7)', true );
 } else {
@@ -237,6 +237,23 @@ if ( ! $theme_active ) {
 
 $r = http( 'GET', $base . '/?saha_form=quote_sent' );
 ok( 'trang kết quả form không bị cache', (bool) preg_match( '/no-cache|no-store|max-age=0/i', $r['headers']['cache-control'] ?? '' ), 'Cache-Control: ' . ( $r['headers']['cache-control'] ?? '(trống)' ) );
+
+/*
+ * ---------------------------------------------------------------------------
+ * Builder (SCC mốc 1.2) — chỉ kiểm tra từ chối, không ghi gì
+ * ---------------------------------------------------------------------------
+ */
+echo "Builder (SCC)\n";
+$r = http( 'GET', $api . '/builder/elements' );
+ok( 'GET /builder/elements khi chưa đăng nhập → 401', 401 === $r['status'], 'status ' . $r['status'] );
+$r = http( 'GET', $api . '/builder/1' );
+ok( 'GET /builder/{id} khi chưa đăng nhập → 401', 401 === $r['status'], 'status ' . $r['status'] );
+$r = http( 'POST', $api . '/builder/save', array(), array( 'postId' => 1, 'data' => array( 'elements' => array() ) ) );
+ok( 'POST /builder/save khi chưa đăng nhập → 401', 401 === $r['status'], 'status ' . $r['status'] );
+$r = http( 'POST', $api . '/builder/render', array(), array( 'node' => array( 'type' => 'heading' ) ) );
+ok( 'POST /builder/render khi chưa đăng nhập → 401', 401 === $r['status'], 'status ' . $r['status'] );
+$r = http( 'GET', $base . '/' );
+ok( 'frontend không nạp JS/CSS của ứng dụng builder (spec §68)', false === strpos( $r['body'], 'plugins/saha-builder/' ) );
 
 /*
  * ---------------------------------------------------------------------------

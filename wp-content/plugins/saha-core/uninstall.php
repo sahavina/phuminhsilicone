@@ -43,6 +43,11 @@ delete_option( 'saha_cache_gen' );
 delete_option( 'saha_theme_options' );
 delete_option( 'saha_theme_css' );
 
+// Layout builder (post meta). post_content dự phòng giữ lại — trang vẫn còn nội dung tĩnh.
+foreach ( array( '_saha_builder_enabled', '_saha_builder_data', '_saha_builder_version', '_saha_builder_hash', '_saha_css_file' ) as $saha_meta_key ) {
+	delete_metadata( 'post', 0, $saha_meta_key, '', true );
+}
+
 // File CSS sinh ra trong uploads/saha/css.
 $saha_uploads = wp_upload_dir( null, false );
 

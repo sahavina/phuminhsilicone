@@ -11,6 +11,12 @@ get_header();
 
 while ( have_posts() ) {
 	the_post();
+
+	if ( saha_theme_builder_active() ) {
+		// Layout builder: tràn khung, tiêu đề/breadcrumb do layout tự đặt.
+		the_content();
+		continue;
+	}
 	?>
 	<div class="saha-container saha-section">
 		<?php saha_theme_breadcrumb(); ?>
