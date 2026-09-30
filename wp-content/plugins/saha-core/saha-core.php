@@ -3,9 +3,9 @@
  * Plugin Name:       SAHA Core
  * Plugin URI:        https://tongkhokeodan.com
  * Description:       Business layer cho Tổng Kho Keo Dán SAHA: settings, roles, security, logger, database migration, brand, product, search, quote, lead, REST API.
- * Version:           1.7.2
- * Requires at least: 6.0
- * Requires PHP:      8.0
+ * Version:           1.8.0
+ * Requires at least: 6.4
+ * Requires PHP:      8.2
  * Author:            Công ty TNHH Thương mại Dịch vụ Trực tuyến SAHA
  * License:           GPL-2.0-or-later
  * Text Domain:       saha-core
@@ -23,14 +23,22 @@ defined( 'ABSPATH' ) || exit;
  * Constants
  * -------------------------------------------------------------------------
  */
-define( 'SAHA_CORE_VERSION', '1.7.2' );
+define( 'SAHA_CORE_VERSION', '1.8.0' );
 define( 'SAHA_CORE_DB_VERSION', '1.2.0' );
 define( 'SAHA_CORE_FILE', __FILE__ );
 define( 'SAHA_CORE_PATH', plugin_dir_path( __FILE__ ) );
 define( 'SAHA_CORE_URL', plugin_dir_url( __FILE__ ) );
 define( 'SAHA_CORE_BASENAME', plugin_basename( __FILE__ ) );
-define( 'SAHA_CORE_MIN_PHP', '8.0' );
-define( 'SAHA_CORE_MIN_WP', '6.0' );
+define( 'SAHA_CORE_MIN_PHP', '8.2' );
+// 6.4: register_post_meta( 'revisions_enabled' ) cho dữ liệu builder (TECHNICAL-DESIGN §5.2).
+define( 'SAHA_CORE_MIN_WP', '6.4' );
+
+/*
+ * Phiên bản API mà saha-builder (ứng dụng soạn thảo) phụ thuộc. Tăng khi REST,
+ * schema builder hoặc định nghĩa control thay đổi không tương thích ngược —
+ * saha-builder sẽ tự tắt thay vì ghi dữ liệu sai (TECHNICAL-DESIGN R14).
+ */
+define( 'SAHA_BUILDER_API_VERSION', 1 );
 
 /*
  * -------------------------------------------------------------------------
@@ -65,7 +73,14 @@ function saha_core_environment_error(): string {
 
 /*
  * -------------------------------------------------------------------------
- * Autoloader — Saha\Core\Foo_Bar => includes/class-foo-bar.php
+ * Autoloader — hai quy ước cùng tồn tại (TECHNICAL-DESIGN D7):
+ *
+ *   PSR-4 (code SCC mới):  Saha\Core\ThemeOptions\Schema => includes/ThemeOptions/Schema.php
+ *   Cũ (Phase 1–8):        Saha\Core\Foo_Bar             => includes/class-foo-bar.php
+ *
+ * Thử PSR-4 trước; không có file thì rơi về quy ước cũ. Module PSR-4 không
+ * được đặt tên trùng thư mục cũ (ví dụ "Tables") — Windows không phân biệt
+ * hoa thường (TECHNICAL-DESIGN R9).
  * -------------------------------------------------------------------------
  */
 spl_autoload_register(
@@ -77,13 +92,21 @@ spl_autoload_register(
 		}
 
 		$relative = substr( $class_name, strlen( $prefix ) );
-		$parts    = explode( '\\', $relative );
-		$base     = array_pop( $parts );
-		$sub      = $parts ? strtolower( implode( '/', $parts ) ) . '/' : '';
-		$file     = SAHA_CORE_PATH . 'includes/' . $sub . 'class-' . strtolower( str_replace( '_', '-', $base ) ) . '.php';
 
-		if ( is_readable( $file ) ) {
-			require_once $file;
+		$psr4 = SAHA_CORE_PATH . 'includes/' . str_replace( '\\', '/', $relative ) . '.php';
+
+		if ( is_readable( $psr4 ) ) {
+			require_once $psr4;
+			return;
+		}
+
+		$parts  = explode( '\\', $relative );
+		$base   = array_pop( $parts );
+		$sub    = $parts ? strtolower( implode( '/', $parts ) ) . '/' : '';
+		$legacy = SAHA_CORE_PATH . 'includes/' . $sub . 'class-' . strtolower( str_replace( '_', '-', $base ) ) . '.php';
+
+		if ( is_readable( $legacy ) ) {
+			require_once $legacy;
 		}
 	}
 );

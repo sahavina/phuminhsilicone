@@ -106,15 +106,37 @@ final class Api {
 	 * @param array<string, mixed> $errors  Lỗi theo field.
 	 * @param int                  $status  HTTP status.
 	 */
-	public static function error( string $message, array $errors = array(), int $status = 400 ): \WP_REST_Response {
+	public static function error( string $message, array $errors = array(), int $status = 400, string $code = '' ): \WP_REST_Response {
 		return new \WP_REST_Response(
 			array(
 				'success' => false,
+				// Spec SCC §99 cần `code`; `errors` giữ lại cho client hiện có (TECHNICAL-DESIGN D10).
+				'code'    => '' !== $code ? $code : self::code_for_status( $status ),
 				'message' => $message,
 				'errors'  => $errors,
 			),
 			$status
 		);
+	}
+
+	/**
+	 * Mã lỗi máy đọc được, suy từ HTTP status khi nơi gọi không chỉ định.
+	 *
+	 * @param int $status HTTP status.
+	 */
+	public static function code_for_status( int $status ): string {
+		$map = array(
+			400 => 'invalid_request',
+			401 => 'unauthorized',
+			403 => 'forbidden',
+			404 => 'not_found',
+			409 => 'conflict',
+			422 => 'validation_failed',
+			429 => 'rate_limited',
+			503 => 'unavailable',
+		);
+
+		return $map[ $status ] ?? ( $status >= 500 ? 'server_error' : 'invalid_request' );
 	}
 
 	/**

@@ -1,0 +1,65 @@
+.saha-container {
+	width: 100%;
+	max-width: calc(var(--saha-container) + 2 * var(--saha-gutter));
+	margin-inline: auto;
+	padding-inline: var(--saha-gutter);
+
+	&--content {
+		max-width: calc(var(--saha-content) + 2 * var(--saha-gutter));
+	}
+}
+
+.saha-section {
+	padding-block: var(--saha-space);
+}
+
+.saha-main:focus {
+	outline: none;
+}
+
+.saha-page-title {
+	margin-bottom: 0.75em;
+}
+
+.saha-archive-header {
+	margin-bottom: 32px;
+}
+
+.saha-archive-description {
+	color: var(--saha-muted);
+}
+
+.saha-prose {
+
+	> :first-child {
+		margin-top: 0;
+	}
+
+	img {
+		border-radius: var(--saha-radius);
+	}
+
+	table {
+		width: 100%;
+		border-collapse: collapse;
+	}
+
+	th,
+	td {
+		padding: 8px 12px;
+		border: 1px solid var(--saha-border);
+		text-align: left;
+	}
+}
+
+// Căn chỉnh block editor.
+.alignwide {
+	max-width: var(--saha-container);
+	margin-inline: auto;
+}
+
+.alignfull {
+	width: 100vw;
+	max-width: 100vw;
+	margin-left: calc(50% - 50vw);
+}

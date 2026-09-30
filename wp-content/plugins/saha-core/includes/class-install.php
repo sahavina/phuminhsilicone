@@ -109,5 +109,10 @@ final class Install {
 			 */
 			do_action( 'saha_core_upgraded', $installed, SAHA_CORE_VERSION );
 		}
+
+		// Định nghĩa role/capability đổi mà không đổi version (filter, code sửa sau) → cài lại.
+		if ( ! Roles::isCurrent() ) {
+			( new Roles() )->install();
+		}
 	}
 }

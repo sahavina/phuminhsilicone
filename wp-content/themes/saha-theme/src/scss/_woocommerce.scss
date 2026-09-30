@@ -1,0 +1,66 @@
+// Chỉ bố cục cơ bản cho vòng lặp sản phẩm — giao diện đầy đủ ở mốc 1.6.
+// Số cột desktop: class columns-N của WooCommerce. Tablet/mobile: class
+// saha-products--tablet-N / saha-products--mobile-N (inc/woocommerce.php).
+
+.woocommerce ul.products,
+.woocommerce-page ul.products {
+	display: grid;
+	grid-template-columns: repeat(var(--saha-shop-cols, 4), minmax(0, 1fr));
+	gap: 24px;
+	margin: 0 0 32px;
+	padding: 0;
+	list-style: none;
+
+	&::before,
+	&::after {
+		display: none;
+	}
+
+	@for $i from 2 through 6 {
+		&.columns-#{$i} {
+			--saha-shop-cols: #{$i};
+		}
+	}
+
+	// Ghi đè float/width 22%–48% của woocommerce-layout/smallscreen.css
+	// (selector của WC có [class*="columns-"] nên phải cụ thể tương đương).
+	li.product,
+	&[class*="columns-"] li.product {
+		float: none;
+		clear: none;
+		width: auto;
+		margin: 0;
+	}
+
+	@media (max-width: 1024px) {
+
+		@for $i from 2 through 4 {
+			&.saha-products--tablet-#{$i} {
+				--saha-shop-cols: #{$i};
+			}
+		}
+	}
+
+	@media (max-width: 767px) {
+		gap: 16px;
+
+		@for $i from 1 through 2 {
+			&.saha-products--mobile-#{$i} {
+				--saha-shop-cols: #{$i};
+			}
+		}
+	}
+}
+
+.woocommerce-loop-product__title {
+	font-size: 1rem;
+}
+
+.saha-catalog-mode {
+
+	.price,
+	.add_to_cart_button,
+	.single_add_to_cart_button {
+		display: none !important;
+	}
+}

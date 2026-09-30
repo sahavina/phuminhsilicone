@@ -1,0 +1,21 @@
+{
+  "name": "saha-commerce-core",
+  "private": true,
+  "description": "Build JS/CSS cho saha-builder (ứng dụng admin React) và saha-theme (frontend).",
+  "license": "GPL-2.0-or-later",
+  "engines": {
+    "node": ">=20",
+    "npm": ">=10"
+  },
+  "scripts": {
+    "build": "wp-scripts build --config webpack.config.js",
+    "start": "wp-scripts start --config webpack.config.js",
+    "lint:js": "wp-scripts lint-js wp-content/plugins/saha-builder/src wp-content/themes/saha-theme/src",
+    "lint:css": "wp-scripts lint-style \"wp-content/themes/saha-theme/src/**/*.scss\" \"wp-content/plugins/saha-builder/src/**/*.scss\"",
+    "test:js": "wp-scripts test-unit-js --passWithNoTests",
+    "check-engines": "wp-scripts check-engines"
+  },
+  "devDependencies": {
+    "@wordpress/scripts": "36.0.0"
+  }
+}

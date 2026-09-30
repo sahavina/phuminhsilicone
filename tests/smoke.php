@@ -41,10 +41,15 @@ function wp_kses_post( $s ) { return (string) $s; }
 function get_post_type( $id ) { return $GLOBALS['__posts'][ $id ]['type'] ?? false; }
 function get_post_status( $id ) { return $GLOBALS['__posts'][ $id ]['status'] ?? false; }
 function get_the_title( $id ) { return $GLOBALS['__posts'][ $id ]['title'] ?? ''; }
+function current_user_can( ...$a ) { return true; }
+function wp_attachment_is_image( $id ) { return 99 === (int) $id; }
 
 spl_autoload_register( static function ( $c ) {
 	if ( 0 !== strpos( $c, 'Saha\\Core\\' ) ) { return; }
-	$rel   = substr( $c, 10 );
+	$rel = substr( $c, 10 );
+	// Code mới (SCC): PSR-4 includes/{Namespace/Path}.php.
+	$psr4 = SAHA_CORE_PATH . 'includes/' . str_replace( '\\', '/', $rel ) . '.php';
+	if ( is_readable( $psr4 ) ) { require_once $psr4; return; }
 	$parts = explode( '\\', $rel );
 	$base  = array_pop( $parts );
 	$sub   = $parts ? strtolower( implode( '/', $parts ) ) . '/' : '';
@@ -279,6 +284,48 @@ $saha_json = json_encode( $saha_out );
 check( '"Hết hàng" fallback dùng NOT EXISTS', false !== strpos( $saha_json, 'NOT EXISTS' ), true );
 check( '"Hết hàng" fallback so với outofstock', false !== strpos( $saha_json, 'outofstock' ), true );
 check( '"Sẵn hàng" fallback so với instock', false !== strpos( (string) json_encode( Saha\Core\Filter::availability_clause( 'in_stock' ) ), '"instock"' ), true );
+
+// ---- SCC mốc 1.1: Theme Options ----------------------------------------
+use Saha\Core\ThemeOptions\CssVariables;
+use Saha\Core\ThemeOptions\InvalidValue;
+use Saha\Core\ThemeOptions\Sanitizer;
+use Saha\Core\ThemeOptions\Schema;
+
+/** 'INVALID' nếu hàm ném InvalidValue, ngược lại giá trị trả về. */
+function saha_try( callable $fn ) {
+	try { return $fn(); } catch ( InvalidValue $e ) { return 'INVALID'; }
+}
+
+echo "ThemeOptions\\Sanitizer\n";
+check( 'màu hex viết hoa → thường', Sanitizer::color( '#127A3F' ), '#127a3f' );
+check( 'rgba bỏ khoảng trắng', Sanitizer::color( 'rgba(0, 0, 0, .5)' ), 'rgba(0,0,0,.5)' );
+check( 'màu chèn CSS bị từ chối', saha_try( fn() => Sanitizer::color( 'red;}body{display:none' ) ), 'INVALID' );
+check( 'var() ngoài --saha-* bị từ chối', saha_try( fn() => Sanitizer::color( 'var(--wp-x)' ) ), 'INVALID' );
+$saha_size = array( 'type' => 'size', 'units' => array( 'px' ), 'min' => 16, 'max' => 160 );
+check( 'số trần hiểu là px', Sanitizer::size( '48', $saha_size ), '48px' );
+check( '48.50px → 48.5px', Sanitizer::size( '48.50px', $saha_size ), '48.5px' );
+check( 'ngoài khoảng bị từ chối', saha_try( fn() => Sanitizer::size( '5000px', $saha_size ) ), 'INVALID' );
+check( 'đơn vị lạ bị từ chối', saha_try( fn() => Sanitizer::size( '3em', $saha_size ) ), 'INVALID' );
+check( 'responsive thiếu desktop bị từ chối', saha_try( fn() => Sanitizer::field( array( 'mobile' => '20px' ), $saha_size + array( 'responsive' => true ) ) ), 'INVALID' );
+$saha_css = Sanitizer::css( 'a{color:red}</style><script>alert(1)</script>@import url(//evil.example/x.css);b{width:expression(alert(1))}' );
+check( 'CSS: không còn ký tự < (không thoát khỏi <style>)', false === strpos( $saha_css, '<' ), true );
+check( 'CSS: bỏ @import', false === stripos( $saha_css, '@import' ), true );
+check( 'CSS: bỏ expression(', false === stripos( $saha_css, 'expression(' ), true );
+check( 'CSS: giữ luật hợp lệ', false !== strpos( $saha_css, 'a{color:red}' ), true );
+check( 'media: ID không phải ảnh bị từ chối', saha_try( fn() => Sanitizer::media( 5 ) ), 'INVALID' );
+check( 'media: ảnh hợp lệ', Sanitizer::media( '99' ), 99 );
+
+echo "ThemeOptions\\Schema + CssVariables\n";
+check( 'font serif không dùng Georgia (thiếu glyph tiếng Việt)', false === stripos( Schema::fontStacks()['serif']['stack'], 'georgia' ), true );
+$saha_vals                      = Schema::defaults();
+$saha_vals['colors']['primary'] = '#127a3f';
+$saha_vals['layout']['gutter']  = array( 'desktop' => '24px', 'mobile' => '12px' );
+$saha_out                       = CssVariables::build( $saha_vals );
+check( 'CSS có màu chính', false !== strpos( $saha_out, '--saha-primary:#127a3f' ), true );
+check( 'breakpoint mobile 767px chứa gutter mobile', (bool) preg_match( '/@media \(max-width:767px\)\{:root\{[^}]*--saha-gutter:12px/', $saha_out ), true );
+check( 'typography sinh biến --saha-type-body-font', false !== strpos( $saha_out, '--saha-type-body-font:' ), true );
+$saha_vals['colors']['primary'] = 'red;}body{display:none';
+check( 'giá trị bẩn trong DB không thoát khỏi khai báo', false === strpos( CssVariables::build( $saha_vals ), 'display:none' ), true );
 
 echo "\n$pass passed, $fail failed\n";
 exit( $fail > 0 ? 1 : 0 );

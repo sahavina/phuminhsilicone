@@ -4,7 +4,7 @@ Website catalogue sản phẩm keo dán công nghiệp: tìm kiếm theo SKU / t
 
 **Công ty TNHH Thương mại Dịch vụ Trực tuyến SAHA** · tongkhokeodan.com
 
-WordPress · WooCommerce · Flatsome + Child Theme · UX Builder · PHP 8 · MySQL/MariaDB
+WordPress · WooCommerce · SAHA Theme + SAHA Builder (SCC, đang làm) · Flatsome child (đóng băng) · PHP 8.2 · MySQL/MariaDB
 
 ---
 
@@ -31,10 +31,16 @@ Repo **chỉ** chứa code do dự án viết. WordPress, WooCommerce, Flatsome 
 ```
 wp-content/
   plugins/saha-core/        Business layer: taxonomy, sản phẩm, tìm kiếm, báo giá, lead,
-                            CRM, REST API, SEO, cache, WP-CLI. Chạy được không cần Flatsome.
-  themes/flatsome-child/    Giao diện: template, CSS, JS, UX Builder element. CẦN Flatsome.
+                            CRM, REST API, SEO, cache, WP-CLI, Theme Options (runtime).
+  plugins/saha-builder/     Ứng dụng admin React (SCC): Theme Options, sau này là builder.
+                            src/ = mã nguồn, build/ = bản đã build (có commit).
+  themes/saha-theme/        Theme riêng của SCC (không cần Flatsome). src/ → assets/build/.
+  themes/saha-theme-child/  Child theme cho tuỳ biến riêng.
+  themes/flatsome-child/    Giao diện cũ trên Flatsome — ĐÓNG BĂNG, không phát triển tiếp.
 docs/                       Kiến trúc, tài liệu từng phase, checklist QA, layout UX Builder mẫu
+docs/scc/                   SAHA Commerce Core: thiết kế kỹ thuật + tài liệu từng mốc
 tests/                      Smoke test, HTTP test, script sinh checklist
+package.json                Build JS/CSS bằng @wordpress/scripts (chỉ cần trên máy dev)
 ```
 
 **Không bao giờ commit:** `wp-config.php`, `.env*`, `wp-content/uploads/`, file `.sql`, `debug.log`, WordPress core, plugin/theme của bên thứ ba. `.gitignore` đã chặn sẵn — đừng dùng `git add -f` cho các file này.
@@ -45,15 +51,18 @@ tests/                      Smoke test, HTTP test, script sinh checklist
 
 | Thành phần | Tối thiểu | Đã kiểm tra |
 |---|---|---|
-| PHP | 8.0 | 8.0.30 |
-| WordPress | 6.0 | 7.1.2 |
+| PHP | **8.2** (từ saha-core 1.8.0) | 8.2.34 |
+| WordPress | 6.4 (saha-core), 6.6 (saha-builder, saha-theme) | 7.1.2 |
 | WooCommerce | 9.6 (có thương hiệu native) | 11.1.2 |
 | MySQL / MariaDB | collation `utf8mb4_*_ci` (không dùng `_bin`) | MariaDB 10.4.32, `utf8mb4_unicode_520_ci` |
 | Flatsome | theme **trả phí**, cần file cài đặt có bản quyền | chưa kiểm tra (xem [mục 11](#11-trạng-thái-dự-án)) |
 | WP-CLI | khuyến nghị | 2.12.0 |
+| Node.js + npm | ≥ 20 — **chỉ máy dev** sửa `src/` (server không cần) | Node 24.18, npm 11.16 |
 | Git | — | — |
 
 PHP extension cần: `mysqli`, `curl`, `mbstring`, `zip`, `openssl`. Nên bật thêm `gd` hoặc `imagick` để WordPress tạo ảnh thumbnail.
+
+> XAMPP hiện đóng gói PHP 8.0. Cách gắn PHP 8.2 vào Apache của XAMPP: [docs/scc/PHASE-1.0.md §9](docs/scc/PHASE-1.0.md#9-installation). **Hosting production phải có PHP 8.2** — kiểm tra trước khi deploy.
 
 > Collation `_ci` quan trọng: nó giúp tìm "keo" ra cả "kéo". Nếu database dùng `utf8mb4_bin`, tìm kiếm tiếng Việt sẽ phân biệt dấu.
 
@@ -147,33 +156,48 @@ Dùng **liên kết thư mục** thay vì copy — sửa code trong repo là sit
 ```powershell
 $repo = 'C:\Projects\phuminhsilicone\wp-content'
 $site = 'C:\xampp\htdocs\saha\wp-content'
-New-Item -ItemType Junction -Path "$site\plugins\saha-core"     -Target "$repo\plugins\saha-core"
-New-Item -ItemType Junction -Path "$site\themes\flatsome-child" -Target "$repo\themes\flatsome-child"
+New-Item -ItemType Junction -Path "$site\plugins\saha-core"        -Target "$repo\plugins\saha-core"
+New-Item -ItemType Junction -Path "$site\plugins\saha-builder"     -Target "$repo\plugins\saha-builder"
+New-Item -ItemType Junction -Path "$site\themes\saha-theme"        -Target "$repo\themes\saha-theme"
+New-Item -ItemType Junction -Path "$site\themes\saha-theme-child"  -Target "$repo\themes\saha-theme-child"
+New-Item -ItemType Junction -Path "$site\themes\flatsome-child"    -Target "$repo\themes\flatsome-child"
 ```
 
 **macOS / Linux:**
 
 ```bash
-ln -s ~/Projects/phuminhsilicone/wp-content/plugins/saha-core     <site>/wp-content/plugins/saha-core
-ln -s ~/Projects/phuminhsilicone/wp-content/themes/flatsome-child <site>/wp-content/themes/flatsome-child
+for d in plugins/saha-core plugins/saha-builder themes/saha-theme themes/saha-theme-child themes/flatsome-child; do
+  ln -s ~/Projects/phuminhsilicone/wp-content/$d <site>/wp-content/$d
+done
 ```
 
 ### 3.8. Kích hoạt
 
 ```bash
-wp plugin activate saha-core
+wp plugin activate saha-core saha-builder
+wp theme activate saha-theme
 ```
 
-Kích hoạt plugin sẽ tự tạo 4 bảng `wp_saha_*`, 4 role, cấu hình mặc định và lịch dọn log.
+Kích hoạt plugin sẽ tự tạo 4 bảng `wp_saha_*`, 4 role, cấu hình mặc định và lịch dọn log. Theme Options ở **Giao diện → SAHA Theme Options**.
 
-**Nếu có Flatsome:** cài theme cha rồi mới bật child theme:
+> `saha-theme` đang phát triển theo mốc (xem [mục 11](#11-trạng-thái-dự-án)). Đến mốc 1.6, việc ẩn giá ở chế độ catalogue mới được xử lý phía server — trước đó đừng dùng `saha-theme` trên production.
+
+Giao diện cũ trên Flatsome (đã đóng băng) — cài theme cha Flatsome rồi mới bật child theme:
 
 ```bash
 wp theme install <đường-dẫn>/flatsome.zip
 wp theme activate flatsome-child
 ```
 
-Chưa có Flatsome vẫn làm việc được với toàn bộ plugin (REST, CRM, tìm kiếm, SEO…) trên theme mặc định — chỉ phần giao diện là không hiện.
+### 3.8b. Build JS/CSS (chỉ khi sửa `src/`)
+
+```bash
+npm ci            # lần đầu
+npm run build     # build một lần — commit cả thư mục build/
+npm run start     # tự build lại khi lưu file
+```
+
+`build/` đã có sẵn trong repo, nên chỉ cài WordPress để chạy thì **không cần** Node.
 
 ### 3.9. Tạo dữ liệu mẫu
 
@@ -293,17 +317,18 @@ Users → Add New → chọn role. Mỗi người một tài khoản riêng; kh�
 | Lệnh | Chạy ở đâu | Kiểm tra gì |
 |---|---|---|
 | **SAHA → Kiểm tra hệ thống** hoặc `wp saha qa` | trên site | môi trường, bảng + index, quyền, cấu hình, REST, tìm kiếm, SEO, bảo mật, cron — chỉ đọc, an toàn trên production |
-| `php tests/smoke.php` | máy dev, chỉ cần PHP | 72 case logic: validate, sanitize, tìm kiếm, cache, SEO, rate limit |
+| `php tests/smoke.php` | máy dev, chỉ cần PHP | 92 case logic: validate, sanitize, tìm kiếm, cache, SEO, rate limit, Theme Options |
+| `npm run lint:js` · `npm run lint:css` | máy dev có Node | chuẩn code JS/SCSS của WordPress |
 | `php tests/http-smoke.php <url>` | máy bất kỳ có PHP + curl | REST, mã HTTP, robots, noindex, no-cache từ ngoài vào — chỉ GET |
 | `php tests/http-smoke.php <url> --write` | **chỉ local/staging** | thêm test form báo giá/liên hệ (tạo 2–3 bản ghi `[Mẫu] QA`) |
 
-Trên Windows, nếu `php` chưa có trong PATH, thay `php` bằng `C:/xampp/php/php.exe`.
+Trên Windows, nếu `php` chưa có trong PATH, thay `php` bằng đường dẫn PHP 8.2 (ví dụ `C:/php82/php.exe`).
 
 Kết quả mong đợi trên site local có dữ liệu mẫu:
 
 ```
 wp saha qa                                    → Lỗi: 0
-php tests/smoke.php                           → 72 passed, 0 failed
+php tests/smoke.php                           → 92 passed, 0 failed
 php tests/http-smoke.php http://localhost/saha --write → 0 failed
 ```
 
@@ -346,6 +371,9 @@ for f in $(git diff --name-only main -- '*.php'); do php -l "$f"; done
 
 # 2. Smoke test
 php tests/smoke.php
+
+# 2b. Nếu sửa JS/SCSS
+npm run lint:js && npm run lint:css && npm run build   # commit cả build/
 
 # 3. Trên site local
 wp saha qa
@@ -394,11 +422,13 @@ Sửa checklist test của một phase → sửa trong `docs/PHASE-*.md`, rồi 
 | [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) | kiến trúc tổng thể, data model, taxonomy, API, bảo mật, SEO, hiệu năng, điểm cần tránh |
 | [docs/PHASE-1.md](docs/PHASE-1.md) … [docs/PHASE-8.md](docs/PHASE-8.md) | từng phase: mục tiêu, file, database, hook, bảo mật, test, cài đặt, nghiệm thu |
 | [docs/QA.md](docs/QA.md) | checklist QA tổng hợp: 188 test, ma trận thiết bị, bảng nghiệm thu |
+| [docs/scc/TECHNICAL-DESIGN.md](docs/scc/TECHNICAL-DESIGN.md) | SAHA Commerce Core: kiến trúc theme + builder riêng, quyết định, lộ trình |
+| [docs/scc/PHASE-1.0.md](docs/scc/PHASE-1.0.md), [PHASE-1.1.md](docs/scc/PHASE-1.1.md) | từng mốc SCC: mục tiêu, file, hook, bảo mật, test, nghiệm thu |
 | [docs/layouts/](docs/layouts/) | layout UX Builder mẫu: trang chủ, footer |
 | [saha-core/README.md](wp-content/plugins/saha-core/README.md) | plugin: file, hook, REST API, database, capability |
 | [flatsome-child/README.md](wp-content/themes/flatsome-child/README.md) | theme: file, shortcode, UX element, JS API, asset |
 
-REST API: `/wp-json/saha/v1/` — `search`, `products`, `brands`, `quote`, `contact`, `nonce`. Chi tiết ở [saha-core/README.md](wp-content/plugins/saha-core/README.md#api).
+REST API: `/wp-json/saha/v1/` — `search`, `products`, `brands`, `quote`, `contact`, `nonce`, `settings` (Theme Options, cần quyền `edit_theme_options`). Chi tiết ở [saha-core/README.md](wp-content/plugins/saha-core/README.md#api).
 
 WP-CLI: `wp saha qa [--strict]` · `wp saha seed [--with-crm] [--homepage-layout=<file>] [--set-front]` · `wp saha unseed` · `wp saha maintenance` · `wp help saha`.
 
@@ -424,4 +454,19 @@ WP-CLI: `wp saha qa [--strict]` · `wp saha seed [--with-crm] [--homepage-layout
 - Giao diện child theme trên Flatsome (khoảng 70 test trong [docs/QA.md](docs/QA.md) + ma trận thiết bị/trình duyệt) — **cần file cài đặt Flatsome**. Tên hook và markup của Flatsome trong code chưa được đối chiếu với bản thật; hãy coi phần giao diện là chưa nghiệm thu.
 - Rank Math / Yoast, email qua SMTP thật, PageSpeed trên staging có domain công khai.
 
-Plugin: **SAHA Core 1.7.2** · Database schema **1.2.0**.
+### SAHA Commerce Core (SCC) — branch `scc/phase-1`
+
+Chuyển từ Flatsome sang theme + builder riêng. Thiết kế: [docs/scc/TECHNICAL-DESIGN.md](docs/scc/TECHNICAL-DESIGN.md).
+
+| Mốc | Nội dung | Trạng thái |
+|---|---|---|
+| 1.0 | PHP 8.2, build `@wordpress/scripts`, CI | ✅ |
+| 1.1 | `saha-theme`, capability builder, Theme Options | ✅ chờ review |
+| 1.2 | Builder runtime (schema, renderer, REST) | ⏳ |
+| 1.3 | Ứng dụng builder (React) | ⏳ |
+| 1.4 | Element + Reusable Blocks | ⏳ |
+| 1.5 | Header/Footer Builder | ⏳ |
+| 1.6 | WooCommerce trên `saha-theme` | ⏳ |
+| 1.7 | QA Phase 1 | ⏳ |
+
+Plugin: **SAHA Core 1.8.0** · **SAHA Builder 0.1.0** · Theme **SAHA Theme 0.1.0** · Database schema **1.2.0**.

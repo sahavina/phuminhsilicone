@@ -40,6 +40,19 @@ delete_option( 'saha_core_flush_rewrite' );
 delete_option( 'saha_brand_cache_keys' );
 delete_option( 'saha_catalog_cache_gen' );
 delete_option( 'saha_cache_gen' );
+delete_option( 'saha_theme_options' );
+delete_option( 'saha_theme_css' );
+
+// File CSS sinh ra trong uploads/saha/css.
+$saha_uploads = wp_upload_dir( null, false );
+
+if ( empty( $saha_uploads['error'] ) ) {
+	foreach ( (array) glob( trailingslashit( $saha_uploads['basedir'] ) . 'saha/css/*.css' ) as $saha_css_file ) {
+		if ( is_string( $saha_css_file ) ) {
+			wp_delete_file( $saha_css_file );
+		}
+	}
+}
 
 foreach ( array( 'saha_seo_manager', 'saha_content_manager', 'saha_sales', 'saha_warehouse' ) as $saha_role ) {
 	if ( get_role( $saha_role ) ) {
@@ -56,6 +69,16 @@ $saha_caps = array(
 	'manage_saha_reports',
 	'manage_saha_settings',
 );
+
+// Capability SCC (Roles::builder_caps) trên role nền của WordPress.
+foreach ( array( 'administrator', 'editor' ) as $saha_builtin ) {
+	$saha_role_object = get_role( $saha_builtin );
+
+	if ( $saha_role_object ) {
+		$saha_role_object->remove_cap( 'edit_saha_builder' );
+		$saha_role_object->remove_cap( 'manage_saha_templates' );
+	}
+}
 
 foreach ( array( 'administrator', 'shop_manager' ) as $saha_builtin ) {
 	$saha_role_object = get_role( $saha_builtin );

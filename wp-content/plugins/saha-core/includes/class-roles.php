@@ -27,6 +27,70 @@ final class Roles {
 	public const CAP_REPORTS         = 'manage_saha_reports';
 	public const CAP_SETTINGS        = 'manage_saha_settings';
 
+	/** SCC: dùng SAHA Builder (spec SCC §67). */
+	public const CAP_BUILDER         = 'edit_saha_builder';
+
+	/** SCC: tạo/sửa template header, footer, điều kiện hiển thị. */
+	public const CAP_TEMPLATES       = 'manage_saha_templates';
+
+	/**
+	 * Capability SCC theo role nền của WordPress.
+	 *
+	 * Tách khỏi all_caps() vì all_caps() còn cấp cho shop_manager — spec SCC §67
+	 * chỉ cho administrator và editor dùng builder.
+	 *
+	 * @return array<string, string[]> role => capability
+	 */
+	public static function builder_caps(): array {
+		/**
+		 * Lọc capability SCC theo role.
+		 *
+		 * @param array<string, string[]> $map role => capability.
+		 */
+		return (array) apply_filters(
+			'saha_builder_role_caps',
+			array(
+				'administrator' => array( self::CAP_BUILDER, self::CAP_TEMPLATES ),
+				'editor'        => array( self::CAP_BUILDER ),
+			)
+		);
+	}
+
+	/**
+	 * Option lưu hash định nghĩa role đã cài.
+	 */
+	public const HASH_OPTION = 'saha_core_roles_hash';
+
+	/**
+	 * Hash của toàn bộ định nghĩa role/capability hiện tại (gồm cả filter).
+	 *
+	 * Install::maybe_upgrade() so hash này với hash đã cài để cài lại khi định
+	 * nghĩa đổi — không chỉ khi đổi version plugin. Trước đây role chỉ được cài
+	 * lại lúc đổi version, nên thay đổi qua filter hoặc code sửa sau khi đã
+	 * tăng version sẽ không bao giờ được áp dụng (phát hiện khi làm mốc SCC 1.1).
+	 */
+	public static function definitionHash(): string {
+		// Chỉ phần quyền — KHÔNG gồm tên role: tên đã dịch theo ngôn ngữ người
+		// dùng, nếu đưa vào hash thì admin khác ngôn ngữ sẽ làm role cài lại liên tục.
+		$roles = array();
+
+		foreach ( self::custom_roles() as $slug => $config ) {
+			$roles[ $slug ] = array(
+				'base' => (string) ( $config['base_role'] ?? '' ),
+				'caps' => array_values( (array) ( $config['caps'] ?? array() ) ),
+			);
+		}
+
+		return md5( (string) wp_json_encode( array( self::all_caps(), self::builder_caps(), $roles ) ) );
+	}
+
+	/**
+	 * Định nghĩa role đã cài có khớp với code hiện tại không.
+	 */
+	public static function isCurrent(): bool {
+		return get_option( self::HASH_OPTION ) === self::definitionHash();
+	}
+
 	/**
 	 * Toàn bộ capability của hệ thống.
 	 *
@@ -144,6 +208,8 @@ final class Roles {
 	 * Tạo role và gán capability. Idempotent.
 	 */
 	public function install(): void {
+		update_option( self::HASH_OPTION, self::definitionHash(), true );
+
 		$this->grant_admin_caps();
 
 		foreach ( self::custom_roles() as $slug => $config ) {
@@ -188,6 +254,18 @@ final class Roles {
 				$shop_manager->add_cap( $cap );
 			}
 		}
+
+		foreach ( self::builder_caps() as $slug => $caps ) {
+			$role = get_role( (string) $slug );
+
+			if ( ! $role ) {
+				continue;
+			}
+
+			foreach ( (array) $caps as $cap ) {
+				$role->add_cap( (string) $cap );
+			}
+		}
 	}
 
 	/**
@@ -214,6 +292,18 @@ final class Roles {
 
 			foreach ( self::all_caps() as $cap ) {
 				$role->remove_cap( $cap );
+			}
+		}
+
+		foreach ( self::builder_caps() as $slug => $caps ) {
+			$role = get_role( (string) $slug );
+
+			if ( ! $role ) {
+				continue;
+			}
+
+			foreach ( (array) $caps as $cap ) {
+				$role->remove_cap( (string) $cap );
 			}
 		}
 	}

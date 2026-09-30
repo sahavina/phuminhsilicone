@@ -22,8 +22,11 @@ wp-content/debug.log
 # Themes/plugins do not belong to us
 wp-content/themes/*
 !wp-content/themes/flatsome-child/
+!wp-content/themes/saha-theme/
+!wp-content/themes/saha-theme-child/
 wp-content/plugins/*
 !wp-content/plugins/saha-core/
+!wp-content/plugins/saha-builder/
 
 # Tooling
 node_modules/

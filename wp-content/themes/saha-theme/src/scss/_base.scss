@@ -1,0 +1,138 @@
+*,
+*::before,
+*::after {
+	box-sizing: border-box;
+}
+
+html {
+	-webkit-text-size-adjust: 100%;
+	scroll-padding-top: calc(var(--saha-sticky-height) + 16px);
+}
+
+body {
+	margin: 0;
+	background: var(--saha-background);
+	color: var(--saha-text);
+	font-family: var(--saha-type-body-font);
+	font-size: var(--saha-type-body-size);
+	font-weight: var(--saha-type-body-weight, 400);
+	line-height: var(--saha-type-body-line-height);
+	letter-spacing: var(--saha-type-body-letter-spacing, normal);
+}
+
+body.saha-no-scroll {
+	overflow: hidden;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+	margin: 0 0 0.5em;
+	color: var(--saha-heading);
+	font-family: var(--saha-type-heading-font);
+	font-weight: var(--saha-type-heading-weight);
+	line-height: var(--saha-type-heading-line-height);
+	letter-spacing: var(--saha-type-heading-letter-spacing, normal);
+}
+
+h1 {
+	font-size: var(--saha-h1-size);
+}
+
+h2 {
+	font-size: var(--saha-h2-size);
+}
+
+h3 {
+	font-size: var(--saha-h3-size);
+}
+
+p {
+	margin: 0 0 1em;
+}
+
+a {
+	color: var(--saha-primary);
+	text-underline-offset: 0.15em;
+
+	&:hover {
+		color: var(--saha-secondary);
+	}
+}
+
+img,
+svg,
+video {
+	max-width: 100%;
+	height: auto;
+}
+
+:focus-visible {
+	outline: 2px solid var(--saha-primary);
+	outline-offset: 2px;
+}
+
+input,
+select,
+textarea,
+button {
+	font: inherit;
+}
+
+input[type="text"],
+input[type="search"],
+input[type="email"],
+input[type="tel"],
+input[type="number"],
+input[type="password"],
+select,
+textarea {
+	max-width: 100%;
+	min-height: 42px;
+	padding: 8px 12px;
+	border: 1px solid var(--saha-border);
+	border-radius: var(--saha-radius);
+	background: #fff;
+	color: var(--saha-text);
+}
+
+.screen-reader-text {
+	position: absolute !important;
+	width: 1px;
+	height: 1px;
+	margin: -1px;
+	padding: 0;
+	overflow: hidden;
+	clip-path: inset(50%);
+	white-space: nowrap;
+	border: 0;
+}
+
+.saha-skip-link {
+	position: absolute;
+	top: -100px;
+	left: 8px;
+	z-index: 1000;
+	padding: 8px 16px;
+	background: var(--saha-secondary);
+	color: #fff;
+
+	&:focus {
+		top: 8px;
+		color: #fff;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+	*,
+	*::before,
+	*::after {
+		transition-duration: 0.01ms !important;
+		animation-duration: 0.01ms !important;
+		scroll-behavior: auto !important;
+	}
+}

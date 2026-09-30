@@ -86,6 +86,8 @@ final class Loader {
 			'forms'      => Form_Handler::class,
 			'crm'        => Crm::class,
 			'seo'        => Seo::class,
+			// SCC (PSR-4).
+			'theme_options' => ThemeOptions\Module::class,
 			'admin'      => Admin::class,
 		);
 

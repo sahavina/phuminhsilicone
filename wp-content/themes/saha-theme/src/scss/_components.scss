@@ -1,0 +1,128 @@
+.saha-button,
+.wp-block-button__link,
+.button {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: 8px;
+	min-height: 44px;
+	padding: 10px 20px;
+	border: 0;
+	border-radius: var(--saha-radius);
+	background: var(--saha-primary);
+	color: #fff;
+	font-family: var(--saha-type-button-font);
+	font-size: var(--saha-type-button-size, 15px);
+	font-weight: var(--saha-type-button-weight);
+	letter-spacing: var(--saha-type-button-letter-spacing, normal);
+	line-height: 1.2;
+	text-decoration: none;
+	cursor: pointer;
+	transition: filter 0.15s ease;
+
+	&:hover,
+	&:focus-visible {
+		color: #fff;
+		filter: brightness(0.92);
+	}
+}
+
+.saha-breadcrumb {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 4px 8px;
+	margin-bottom: 24px;
+	color: var(--saha-muted);
+	font-size: 14px;
+
+	&__sep {
+		color: var(--saha-border);
+	}
+
+	a {
+		color: inherit;
+	}
+}
+
+.saha-pagination,
+.woocommerce-pagination {
+	margin-top: 40px;
+
+	.nav-links,
+	ul {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 8px;
+		margin: 0;
+		padding: 0;
+		list-style: none;
+	}
+
+	.page-numbers {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		min-width: 40px;
+		height: 40px;
+		padding: 0 12px;
+		border: 1px solid var(--saha-border);
+		border-radius: var(--saha-radius);
+		color: var(--saha-text);
+		text-decoration: none;
+
+		&.current {
+			border-color: var(--saha-primary);
+			background: var(--saha-primary);
+			color: #fff;
+		}
+	}
+}
+
+.saha-empty {
+	padding: 48px 24px;
+	border: 1px dashed var(--saha-border);
+	border-radius: var(--saha-radius);
+	text-align: center;
+}
+
+.saha-chips {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px;
+	margin: 0 0 32px;
+	padding: 0;
+	list-style: none;
+
+	a {
+		display: inline-block;
+		padding: 6px 14px;
+		border: 1px solid var(--saha-border);
+		border-radius: 999px;
+		color: var(--saha-text);
+		text-decoration: none;
+
+		&:hover {
+			border-color: var(--saha-primary);
+			color: var(--saha-primary);
+		}
+	}
+}
+
+.saha-404 {
+	max-width: calc(var(--saha-content) + 2 * var(--saha-gutter));
+
+	.search-form,
+	.woocommerce-product-search {
+		display: flex;
+		gap: 8px;
+		margin-bottom: 32px;
+
+		input[type="search"] {
+			flex: 1;
+		}
+	}
+}
+
+.saha-icon {
+	flex-shrink: 0;
+}

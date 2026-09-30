@@ -151,7 +151,7 @@ saha-builder ──requires──▶ saha-core ◀──uses (function_exists)�
 
 | # | Module | Nơi | Service / Controller / Repository | REST | Admin UI | Phase |
 |---|---|---|---|---|---|---|
-| 01 | Core | core | `Core\Plugin`, `Core\ModuleRegistry`, `Core\Container` | `/system` | SAHA → Dashboard, System | 1 |
+| 01 | Core | core | `Core\Plugin`, `Core\ModuleRegistry`, `Core\Container` (thực tế dùng `Saha\Core\Loader` sẵn có — [PHASE-1.1 §2](PHASE-1.1.md#sai-khác-so-với-thiết-kế)) | `/system` | SAHA → Dashboard, System | 1 |
 | 02 | Theme Options | core + builder | `ThemeOptions\Schema`, `Repository`, `CssVariables` | `/settings` | Appearance → SAHA Theme Options | 1 |
 | 03 | Builder | core (runtime) + builder (app) | `Builder\Schema`, `ElementRegistry`, `Sanitizer`, `Renderer`, `CssGenerator`, `RenderCache`, `SchemaMigrator`, `LayoutRepository` | `/builder/*` | SAHA → Builder | 1 |
 | 04 | Component Library | core + builder | `Builder\Elements\*` (PHP render) + `elements/*` (React edit) | `/builder/elements` | trong builder | 1 (cơ bản), 2–3 (mở rộng) |

@@ -1,0 +1,56 @@
+// Giá trị dự phòng khi saha-core tắt hoặc chưa sinh global.css.
+// Khớp với default trong Saha\Core\ThemeOptions\Schema.
+:where(:root) {
+	--saha-primary: #0b5cab;
+	--saha-secondary: #1f2937;
+	--saha-accent: #f5a623;
+	--saha-success: #1e7e34;
+	--saha-warning: #b26a00;
+	--saha-error: #c62828;
+	--saha-text: #1f2328;
+	--saha-heading: #111827;
+	--saha-border: #e3e6ea;
+	--saha-background: #fff;
+
+	--saha-container: 1200px;
+	--saha-content: 800px;
+	--saha-sidebar: 280px;
+	--saha-gutter: 24px;
+
+	--saha-logo-height: 48px;
+	--saha-header-height: 80px;
+	--saha-sticky-height: 64px;
+	--saha-sticky-bg: #fff;
+
+	--saha-type-body-font: system-ui, -apple-system, "Segoe UI", roboto, "Helvetica Neue", arial, sans-serif;
+	--saha-type-body-size: 16px;
+	--saha-type-body-line-height: 1.6;
+	--saha-type-heading-font: var(--saha-type-body-font);
+	--saha-type-heading-weight: 700;
+	--saha-type-heading-line-height: 1.25;
+	--saha-type-menu-font: var(--saha-type-body-font);
+	--saha-type-menu-size: 15px;
+	--saha-type-menu-weight: 600;
+	--saha-type-button-font: var(--saha-type-body-font);
+	--saha-type-button-weight: 600;
+
+	--saha-h1-size: 36px;
+	--saha-h2-size: 28px;
+	--saha-h3-size: 22px;
+
+	// Không có trong Theme Options — token nội bộ của theme.
+	--saha-radius: 6px;
+	--saha-muted: #5f6b7a;
+	--saha-surface: #f6f7f9;
+	--saha-shadow: 0 8px 24px rgb(15 23 42 / 12%);
+	--saha-space: clamp(32px, 5vw, 64px);
+}
+
+@media (max-width: 767px) {
+
+	:where(:root) {
+		--saha-gutter: 16px;
+		--saha-logo-height: 36px;
+		--saha-header-height: 64px;
+	}
+}
