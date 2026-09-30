@@ -137,3 +137,26 @@ if ( ! function_exists( 'saha_theme_asset_version' ) ) {
 		return is_readable( $path ) ? (string) filemtime( $path ) : SAHA_THEME_VERSION;
 	}
 }
+
+if ( ! function_exists( 'saha_theme_content_has_shortcode' ) ) {
+	/**
+	 * Nội dung trang hiện tại có chứa shortcode này không.
+	 *
+	 * Dùng để conditional enqueue mà không cần load asset ở mọi trang (spec §73).
+	 *
+	 * @param string $shortcode Tên shortcode.
+	 */
+	function saha_theme_content_has_shortcode( string $shortcode ): bool {
+		if ( ! is_singular() ) {
+			return false;
+		}
+
+		$post = get_post();
+
+		if ( ! $post instanceof WP_Post ) {
+			return false;
+		}
+
+		return has_shortcode( (string) $post->post_content, $shortcode );
+	}
+}

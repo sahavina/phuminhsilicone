@@ -107,3 +107,32 @@
 		align-items: flex-start;
 	}
 }
+
+.saha-brand-card__link {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 8px;
+	color: inherit;
+	text-decoration: none;
+}
+
+.saha-brand-card__placeholder {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 56px;
+	height: 56px;
+	background: var(--saha-color-surface-alt);
+	border-radius: 50%;
+	color: var(--saha-color-primary);
+	font-size: 22px;
+	font-weight: 700;
+	text-transform: uppercase;
+}
+
+.saha-brand-header__country,
+.saha-brand-header__website {
+	margin: 4px 0;
+	font-size: 14px;
+}

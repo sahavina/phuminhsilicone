@@ -65,12 +65,15 @@ final class Loader {
 	 */
 	private function modules(): array {
 		$modules = array(
-			'logger'   => Logger::class,
-			'settings' => Settings::class,
-			'security' => Security::class,
-			'roles'    => Roles::class,
-			'install'  => Install::class,
-			'admin'    => Admin::class,
+			'logger'     => Logger::class,
+			'settings'   => Settings::class,
+			'security'   => Security::class,
+			'roles'      => Roles::class,
+			'install'    => Install::class,
+			'taxonomies' => Taxonomies::class,
+			'brand'      => Brand::class,
+			'product'    => Product::class,
+			'admin'      => Admin::class,
 		);
 
 		/**

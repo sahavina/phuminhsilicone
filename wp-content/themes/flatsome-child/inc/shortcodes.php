@@ -122,3 +122,51 @@ add_shortcode(
 		return '<span class="saha-company-' . esc_attr( $field ) . '">' . esc_html( $value ) . '</span>';
 	}
 );
+
+/**
+ * [saha_brand_grid number="0" orderby="name" order="ASC" hide_empty="1" show_count="1"]
+ *
+ * Dùng cho trang /thuong-hieu/ và block "Thương hiệu nổi bật" ở trang chủ.
+ * Element chỉ render — dữ liệu lấy từ service của plugin (spec §36).
+ */
+add_shortcode(
+	'saha_brand_grid',
+	static function ( $atts ): string {
+		if ( ! saha_theme_has_core() ) {
+			return '';
+		}
+
+		$atts = shortcode_atts(
+			array(
+				'number'     => '0',
+				'orderby'    => 'name',
+				'order'      => 'ASC',
+				'hide_empty' => '1',
+				'show_count' => '1',
+			),
+			is_array( $atts ) ? $atts : array(),
+			'saha_brand_grid'
+		);
+
+		$brands = saha_get_brands(
+			array(
+				'number'     => (int) $atts['number'],
+				'orderby'    => sanitize_key( (string) $atts['orderby'] ),
+				'order'      => sanitize_key( (string) $atts['order'] ),
+				'hide_empty' => '1' === (string) $atts['hide_empty'],
+			)
+		);
+
+		ob_start();
+
+		saha_theme_part(
+			'brand/grid',
+			array(
+				'brands'     => $brands,
+				'show_count' => '1' === (string) $atts['show_count'],
+			)
+		);
+
+		return (string) ob_get_clean();
+	}
+);

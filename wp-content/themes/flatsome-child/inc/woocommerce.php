@@ -99,3 +99,189 @@ add_filter(
 	},
 	20
 );
+
+/*
+ * -------------------------------------------------------------------------
+ * PHASE 2 — Catalogue presentation
+ * -------------------------------------------------------------------------
+ */
+
+/**
+ * Thương hiệu trên product card của loop.
+ */
+add_action(
+	'woocommerce_before_shop_loop_item_title',
+	static function (): void {
+		global $product;
+
+		if ( ! $product instanceof WC_Product || ! function_exists( 'saha_get_product_brand' ) ) {
+			return;
+		}
+
+		$brand = saha_get_product_brand( $product->get_id() );
+
+		if ( empty( $brand['name'] ) ) {
+			return;
+		}
+
+		printf(
+			'<div class="saha-product-card__brand">%s</div>',
+			esc_html( (string) $brand['name'] )
+		);
+	},
+	15
+);
+
+/**
+ * Khối meta dưới tên sản phẩm: SKU, thương hiệu, tình trạng, đơn vị.
+ */
+add_action(
+	'woocommerce_single_product_summary',
+	static function (): void {
+		saha_theme_part( 'product/meta', array( 'product_id' => get_the_ID() ) );
+	},
+	6
+);
+
+/**
+ * CTA: hotline + yêu cầu báo giá.
+ */
+add_action(
+	'woocommerce_single_product_summary',
+	static function (): void {
+		saha_theme_part( 'product/cta', array( 'product_id' => get_the_ID() ) );
+	},
+	35
+);
+
+/**
+ * Các khối nội dung kỹ thuật: ứng dụng, thông số, hướng dẫn, lưu ý, tài liệu.
+ *
+ * Mô tả dài/ngắn vẫn do WooCommerce hiển thị — không render lại để tránh trùng.
+ */
+add_action(
+	'woocommerce_after_single_product_summary',
+	static function (): void {
+		saha_theme_part( 'product/sections', array( 'product_id' => get_the_ID() ) );
+	},
+	12
+);
+
+/**
+ * Sản phẩm khác cùng thương hiệu (spec §16).
+ */
+add_action(
+	'woocommerce_after_single_product_summary',
+	static function (): void {
+		saha_theme_part( 'product/brand-products', array( 'product_id' => get_the_ID() ) );
+	},
+	22
+);
+
+/**
+ * Đánh dấu container sản phẩm để main.js bắn event view_product.
+ *
+ * @param string[] $classes Class hiện có.
+ * @return string[]
+ */
+add_filter(
+	'woocommerce_post_class',
+	static function ( array $classes, $product ): array {
+		if ( ! is_singular( 'product' ) || ! $product instanceof WC_Product ) {
+			return $classes;
+		}
+
+		$classes[] = 'saha-product-single';
+
+		return $classes;
+	},
+	10,
+	2
+);
+
+add_action(
+	'woocommerce_before_single_product_summary',
+	static function (): void {
+		global $product;
+
+		if ( ! $product instanceof WC_Product ) {
+			return;
+		}
+
+		printf(
+			'<span class="saha-visually-hidden" data-saha-product-view="%1$d" data-saha-sku="%2$s"></span>',
+			absint( $product->get_id() ),
+			esc_attr( (string) $product->get_sku() )
+		);
+	},
+	1
+);
+
+/**
+ * Header trang thương hiệu.
+ *
+ * WooCommerce tự map mọi taxonomy của product sang archive-product.php,
+ * nên không cần file taxonomy-product_brand.php riêng.
+ */
+add_action(
+	'woocommerce_archive_description',
+	static function (): void {
+		if ( ! is_tax( 'product_brand' ) || ! saha_theme_has_core() ) {
+			return;
+		}
+
+		$saha_term = get_queried_object();
+
+		if ( ! $saha_term instanceof WP_Term ) {
+			return;
+		}
+
+		saha_theme_part( 'brand/header', array( 'brand' => saha_get_brand( $saha_term ) ) );
+	},
+	5
+);
+
+/**
+ * Nội dung SEO đặt DƯỚI danh sách sản phẩm (spec §23).
+ */
+add_action(
+	'woocommerce_after_main_content',
+	static function (): void {
+		if ( ! is_tax( 'product_brand' ) || ! saha_theme_has_core() ) {
+			return;
+		}
+
+		$saha_term = get_queried_object();
+
+		if ( ! $saha_term instanceof WP_Term ) {
+			return;
+		}
+
+		$saha_brand = saha_get_brand( $saha_term );
+		$saha_seo   = (string) ( $saha_brand['seo_content'] ?? '' );
+
+		// Chỉ hiển thị ở trang 1 để tránh nội dung trùng khi phân trang.
+		if ( '' === trim( $saha_seo ) || get_query_var( 'paged' ) > 1 ) {
+			return;
+		}
+
+		printf(
+			'<div class="saha-brand-seo-content">%s</div>',
+			wp_kses_post( wpautop( $saha_seo ) )
+		);
+	},
+	5
+);
+
+/**
+ * Ẩn tiêu đề archive mặc định của Flatsome trên trang thương hiệu,
+ * vì header riêng đã có H1 (tránh 2 H1 — spec §22).
+ *
+ * @param bool $show Trạng thái hiện tại.
+ */
+add_filter(
+	'woocommerce_show_page_title',
+	static function ( $show ) {
+		return is_tax( 'product_brand' ) ? false : $show;
+	}
+);
