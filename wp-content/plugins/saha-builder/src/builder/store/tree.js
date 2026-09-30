@@ -508,3 +508,32 @@ export function nodeLabel( defs, node ) {
 		? `${ name }: ${ text.length > 28 ? text.slice( 0, 28 ) + '…' : text }`
 		: name;
 }
+
+/**
+ * Thay một node bằng danh sách node khác (cùng vị trí).
+ *
+ * @param {Object}   doc   Tài liệu.
+ * @param {string}   id    Node bị thay.
+ * @param {Object[]} nodes Node mới.
+ * @return {Object} Tài liệu mới.
+ */
+export function replaceNode( doc, id, nodes ) {
+	const where = locate( doc, id );
+
+	if ( ! where ) {
+		return doc;
+	}
+
+	let next = removeNode( doc, id );
+
+	nodes.forEach( ( node, i ) => {
+		next = insertNode(
+			next,
+			where.parent ? where.parent.id : null,
+			where.index + i,
+			node
+		);
+	} );
+
+	return next;
+}

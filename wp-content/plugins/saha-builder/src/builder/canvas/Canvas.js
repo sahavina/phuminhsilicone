@@ -11,7 +11,7 @@ import { __ } from '@wordpress/i18n';
 import { api } from '../api';
 import { DEVICES, config, drag, useBuilder } from '../context';
 import { useActions } from '../actions';
-import { findNode, nodeLabel } from '../store/tree';
+import { findNode, nodeLabel, walk } from '../store/tree';
 import { CANVAS_UI_CSS } from './canvas-ui';
 import { computeDrop } from './drop';
 
@@ -45,6 +45,7 @@ export default function Canvas( { onShortcut } ) {
 	const dropRef = useRef( null );
 	const [ ready, setReady ] = useState( false );
 	const [ version, setVersion ] = useState( 0 );
+	const [ refresh, setRefresh ] = useState( 0 );
 	const [ size, setSize ] = useState( { width: 0, height: 0 } );
 
 	// Bản mới nhất cho các listener gắn một lần trong iframe.
@@ -155,7 +156,37 @@ export default function Canvas( { onShortcut } ) {
 		if ( removed ) {
 			publishErrors();
 		}
-	}, [ state.doc, renderSection, publishErrors ] );
+	}, [ state.doc, refresh, renderSection, publishErrors ] );
+
+	// Quay lại tab builder (có thể vừa sửa block ở tab khác) → render lại section chứa block.
+	useEffect( () => {
+		const onFocus = () => {
+			let stale = false;
+
+			latest.current.state.doc.elements.forEach( ( section ) => {
+				let hasBlock = 'block' === section.type;
+				walk( section.children, ( node ) => {
+					hasBlock = hasBlock || 'block' === node.type;
+				} );
+
+				const cached = cacheRef.current.get( section.id );
+
+				// Đánh dấu cũ (key rỗng) nhưng giữ HTML → không nháy "Đang tải…".
+				if ( hasBlock && cached ) {
+					cacheRef.current.set( section.id, { ...cached, key: '' } );
+					stale = true;
+				}
+			} );
+
+			if ( stale ) {
+				setRefresh( ( n ) => n + 1 );
+			}
+		};
+
+		window.addEventListener( 'focus', onFocus );
+
+		return () => window.removeEventListener( 'focus', onFocus );
+	}, [] );
 
 	/*
 	 * ---------------------------------------------------------------

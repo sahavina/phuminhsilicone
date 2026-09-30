@@ -513,3 +513,59 @@ html.wp-toolbar:has(body.saha-builder-fullscreen) {
 	font-size: 12px;
 	font-weight: 500;
 }
+
+.saha-b-icons {
+	display: grid;
+	grid-template-columns: repeat(6, 1fr);
+	gap: 4px;
+
+	&__item {
+		display: grid;
+		place-items: center;
+		aspect-ratio: 1;
+		padding: 4px;
+		border: 1px solid #dcdcde;
+		border-radius: 4px;
+		background: #fff;
+		color: #1e1e1e;
+		cursor: pointer;
+
+		svg {
+			width: 20px;
+			height: 20px;
+		}
+
+		&:hover,
+		&:focus-visible {
+			border-color: var(--wp-admin-theme-color, #3858e9);
+		}
+
+		&.is-selected {
+			border-color: var(--wp-admin-theme-color, #3858e9);
+			background: var(--wp-admin-theme-color, #3858e9);
+			color: #fff;
+		}
+	}
+}
+
+.saha-b-code textarea {
+	font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+	font-size: 12px;
+}
+
+.saha-b-blockref__actions,
+.saha-b-blocktools {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 8px;
+	margin-top: 8px;
+}
+
+.saha-b-blocktools {
+	flex-direction: column;
+	align-items: stretch;
+	margin-top: 16px;
+	padding-top: 16px;
+	border-top: 1px solid #dcdcde;
+}

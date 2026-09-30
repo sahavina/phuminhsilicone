@@ -99,6 +99,27 @@ final class Frontend {
 			return;
 		}
 
+		$this->enqueueLayoutCss( $post_id );
+
+		// Block dùng chung trên trang: CSS nằm ở file riêng của block (sửa block không
+		// phải sinh lại CSS mọi trang dùng nó).
+		$document = LayoutRepository::get( $post_id );
+
+		if ( null !== $document ) {
+			foreach ( LayoutService::referencedBlocks( $document ) as $block_id ) {
+				if ( 'publish' === get_post_status( $block_id ) ) {
+					$this->enqueueLayoutCss( $block_id );
+				}
+			}
+		}
+	}
+
+	/**
+	 * Nạp CSS riêng của một layout (trang hoặc block).
+	 *
+	 * @param int $post_id Post ID.
+	 */
+	private function enqueueLayoutCss( int $post_id ): void {
 		$state = LayoutService::ensureCss( $post_id );
 
 		if ( '' !== $state['file'] ) {

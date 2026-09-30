@@ -21,6 +21,7 @@ import {
 import ColorField from './ColorField';
 import LinkField from './LinkField';
 import MediaField from './MediaField';
+import { BlockRefField, HtmlField, IconField, TermField } from './more';
 import RichTextField from './RichTextField';
 import SpacingField from './SpacingField';
 import TypographyField from './TypographyField';
@@ -43,6 +44,10 @@ const CONTROLS = {
 	background: BackgroundField,
 	htmlId: TextField,
 	classList: TextField,
+	icon: IconField,
+	html: HtmlField,
+	term: TermField,
+	blockRef: BlockRefField,
 };
 
 const DEVICE_ICON = {
@@ -61,7 +66,12 @@ export default function Field( { nodeId, def, value, onChange, error } ) {
 
 	const responsive = !! def.responsive;
 	const shown = responsive ? valueAt( value, device ) : value;
-	const placeholder = responsive ? inheritedAt( value, device ) : undefined;
+	// Ô trống: giá trị kế thừa từ thiết bị lớn hơn, hoặc mặc định của thiết bị này (ví dụ số cột 4/3/2).
+	const placeholder = responsive
+		? ( inheritedAt( value, device ) ??
+			valueAt( def.default, device ) ??
+			inheritedAt( def.default, device ) )
+		: undefined;
 	const id = `${ nodeId }-${ def.key }`;
 	const selfLabelled = [ 'toggle' ].includes( def.type );
 

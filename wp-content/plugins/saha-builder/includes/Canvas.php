@@ -51,7 +51,8 @@ final class Canvas {
 				self::QUERY_VAR => $post_id,
 				'_wpnonce'      => wp_create_nonce( self::QUERY_VAR . '_' . $post_id ),
 			),
-			(string) get_permalink( $post_id )
+			// Block (không public) không có URL riêng → dùng trang chủ; canvas không phụ thuộc truy vấn chính.
+			is_post_type_viewable( (string) get_post_type( $post_id ) ) ? (string) get_permalink( $post_id ) : home_url( '/' )
 		);
 	}
 
@@ -66,6 +67,7 @@ final class Canvas {
 			wp_die( esc_html__( 'Bạn không có quyền xem canvas này.', 'saha-builder' ), 403 );
 		}
 
+		status_header( 200 );
 		nocache_headers();
 		send_frame_options_header();
 

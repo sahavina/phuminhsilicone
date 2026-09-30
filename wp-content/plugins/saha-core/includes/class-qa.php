@@ -417,6 +417,7 @@ final class Qa {
 			'/saha/v1/quote',
 			'/saha/v1/contact',
 			'/saha/v1/settings',
+			'/saha/v1/blocks',
 			'/saha/v1/builder/elements',
 			'/saha/v1/builder/(?P<id>\d+)',
 			'/saha/v1/builder/save',

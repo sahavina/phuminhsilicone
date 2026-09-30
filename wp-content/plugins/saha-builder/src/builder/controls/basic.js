@@ -54,7 +54,9 @@ export function NumberField( { value, onChange, placeholder, def } ) {
 			max={ def.max }
 			placeholder={
 				placeholder ??
-				( undefined !== def.default ? String( def.default ) : '' )
+				( undefined !== def.default && 'object' !== typeof def.default
+					? String( def.default )
+					: '' )
 			}
 			onChange={ ( v ) => onChange( '' === v ? null : Number( v ) ) }
 		/>

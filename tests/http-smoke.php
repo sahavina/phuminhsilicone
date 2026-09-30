@@ -254,6 +254,10 @@ $r = http( 'POST', $api . '/builder/render', array(), array( 'node' => array( 't
 ok( 'POST /builder/render khi chưa đăng nhập → 401', 401 === $r['status'], 'status ' . $r['status'] );
 $r = http( 'GET', $base . '/' );
 ok( 'frontend không nạp JS/CSS của ứng dụng builder (spec §68)', false === strpos( $r['body'], 'plugins/saha-builder/' ) );
+$r = http( 'GET', $api . '/blocks' );
+ok( 'GET /blocks khi chưa đăng nhập → 401', 401 === $r['status'], 'status ' . $r['status'] );
+$r = http( 'POST', $api . '/blocks', array(), array( 'title' => 'x', 'node' => array( 'type' => 'section' ) ) );
+ok( 'POST /blocks khi chưa đăng nhập → 401', 401 === $r['status'], 'status ' . $r['status'] );
 $r = http( 'GET', $base . '/?saha_builder_canvas=1&_wpnonce=abc' );
 ok( 'canvas builder khi chưa đăng nhập / nonce sai → 403', 403 === $r['status'], 'status ' . $r['status'] );
 

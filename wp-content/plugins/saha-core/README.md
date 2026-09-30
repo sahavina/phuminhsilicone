@@ -47,13 +47,17 @@ Builder/
   Schema/Node, Document, SchemaMigrator   cấu trúc JSON + migrate phiên bản schema
   Controls/*                              mỗi loại giá trị một sanitizer (color, size, spacing,
                                           typography, link, media, background, richtext…)
-  Elements/*                              Section, Row, Column, Heading, Text, Button, Image
+  Elements/*                              20 element Phase 1 (bố cục, nội dung, marketing, sản phẩm, blog)
+  Icons                                   bộ icon SVG nội tuyến
   ElementRegistry, Sanitizer              định nghĩa element (nguồn duy nhất) + sanitize tài liệu
   Renderer, RenderContext, RenderCache    JSON → HTML; cache subtree tĩnh
   CssRules, CssGenerator                  style .saha-e-{id}, responsive 1024/767
   LayoutRepository, LayoutService         post meta, lưu (khoá, baseHash, CSS, revision)
   Frontend, Rest/BuilderController        the_content + CSS; REST /builder/*
 ```
+
+Blocks dùng chung: `includes/Blocks/` — post type `saha_block` (SAHA → Blocks), REST `/blocks`,
+element Block render nội dung mới nhất (chống vòng lặp, tối đa 3 cấp).
 
 Thêm element: class kế thừa `Builder\Elements\Element` (definition + render + styles), đăng ký
 qua `add_action( 'saha_builder_elements', fn( $r ) => $r->register( new My_Element() ) )`.
@@ -73,7 +77,7 @@ Action: `saha_core_loaded`, `saha_core_activated`, `saha_core_deactivated`,
 `saha_theme_options`, `saha_theme_options_schema`, `saha_css_variables`, `saha_theme_font_stacks`,
 `saha_builder_role_caps`, `saha_builder_post_types`, `saha_builder_element_definition`,
 `saha_builder_render_element`, `saha_builder_node_classes`, `saha_builder_render_cache`,
-`saha_builder_migrate_document`, `saha_builder_enqueue_layout_css`.
+`saha_builder_migrate_document`, `saha_builder_enqueue_layout_css`, `saha_builder_icons`.
 
 ## API
 
@@ -93,6 +97,7 @@ Action: `saha_core_loaded`, `saha_core_activated`, `saha_core_deactivated`,
 | GET | `/builder/{id}` | `edit_saha_builder` + `edit_post` |
 | POST | `/builder/save`, `/builder/lock/{id}` | `edit_saha_builder` + `edit_post` |
 | POST | `/builder/render` | `edit_saha_builder` (+ `edit_post` nếu có postId) |
+| GET, POST | `/blocks` | `edit_saha_builder` (+ quyền xuất bản trang để tạo) |
 
 Envelope: `{success, message, data}` / `{success:false, code, message, errors}`.
 Thêm route mới: tạo file trong `api/routes/`, return closure nhận `$namespace`.

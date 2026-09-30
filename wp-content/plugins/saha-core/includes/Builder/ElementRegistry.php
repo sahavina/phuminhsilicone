@@ -10,13 +10,26 @@ declare( strict_types=1 );
 namespace Saha\Core\Builder;
 
 use Saha\Core\Builder\Controls\ControlRegistry;
+use Saha\Core\Builder\Elements\Banner;
+use Saha\Core\Builder\Elements\Block;
 use Saha\Core\Builder\Elements\Button;
 use Saha\Core\Builder\Elements\Column;
+use Saha\Core\Builder\Elements\Container;
+use Saha\Core\Builder\Elements\Cta;
+use Saha\Core\Builder\Elements\Divider;
 use Saha\Core\Builder\Elements\Element;
 use Saha\Core\Builder\Elements\Heading;
+use Saha\Core\Builder\Elements\Html;
+use Saha\Core\Builder\Elements\Icon;
+use Saha\Core\Builder\Elements\IconBox;
 use Saha\Core\Builder\Elements\Image;
+use Saha\Core\Builder\Elements\Posts;
+use Saha\Core\Builder\Elements\ProductCategories;
+use Saha\Core\Builder\Elements\Products;
 use Saha\Core\Builder\Elements\Row;
 use Saha\Core\Builder\Elements\Section;
+use Saha\Core\Builder\Elements\Shortcode;
+use Saha\Core\Builder\Elements\Spacer;
 use Saha\Core\Builder\Elements\Text;
 
 defined( 'ABSPATH' ) || exit;
@@ -47,7 +60,34 @@ final class ElementRegistry {
 		if ( null === self::$instance ) {
 			self::$instance = new self();
 
-			foreach ( array( new Section(), new Row(), new Column(), new Heading(), new Text(), new Button(), new Image() ) as $element ) {
+			$core = array(
+				// Bố cục.
+				new Section(),
+				new Container(),
+				new Row(),
+				new Column(),
+				new Spacer(),
+				new Divider(),
+				// Nội dung.
+				new Heading(),
+				new Text(),
+				new Button(),
+				new Image(),
+				new Icon(),
+				new IconBox(),
+				new Html(),
+				new Shortcode(),
+				// Marketing.
+				new Banner(),
+				new Cta(),
+				new Block(),
+				// WooCommerce, blog.
+				new Products(),
+				new ProductCategories(),
+				new Posts(),
+			);
+
+			foreach ( $core as $element ) {
 				self::$instance->register( $element );
 			}
 

@@ -8,6 +8,7 @@ import { __ } from '@wordpress/i18n';
 import { useActions } from '../actions';
 import { useBuilder } from '../context';
 import Field from '../controls/Field';
+import BlockTools from './BlockTools';
 import { findNode } from '../store/tree';
 
 const TABS = [
@@ -195,6 +196,8 @@ export default function Settings() {
 					</p>
 				) }
 			</fieldset>
+
+			{ 'content' === tab && <BlockTools node={ node } /> }
 		</div>
 	);
 }

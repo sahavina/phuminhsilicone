@@ -68,7 +68,7 @@ function wp_get_attachment_image_url( $id, $size = 'thumbnail' ) { return 99 ===
 function get_post_type( $id ) { return $GLOBALS['__posts'][ $id ]['type'] ?? false; }
 function get_post_status( $id ) { return $GLOBALS['__posts'][ $id ]['status'] ?? false; }
 function get_the_title( $id ) { return $GLOBALS['__posts'][ $id ]['title'] ?? ''; }
-function current_user_can( ...$a ) { return true; }
+function current_user_can( $cap, ...$a ) { return ! in_array( $cap, $GLOBALS['__caps_denied'] ?? array(), true ); }
 function wp_attachment_is_image( $id ) { return 99 === (int) $id; }
 
 spl_autoload_register( static function ( $c ) {
@@ -513,6 +513,52 @@ $saha_sec = saha_bs( array( 'elements' => array( array( 'id' => 'secccccc', 'typ
 $saha_sec_css = ( new CssGenerator() )->document( $saha_sec );
 check( 'màu chữ section áp cho tiêu đề bên trong', false !== strpos( $saha_sec_css, '.saha-e-secccccc :where(h1, h2, h3, h4, h5, h6){color:#ffffff}' ), true );
 check( 'màu riêng của tiêu đề đứng sau (thắng)', strpos( $saha_sec_css, '.saha-e-hhhhhhhh{' ) > strpos( $saha_sec_css, ':where(h1' ), true );
+
+echo "Builder — element mốc 1.4\n";
+$saha_reg   = Saha\Core\Builder\ElementRegistry::instance();
+$saha_ctrls = Saha\Core\Builder\Controls\ControlRegistry::instance();
+$saha_types = array_keys( $saha_reg->all() );
+check( 'đủ 20 element Phase 1', count( $saha_types ), 20 );
+$saha_bad_ctrl = array();
+foreach ( $saha_reg->all() as $saha_t => $saha_el ) {
+	foreach ( (array) $saha_el->def()['controls'] as $saha_k => $saha_c ) {
+		if ( null === $saha_ctrls->get( (string) $saha_c['type'] ) ) {
+			$saha_bad_ctrl[] = $saha_t . '.' . $saha_k;
+		}
+	}
+}
+check( 'mọi control của element đều có loại tồn tại', $saha_bad_ctrl, array() );
+
+// Element không cần WordPress đầy đủ: render với giá trị mặc định, trong cha hợp lệ.
+$saha_leafs = array( 'spacer', 'divider', 'icon', 'iconbox', 'html', 'shortcode', 'banner', 'cta' );
+$saha_kids  = array_map( static fn( $t ) => array( 'type' => $t ), $saha_leafs );
+$saha_kids[] = array( 'type' => 'container', 'children' => array( array( 'type' => 'heading' ) ) );
+$saha_r = saha_bs( array( 'elements' => array( array( 'type' => 'section', 'children' => $saha_kids ) ) ) );
+check( 'element mới hợp lệ trong section', $saha_r['errors'], array() );
+$saha_html = ( new Renderer() )->document( $saha_r['document'], new RenderContext( 0, false, false ) );
+check( 'icon: SVG nội tuyến aria-hidden', (bool) preg_match( '/<svg class="saha-icon[^"]*"[^>]*aria-hidden="true"/', $saha_html ), true );
+check( 'divider → <hr>', false !== strpos( $saha_html, '<hr class="saha-e' ), true );
+check( 'CTA có nút mặc định', false !== strpos( $saha_html, 'Yêu cầu báo giá' ), true );
+check( 'container chứa được heading', false !== strpos( $saha_html, 'saha-container-el' ) && false !== strpos( $saha_html, 'saha-heading' ), true );
+check( 'html/shortcode trống: frontend không in gì', false === strpos( $saha_html, 'saha-html' ) && false === strpos( $saha_html, 'saha-shortcode' ), true );
+
+check( 'cột không được đặt trong container', count( saha_bs( array( 'elements' => array( array( 'type' => 'section', 'children' => array( array( 'type' => 'container', 'children' => array( array( 'type' => 'column' ) ) ) ) ) ) ) )['errors'] ) > 0, true );
+check( 'banner, block đặt được ở cấp gốc', saha_bs( array( 'elements' => array( array( 'type' => 'banner' ), array( 'type' => 'block' ) ) ) )['errors'], array() );
+check( 'icon không tồn tại bị từ chối', count( saha_bs( array( 'elements' => array( array( 'type' => 'section', 'children' => array( array( 'id' => 'iiiiiiii', 'type' => 'icon', 'props' => array( 'icon' => 'khong-co' ) ) ) ) ) ) )['errors'] ), 1 );
+
+$saha_html_doc = array( 'elements' => array( array( 'type' => 'section', 'children' => array( array( 'id' => 'hhhhhhh1', 'type' => 'html', 'props' => array( 'html' => '<p>Bản đồ</p><script>track()</script>' ) ) ) ) ) );
+$saha_kept = saha_bs( $saha_html_doc )['document']->toArray()['elements'][0]['children'][0]['props']['html'];
+check( 'HTML: người có unfiltered_html giữ được script', false !== strpos( $saha_kept, '<script>' ), true );
+$GLOBALS['__caps_denied'] = array( 'unfiltered_html' );
+$saha_strip = saha_bs( $saha_html_doc )['document']->toArray()['elements'][0]['children'][0]['props']['html'];
+$GLOBALS['__caps_denied'] = array();
+check( 'HTML: người không có unfiltered_html → script bị lọc', false === strpos( $saha_strip, '<script' ) && false !== strpos( $saha_strip, '<p>Bản đồ</p>' ), true );
+
+$saha_banner = saha_bs( array( 'elements' => array( array( 'type' => 'banner', 'props' => array( 'image' => array( 'id' => 99 ), 'priority' => true, 'title' => 'Hero', 'titleTag' => 'h1' ) ) ) ) )['document'];
+$saha_banner_html = ( new Renderer() )->document( $saha_banner, new RenderContext( 0, false, false ) );
+check( 'banner ưu tiên: ảnh fetchpriority=high, loading=eager', false !== strpos( $saha_banner_html, 'fetchpriority="high"' ) && false !== strpos( $saha_banner_html, 'loading="eager"' ), true );
+check( 'banner: ảnh nền alt rỗng, tiêu đề H1', false !== strpos( $saha_banner_html, 'alt=""' ) && false !== strpos( $saha_banner_html, '<h1 class="saha-banner__title">Hero</h1>' ), true );
+check( 'element động (block, products, posts, shortcode) không vào render cache', array_values( array_filter( $saha_types, static fn( $t ) => ! empty( $saha_reg->get( $t )->def()['dynamic'] ) ) ), array( 'shortcode', 'block', 'products', 'posts' ) );
 
 echo "\n$pass passed, $fail failed\n";
 exit( $fail > 0 ? 1 : 0 );

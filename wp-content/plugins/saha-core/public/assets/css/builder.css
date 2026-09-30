@@ -189,6 +189,270 @@ a.saha-btn--link:focus-visible {
 	width: 100%;
 }
 
+/* Container */
+:where(.saha-container-el) {
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	flex-wrap: wrap;
+	gap: 16px;
+	width: 100%;
+}
+
+:where(.saha-container-el--nowrap) {
+	flex-wrap: nowrap;
+}
+
+/* Spacer, Divider */
+:where(.saha-spacer) {
+	height: 40px;
+}
+
+:where(.saha-divider) {
+	width: 100%;
+	height: 0;
+	margin: 16px 0;
+	border: 0;
+	border-top: 1px solid var(--saha-border, #e3e6ea);
+}
+
+/* Icon */
+:where(.saha-icon-el) {
+	line-height: 0;
+}
+
+:where(.saha-icon-el__shape) {
+	display: inline-flex;
+	font-size: 32px;
+	color: var(--saha-primary, #0b5cab);
+}
+
+:where(.saha-icon-el__shape) .saha-icon,
+:where(.saha-iconbox__icon) .saha-icon {
+	width: 1em;
+	height: 1em;
+}
+
+/* Icon Box */
+:where(.saha-iconbox) {
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
+}
+
+:where(.saha-iconbox__icon) {
+	display: inline-flex;
+	flex-shrink: 0;
+	font-size: 40px;
+	color: var(--saha-primary, #0b5cab);
+}
+
+:where(.saha-iconbox__title) {
+	margin: 0 0 6px;
+	font-size: 1.1rem;
+}
+
+:where(.saha-iconbox__title) a {
+	color: inherit;
+	text-decoration: none;
+}
+
+:where(.saha-iconbox__text) {
+	margin: 0;
+	opacity: 0.85;
+}
+
+/* Banner: ảnh là <img> phủ kín (srcset, fetchpriority) thay cho CSS background */
+:where(.saha-banner) {
+	position: relative;
+	display: flex;
+	align-items: center;
+	justify-content: flex-start;
+	min-height: 420px;
+	overflow: hidden;
+	padding: 48px var(--saha-gutter, 16px);
+	background: var(--saha-secondary, #1f2937);
+	color: #fff;
+}
+
+:where(.saha-banner__bg) {
+	position: absolute;
+	inset: 0;
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+}
+
+:where(.saha-banner)::before {
+	content: "";
+	position: absolute;
+	inset: 0;
+	z-index: 1;
+	pointer-events: none;
+}
+
+:where(.saha-banner__content) {
+	position: relative;
+	z-index: 2;
+	max-width: 640px;
+}
+
+:where(.saha-banner__title) {
+	margin: 0 0 12px;
+	font-size: var(--saha-h1-size, 36px);
+}
+
+:where(.saha-banner__text) {
+	margin: 0 0 20px;
+	font-size: 1.1em;
+}
+
+/* CTA */
+:where(.saha-cta) {
+	display: flex;
+	flex-direction: row;
+	flex-wrap: wrap;
+	align-items: center;
+	justify-content: space-between;
+	gap: 16px 32px;
+	padding: 32px;
+	border-radius: var(--saha-radius, 6px);
+}
+
+:where(.saha-cta__title) {
+	margin: 0 0 6px;
+}
+
+:where(.saha-cta__text) {
+	margin: 0;
+	opacity: 0.9;
+}
+
+:where(.saha-cta__actions),
+:where(.saha-banner__actions) {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 12px;
+}
+
+@media (max-width: 767px) {
+	:where(.saha-cta) {
+		flex-direction: column;
+		align-items: flex-start;
+		padding: 24px;
+	}
+}
+
+/* Lưới: sản phẩm, danh mục, bài viết — số cột qua --saha-cols */
+:where(.saha-terms__grid, .saha-posts-el__grid) {
+	display: grid;
+	grid-template-columns: repeat(var(--saha-cols, 4), minmax(0, 1fr));
+	gap: 24px;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+/* Thắng CSS float/width của WooCommerce (.woocommerce ul.products li.product). */
+.saha-products.woocommerce ul.saha-products-grid {
+	display: grid;
+	grid-template-columns: repeat(var(--saha-cols, 4), minmax(0, 1fr));
+	gap: 24px;
+	margin: 0;
+	padding: 0;
+}
+
+.saha-products.woocommerce ul.saha-products-grid::before,
+.saha-products.woocommerce ul.saha-products-grid::after {
+	display: none;
+}
+
+.saha-products.woocommerce ul.saha-products-grid li.product {
+	float: none;
+	clear: none;
+	width: auto;
+	margin: 0;
+}
+
+:where(.saha-terms__link) {
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+	align-items: center;
+	padding: 12px;
+	border: 1px solid var(--saha-border, #e3e6ea);
+	border-radius: var(--saha-radius, 6px);
+	color: inherit;
+	text-align: center;
+	text-decoration: none;
+}
+
+:where(.saha-terms__link):hover {
+	border-color: var(--saha-primary, #0b5cab);
+}
+
+:where(.saha-terms__media) img {
+	display: block;
+	width: 100%;
+	height: auto;
+	aspect-ratio: 1;
+	object-fit: contain;
+}
+
+:where(.saha-terms__name) {
+	font-weight: 600;
+}
+
+:where(.saha-terms__count) {
+	font-size: 0.85em;
+	opacity: 0.7;
+}
+
+:where(.saha-post-card) {
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
+}
+
+:where(.saha-post-card__media) img {
+	display: block;
+	width: 100%;
+	height: auto;
+	aspect-ratio: 16 / 10;
+	object-fit: cover;
+	border-radius: var(--saha-radius, 6px);
+}
+
+:where(.saha-post-card__title) {
+	margin: 0 0 4px;
+	font-size: 1.1rem;
+}
+
+:where(.saha-post-card__title) a {
+	color: inherit;
+	text-decoration: none;
+}
+
+:where(.saha-post-card__date) {
+	font-size: 0.85em;
+	opacity: 0.7;
+}
+
+:where(.saha-post-card__excerpt) {
+	margin: 6px 0 0;
+}
+
+@media (max-width: 1024px) {
+	:where(.saha-terms__grid, .saha-posts-el__grid) {
+		grid-template-columns: repeat(var(--saha-cols, 2), minmax(0, 1fr));
+	}
+}
+
+/* Block dùng chung: section bên trong block nằm trong cột thì không cần lề ngoài riêng */
+:where(.saha-column, .saha-container-el) > :where(.saha-block-ref) :where(.saha-section__inner) {
+	padding-inline: 0;
+}
+
 /* Ẩn theo thiết bị — cùng breakpoint với Theme Options */
 @media (min-width: 1025px) {
 	.saha-hide-desktop {

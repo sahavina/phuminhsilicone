@@ -32,7 +32,7 @@ final class Image extends Element {
 			'name'           => __( 'Ảnh', 'saha-core' ),
 			'icon'           => 'format-image',
 			'category'       => 'content',
-			'allowedParents' => array( 'column', 'section' ),
+			'allowedParents' => self::CONTENT_PARENTS,
 			'controls'       => array(
 				'image'        => array(
 					'type'        => 'media',

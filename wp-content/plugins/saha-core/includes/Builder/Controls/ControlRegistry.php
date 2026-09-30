@@ -57,6 +57,10 @@ final class ControlRegistry {
 				new Background(),
 				new HtmlId(),
 				new ClassList(),
+				new Icon(),
+				new Html(),
+				new Term(),
+				new BlockRef(),
 			) as $control ) {
 				self::$instance->register( $control );
 			}

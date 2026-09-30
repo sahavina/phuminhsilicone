@@ -30,6 +30,11 @@ defined( 'ABSPATH' ) || exit;
 abstract class Element {
 
 	/**
+	 * Cha hợp lệ của element nội dung (tiêu đề, văn bản, nút…).
+	 */
+	public const CONTENT_PARENTS = array( 'section', 'column', 'container' );
+
+	/**
 	 * Định nghĩa đã chuẩn hoá (cache trong request).
 	 *
 	 * @var array<string, mixed>|null

@@ -30,6 +30,16 @@ export const api = {
 			signal,
 		} ).then( ( r ) => r.data ),
 
+	blocks: () =>
+		apiFetch( { path: '/saha/v1/blocks' } ).then( ( r ) => r.data ),
+
+	createBlock: ( title, node ) =>
+		apiFetch( {
+			path: '/saha/v1/blocks',
+			method: 'POST',
+			data: { title, node },
+		} ).then( ( r ) => r.data ),
+
 	lock: ( postId ) =>
 		apiFetch( { path: `${ BASE }/lock/${ postId }`, method: 'POST' } ).then(
 			( r ) => r.data

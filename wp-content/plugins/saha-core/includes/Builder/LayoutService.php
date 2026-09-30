@@ -110,6 +110,110 @@ final class LayoutService {
 	}
 
 	/**
+	 * Render nội dung một block (element Block).
+	 *
+	 * - Frontend chỉ hiện block đã xuất bản; editor hiện cả bản nháp.
+	 * - Chống vòng lặp (A chứa B chứa A) và lồng quá Limits::MAX_BLOCK_DEPTH cấp.
+	 * - Nội dung trong block render KHÔNG có data-saha-id: bấm vào đâu trong block
+	 *   cũng là chọn element Block (sửa nội dung block ở màn hình của block).
+	 *
+	 * @param int           $block_id Block ID.
+	 * @param RenderContext $ctx      Ngữ cảnh của trang chứa block.
+	 * @return array{html: string, error: string}
+	 */
+	public static function renderBlock( int $block_id, RenderContext $ctx ): array {
+		$post = get_post( $block_id );
+
+		if ( ! $post || \Saha\Core\Blocks\PostType::NAME !== $post->post_type || 'trash' === $post->post_status ) {
+			return array(
+				'html'  => '',
+				'error' => __( 'Block không tồn tại hoặc đã bị xoá.', 'saha-core' ),
+			);
+		}
+
+		if ( 'publish' !== $post->post_status && ! $ctx->editor ) {
+			return array(
+				'html'  => '',
+				'error' => '',
+			);
+		}
+
+		// Chuỗi đang render: gồm cả tài liệu gốc nếu nó là block (mở block A có tham chiếu B, B tham chiếu A).
+		$stack = $ctx->blockStack;
+
+		if ( $ctx->postId > 0 && ! in_array( $ctx->postId, $stack, true ) && \Saha\Core\Blocks\PostType::NAME === get_post_type( $ctx->postId ) ) {
+			$stack[] = $ctx->postId;
+		}
+
+		if ( in_array( $block_id, $stack, true ) ) {
+			return array(
+				'html'  => '',
+				'error' => __( 'Block đang chứa chính nó — đã bỏ qua để tránh lặp vô hạn.', 'saha-core' ),
+			);
+		}
+
+		if ( count( $stack ) >= Limits::MAX_BLOCK_DEPTH ) {
+			return array(
+				'html'  => '',
+				/* translators: %d: số cấp tối đa */
+				'error' => sprintf( __( 'Block lồng quá %d cấp.', 'saha-core' ), Limits::MAX_BLOCK_DEPTH ),
+			);
+		}
+
+		$document = LayoutRepository::get( $block_id );
+
+		if ( null === $document || $document->isEmpty() ) {
+			return array(
+				'html'  => '',
+				'error' => __( 'Block chưa có nội dung — mở block trong SAHA Builder để dựng.', 'saha-core' ),
+			);
+		}
+
+		$child             = new RenderContext( $block_id, false, $ctx->useCache && ! $ctx->editor );
+		$child->blockStack = array_merge( $stack, array( $block_id ) );
+
+		$html = ( new Renderer() )->document( $document, $child );
+
+		$ctx->addAssets( $child->assets );
+
+		return array(
+			'html'  => $html,
+			'error' => '',
+		);
+	}
+
+	/**
+	 * Mọi block được tham chiếu (kể cả block lồng trong block), không trùng.
+	 *
+	 * @param Document $document Tài liệu.
+	 * @param int[]    $seen     Block đã duyệt (chống vòng lặp).
+	 * @param int      $depth    Độ sâu hiện tại.
+	 * @return int[]
+	 */
+	public static function referencedBlocks( Document $document, array $seen = array(), int $depth = 0 ): array {
+		if ( $depth >= Limits::MAX_BLOCK_DEPTH ) {
+			return $seen;
+		}
+
+		foreach ( $document->walk() as $node ) {
+			$id = 'block' === $node->type ? (int) $node->prop( 'blockId', 0 ) : 0;
+
+			if ( $id <= 0 || in_array( $id, $seen, true ) ) {
+				continue;
+			}
+
+			$seen[] = $id;
+			$inner  = LayoutRepository::get( $id );
+
+			if ( null !== $inner ) {
+				$seen = self::referencedBlocks( $inner, $seen, $depth + 1 );
+			}
+		}
+
+		return $seen;
+	}
+
+	/**
 	 * Sinh lại file CSS của post.
 	 *
 	 * @param int           $post_id  Post ID.

@@ -31,7 +31,7 @@ final class Text extends Element {
 			'name'           => __( 'Văn bản', 'saha-core' ),
 			'icon'           => 'editor-paragraph',
 			'category'       => 'content',
-			'allowedParents' => array( 'column', 'section' ),
+			'allowedParents' => self::CONTENT_PARENTS,
 			'controls'       => array(
 				'content'    => array(
 					'type'    => 'richtext',

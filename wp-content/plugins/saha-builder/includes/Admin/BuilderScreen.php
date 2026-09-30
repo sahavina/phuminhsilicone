@@ -174,6 +174,9 @@ final class BuilderScreen {
 			'palette'       => self::palette(),
 			'canUpload'     => current_user_can( 'upload_files' ),
 			'lockInterval'  => 60,
+			'builderUrl'    => add_query_arg( 'page', self::SLUG, admin_url( 'admin.php' ) ) . '&post=',
+			'blocksUrl'     => admin_url( 'edit.php?post_type=saha_block' ),
+			'canCreateBlock' => current_user_can( 'publish_pages' ),
 		);
 	}
 

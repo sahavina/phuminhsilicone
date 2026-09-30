@@ -9,6 +9,8 @@ declare( strict_types=1 );
 
 namespace Saha\Core\Builder;
 
+use Saha\Core\Blocks\PostType as BlockPostType;
+use Saha\Core\Blocks\Rest\BlocksController;
 use Saha\Core\Builder\Rest\BuilderController;
 
 defined( 'ABSPATH' ) || exit;
@@ -27,6 +29,8 @@ final class Module {
 	public function register(): void {
 		add_action( 'init', array( LayoutRepository::class, 'registerMeta' ), 20 );
 		add_action( 'rest_api_init', array( new BuilderController(), 'registerRoutes' ) );
+		add_action( 'rest_api_init', array( new BlocksController(), 'registerRoutes' ) );
+		( new BlockPostType() )->register();
 		( new Frontend() )->register();
 	}
 }

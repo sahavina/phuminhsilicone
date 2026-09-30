@@ -34,7 +34,7 @@ final class Heading extends Element {
 			'name'           => __( 'Tiêu đề', 'saha-core' ),
 			'icon'           => 'heading',
 			'category'       => 'content',
-			'allowedParents' => array( 'column', 'section' ),
+			'allowedParents' => self::CONTENT_PARENTS,
 			'controls'       => array(
 				'text'       => array(
 					'type'      => 'text',

@@ -34,7 +34,7 @@ final class Section extends Element {
 			'icon'            => 'table-row-before',
 			'category'        => 'layout',
 			'allowedParents'  => array( 'root' ),
-			'allowedChildren' => array( 'row', 'heading', 'text', 'button', 'image' ),
+			'allowedChildren' => array( '*' ), // Element con tự khai báo cha hợp lệ.
 			'controls'        => array(
 				'layout'        => array(
 					'type'    => 'select',

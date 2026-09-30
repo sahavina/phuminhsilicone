@@ -189,8 +189,9 @@ final class BuilderController {
 				'document'   => LayoutRepository::raw( $post_id ) ?? LayoutService::emptyDocument()->toArray(),
 				'hash'       => LayoutRepository::hash( $post_id ),
 				'lockedBy'   => '' !== $locker ? $locker : null,
-				'permalink'  => get_permalink( $post ),
-				'previewUrl' => get_preview_post_link( $post ),
+				// Block không có trang riêng để xem.
+				'permalink'  => is_post_type_viewable( $post->post_type ) ? get_permalink( $post ) : '',
+				'previewUrl' => is_post_type_viewable( $post->post_type ) ? get_preview_post_link( $post ) : '',
 			)
 		);
 	}
@@ -264,11 +265,17 @@ final class BuilderController {
 		}
 
 		$ctx = new RenderContext( self::postId( $request ), true, false );
+		$css = ( new CssGenerator() )->node( $result['node'] );
+
+		// Block dùng chung trong node: kèm CSS của block (frontend nạp từ file riêng của block).
+		foreach ( LayoutService::referencedBlocks( new \Saha\Core\Builder\Schema\Document( array( $result['node'] ) ) ) as $block_id ) {
+			$css .= "\n" . LayoutService::inlineCss( $block_id );
+		}
 
 		return Api::success(
 			array(
 				'html'   => ( new Renderer() )->node( $result['node'], $ctx ),
-				'css'    => ( new CssGenerator() )->node( $result['node'] ),
+				'css'    => $css,
 				'assets' => $ctx->assets,
 			)
 		);

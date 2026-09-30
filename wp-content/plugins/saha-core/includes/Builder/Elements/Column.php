@@ -32,7 +32,7 @@ final class Column extends Element {
 			'icon'            => 'align-pull-left',
 			'category'        => 'layout',
 			'allowedParents'  => array( 'row' ),
-			'allowedChildren' => array( 'row', 'heading', 'text', 'button', 'image' ),
+			'allowedChildren' => array( '*' ),
 			'controls'        => array(
 				'width'         => array(
 					'type'       => 'size',

@@ -12,6 +12,7 @@ import {
 	newId,
 	nodeLabel,
 	removeNode,
+	replaceNode,
 	resolveClickInsert,
 	wrapChain,
 } from '../tree';
@@ -179,5 +180,29 @@ describe( 'nodeLabel', () => {
 		expect( nodeLabel( defs, findNode( sampleDoc(), 't1' ) ) ).toBe(
 			'Văn bản: Nội dung'
 		);
+	} );
+} );
+
+describe( 'replaceNode', () => {
+	it( 'thay một node bằng nhiều node, giữ vị trí', () => {
+		const doc = replaceNode( sampleDoc(), 's1', [
+			{ id: 'x1', type: 'section', props: {} },
+			{ id: 'x2', type: 'section', props: {} },
+		] );
+		expect( doc.elements.map( ( n ) => n.id ) ).toEqual( [
+			'x1',
+			'x2',
+			's2',
+		] );
+	} );
+
+	it( 'thay node lồng trong cột', () => {
+		const doc = replaceNode( sampleDoc(), 'h1', [
+			{ id: 'bk', type: 'block', props: { blockId: 5 } },
+		] );
+		expect( findNode( doc, 'c1' ).children.map( ( n ) => n.id ) ).toEqual( [
+			'bk',
+			't1',
+		] );
 	} );
 } );

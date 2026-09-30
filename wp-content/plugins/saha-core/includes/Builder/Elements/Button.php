@@ -35,7 +35,7 @@ final class Button extends Element {
 			'name'           => __( 'Nút', 'saha-core' ),
 			'icon'           => 'button',
 			'category'       => 'content',
-			'allowedParents' => array( 'column', 'section' ),
+			'allowedParents' => self::CONTENT_PARENTS,
 			'controls'       => array(
 				'text'         => array(
 					'type'      => 'text',
@@ -146,6 +146,29 @@ final class Button extends Element {
 			: '<span class="' . esc_attr( $classes ) . '">' . $text . '</span>';
 
 		return '<div' . $this->rootAttributes( $node, $ctx, $wrap ) . '>' . $inner . '</div>';
+	}
+
+	/**
+	 * HTML một nút (dùng lại trong Banner, CTA, Icon Box).
+	 *
+	 * @param mixed  $link    Giá trị control link.
+	 * @param string $text    Chữ.
+	 * @param string $variant primary | secondary | outline | link.
+	 * @param string $size    sm | md | lg.
+	 * @return string '' nếu không có chữ.
+	 */
+	public static function markup( $link, string $text, string $variant = 'primary', string $size = 'md' ): string {
+		if ( '' === trim( $text ) ) {
+			return '';
+		}
+
+		$variant = in_array( $variant, self::VARIANTS, true ) ? $variant : 'primary';
+		$size    = in_array( $size, self::SIZES, true ) ? $size : 'md';
+		$classes = esc_attr( 'saha-btn saha-btn--' . $variant . ' saha-btn--' . $size );
+
+		return is_array( $link ) && ! empty( $link['url'] )
+			? '<a class="' . $classes . '"' . Link::attributes( $link ) . '>' . esc_html( $text ) . '</a>'
+			: '<span class="' . $classes . '">' . esc_html( $text ) . '</span>';
 	}
 
 	/**
