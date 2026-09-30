@@ -190,5 +190,54 @@ check( 'giá trị select lạ → mặc định', $saha_clean['product_schema_s
 $saha_clean = Saha\Core\Settings::sanitize( array( 'product_schema_source' => 'seo_plugin' ) );
 check( 'giá trị select hợp lệ giữ nguyên', $saha_clean['product_schema_source'], 'seo_plugin' );
 
+echo "Cache (spec §27, §80)\n";
+$GLOBALS['__transients'] = array();
+if ( ! function_exists( 'wp_json_encode' ) ) {
+	function wp_json_encode( $v ) { return json_encode( $v ); }
+}
+if ( ! function_exists( 'get_transient' ) ) {
+	function get_transient( $k ) { return $GLOBALS['__transients'][ $k ] ?? false; }
+}
+if ( ! function_exists( 'set_transient' ) ) {
+	function set_transient( $k, $v, $ttl = 0 ) { $GLOBALS['__transients'][ $k ] = $v; return true; }
+}
+if ( ! function_exists( 'update_option' ) ) {
+	function update_option( $k, $v, $autoload = null ) { $GLOBALS['__options'][ $k ] = $v; return true; }
+}
+
+Saha\Core\Cache::reset_request_state();
+$saha_calls = 0;
+$saha_fn    = static function () use ( &$saha_calls ): array { $saha_calls++; return array(); };
+
+Saha\Core\Cache::remember( 'products', array( 'a' => 1 ), $saha_fn );
+Saha\Core\Cache::remember( 'products', array( 'a' => 1 ), $saha_fn );
+check( 'kết quả RỖNG vẫn được cache (không query lại)', $saha_calls, 1 );
+
+$saha_key_before = Saha\Core\Cache::key( 'products', array( 'a' => 1 ) );
+Saha\Core\Cache::bump();
+$saha_key_after = Saha\Core\Cache::key( 'products', array( 'a' => 1 ) );
+check( 'bump đổi key → cache cũ tự vô hiệu', $saha_key_before !== $saha_key_after, true );
+
+Saha\Core\Cache::remember( 'products', array( 'a' => 1 ), $saha_fn );
+check( 'sau bump: tính lại đúng 1 lần', $saha_calls, 2 );
+
+$saha_gen = Saha\Core\Cache::generation();
+Saha\Core\Cache::bump();
+Saha\Core\Cache::bump();
+check( 'nhiều hook trong 1 request chỉ tăng thế hệ 1 lần', Saha\Core\Cache::generation(), $saha_gen );
+check( 'key transient < 172 ký tự', strlen( Saha\Core\Cache::key( 'search_ids', array( str_repeat( 'x', 500 ) ) ) ) < 172, true );
+
+echo "Maintenance (spec §28, §60)\n";
+check( 'không bao giờ xoá quotes', Saha\Core\Maintenance::purge( 'quotes', 1 ), 0 );
+check( 'không bao giờ xoá leads', Saha\Core\Maintenance::purge( 'leads', 1 ), 0 );
+check( 'retention 0 = không xoá', Saha\Core\Maintenance::purge( 'logs', 0 ), 0 );
+
+echo "Hero LCP (spec §25)\n";
+require_once dirname( __DIR__ ) . '/wp-content/themes/flatsome-child/inc/performance.php';
+check( 'tìm bg của ux_banner đầu tiên', saha_theme_find_hero_image_id( '[section][ux_banner height="460px" bg="321" bg_size="original"][text_box]…[/ux_banner][ux_banner bg="999"]' ), 321 );
+check( 'banner chưa chọn ảnh → 0', saha_theme_find_hero_image_id( '[ux_banner height="460px" bg=""]' ), 0 );
+check( 'không có banner → 0', saha_theme_find_hero_image_id( '[row][col]Nội dung[/col][/row]' ), 0 );
+check( 'không nhầm thuộc tính bg_color', saha_theme_find_hero_image_id( '[ux_banner bg_color="123"]' ), 0 );
+
 echo "\n$pass passed, $fail failed\n";
 exit( $fail > 0 ? 1 : 0 );

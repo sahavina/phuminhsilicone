@@ -171,6 +171,20 @@ final class Settings {
 				'default'     => true,
 				'description' => __( 'Tắt sẽ chỉ ghi vào debug.log khi WP_DEBUG_LOG bật.', 'saha-core' ),
 			),
+			'log_retention_days'       => array(
+				'type'        => 'int',
+				'label'       => __( 'Giữ log hệ thống (ngày)', 'saha-core' ),
+				'section'     => 'system',
+				'default'     => 90,
+				'description' => __( 'Log cũ hơn số ngày này được xoá tự động mỗi đêm. 0 = không xoá.', 'saha-core' ),
+			),
+			'search_log_retention_days' => array(
+				'type'        => 'int',
+				'label'       => __( 'Giữ log tìm kiếm (ngày)', 'saha-core' ),
+				'section'     => 'system',
+				'default'     => 180,
+				'description' => __( 'Chỉ áp dụng khi bật ghi log tìm kiếm. 0 = không xoá.', 'saha-core' ),
+			),
 			'delete_data_on_uninstall' => array(
 				'type'        => 'bool',
 				'label'       => __( 'Xoá dữ liệu khi gỡ plugin', 'saha-core' ),
@@ -338,6 +352,12 @@ final class Settings {
 				$value         = sanitize_key( (string) $input[ $key ] );
 				$options       = (array) ( $field['options'] ?? array() );
 				$clean[ $key ] = array_key_exists( $value, $options ) ? $value : (string) ( $field['default'] ?? '' );
+				continue;
+			}
+
+			if ( 'int' === $type ) {
+				// Số ngày lưu trữ: 0 (không xoá) đến 10 năm.
+				$clean[ $key ] = max( 0, min( 3650, (int) $input[ $key ] ) );
 				continue;
 			}
 

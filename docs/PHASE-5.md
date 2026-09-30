@@ -167,7 +167,7 @@ Checklist thủ công:
 
 ## 11. Ghi chú & giới hạn
 
-- **LCP của hero:** ảnh hero là ứng viên LCP. Nếu bật *Flatsome → Advanced → Performance → Lazy load images*, hãy kiểm tra ảnh banner đầu trang **không** bị lazy-load; nếu có, tắt lazy-load cho banner đầu hoặc dùng tuỳ chọn của plugin cache (LiteSpeed: *Exclude first N images from lazy load*). Phần tối ưu tự động để ở Phase 7.
+- **LCP của hero:** ảnh hero là ứng viên LCP. Nếu bật *Flatsome → Advanced → Performance → Lazy load images*, hãy kiểm tra ảnh banner đầu trang **không** bị lazy-load; nếu có, tắt lazy-load cho banner đầu hoặc dùng tuỳ chọn của plugin cache (LiteSpeed: *Exclude first N images from lazy load*). Phase 7 đã thêm preload + `skip-lazy` tự động cho ảnh hero.
 - **`orderby="rand"`** được cache theo TTL để tránh `ORDER BY RAND()` mỗi request — nghĩa là thứ tự "ngẫu nhiên" chỉ đổi khi cache hết hạn hoặc dữ liệu thay đổi. Đây là đánh đổi có chủ đích.
-- Cache thương hiệu của Phase 2 vẫn dùng cơ chế danh sách key riêng. Gộp về cơ chế thế hệ ở Phase 7 cho thống nhất.
+- ~~Cache thương hiệu của Phase 2 vẫn dùng cơ chế danh sách key riêng.~~ → **đã gộp ở Phase 7** vào lớp `Cache` chung.
 - Layout mẫu dùng cú pháp shortcode của Flatsome (`ux_banner`, `featured_box`, `blog_posts`, `ux_menu`). Tên tham số có thể khác nhẹ giữa các phiên bản Flatsome — nếu một khối native không hiện đúng, kéo lại khối đó từ UX Builder; các khối `saha_*` không phụ thuộc phiên bản Flatsome.

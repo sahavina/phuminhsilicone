@@ -29,10 +29,31 @@ final class Form_Handler {
 	 * Gắn hook.
 	 */
 	public function register(): void {
+		add_action( 'template_redirect', array( $this, 'prevent_caching_result_page' ), 0 );
+
 		foreach ( array( 'saha_quote', 'saha_contact' ) as $action ) {
 			add_action( 'admin_post_nopriv_' . $action, array( $this, 'handle_' . substr( $action, 5 ) ) );
 			add_action( 'admin_post_' . $action, array( $this, 'handle_' . substr( $action, 5 ) ) );
 		}
+	}
+
+	/**
+	 * Trang mang thông báo kết quả (?saha_form=…) không được lưu vào page cache,
+	 * nếu không khách sau sẽ thấy thông báo của khách trước (spec §27).
+	 */
+	public function prevent_caching_result_page(): void {
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- chỉ kiểm tra có tham số.
+		if ( ! isset( $_GET[ self::RESULT_VAR ] ) ) {
+			return;
+		}
+
+		if ( ! defined( 'DONOTCACHEPAGE' ) ) {
+			define( 'DONOTCACHEPAGE', true ); // Chuẩn chung: LiteSpeed, WP Rocket, W3TC, WP Super Cache.
+		}
+
+		do_action( 'litespeed_control_set_nocache', 'saha form result' );
+
+		nocache_headers();
 	}
 
 	/**

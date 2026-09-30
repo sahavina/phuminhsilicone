@@ -16,6 +16,9 @@ if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) ) {
 $saha_settings = get_option( 'saha_core_settings', array() );
 $saha_purge    = is_array( $saha_settings ) && ! empty( $saha_settings['delete_data_on_uninstall'] );
 
+// Cron luôn được huỷ khi gỡ plugin, kể cả khi giữ lại dữ liệu.
+wp_clear_scheduled_hook( 'saha_core_daily_maintenance' );
+
 if ( ! $saha_purge ) {
 	return;
 }
@@ -36,6 +39,7 @@ delete_option( 'saha_core_migrations_ran' );
 delete_option( 'saha_core_flush_rewrite' );
 delete_option( 'saha_brand_cache_keys' );
 delete_option( 'saha_catalog_cache_gen' );
+delete_option( 'saha_cache_gen' );
 
 foreach ( array( 'saha_seo_manager', 'saha_content_manager', 'saha_sales', 'saha_warehouse' ) as $saha_role ) {
 	if ( get_role( $saha_role ) ) {

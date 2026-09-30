@@ -35,9 +35,16 @@ final class Search {
 	public const MAX_PER_PAGE = 50;
 
 	/**
-	 * TTL cache kết quả.
+	 * TTL cache kết quả. Ngắn vì số từ khoá khác nhau rất nhiều: khi không có
+	 * object cache, mỗi từ khoá là một transient trong bảng options.
+	 * Dữ liệu sản phẩm đổi thì Cache đã tự vô hiệu theo thế hệ.
 	 */
-	private const CACHE_TTL = 5 * MINUTE_IN_SECONDS;
+	private const CACHE_TTL = 15 * MINUTE_IN_SECONDS;
+
+	/**
+	 * Số kết quả tối đa trang kết quả tìm kiếm của WordPress phân trang được.
+	 */
+	public const MAX_RESULTS = 1000;
 
 	/**
 	 * Điểm cho từng loại khớp.
@@ -89,11 +96,11 @@ final class Search {
 			return $empty;
 		}
 
-		$cache_key = 'saha_search_' . md5( $term . '|' . $page . '|' . $per_page );
-		$cached    = get_transient( $cache_key );
+		$cache_args = array( $term, $page, $per_page );
+		$cached     = Cache::get( 'search', $cache_args );
 
-		if ( is_array( $cached ) ) {
-			return $cached;
+		if ( $cached['hit'] ) {
+			return (array) $cached['value'];
 		}
 
 		$ids_result = self::query_ids( $term, $page, $per_page );
@@ -106,7 +113,7 @@ final class Search {
 			'query'    => $term,
 		);
 
-		set_transient( $cache_key, $result, self::CACHE_TTL );
+		Cache::set( 'search', $cache_args, $result, self::CACHE_TTL );
 
 		/**
 		 * Vừa thực hiện một lượt tìm kiếm.
@@ -126,10 +133,22 @@ final class Search {
 	 * @param int    $limit Giới hạn.
 	 * @return int[]
 	 */
-	public static function search_ids( string $term, int $limit = 200 ): array {
-		$result = self::query_ids( self::normalize( $term ), 1, max( 1, min( 500, $limit ) ) );
+	public static function search_ids( string $term, int $limit = self::MAX_RESULTS ): array {
+		$term  = self::normalize( $term );
+		$limit = max( 1, min( self::MAX_RESULTS, $limit ) );
 
-		return $result['ids'];
+		if ( mb_strlen( $term ) < self::MIN_LENGTH ) {
+			return array();
+		}
+
+		$ids = Cache::remember(
+			'search_ids',
+			array( $term, $limit ),
+			static fn(): array => self::query_ids( $term, 1, $limit )['ids'],
+			self::CACHE_TTL
+		);
+
+		return array_map( 'absint', (array) $ids );
 	}
 
 	/*

@@ -81,7 +81,7 @@ $option = Settings::OPTION;
 								><?php echo esc_textarea( (string) $value ); ?></textarea>
 							<?php else : ?>
 								<?php
-								$input_type = 'email' === $type ? 'email' : ( 'url' === $type ? 'url' : 'text' );
+								$input_type = 'email' === $type ? 'email' : ( 'url' === $type ? 'url' : ( 'int' === $type ? 'number' : 'text' ) );
 								?>
 								<input
 									type="<?php echo esc_attr( $input_type ); ?>"

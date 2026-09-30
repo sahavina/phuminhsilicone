@@ -70,6 +70,8 @@ final class Loader {
 			'security'   => Security::class,
 			'roles'      => Roles::class,
 			'install'    => Install::class,
+			'cache'      => Cache::class,
+			'maintenance' => Maintenance::class,
 			'taxonomies' => Taxonomies::class,
 			'brand'      => Brand::class,
 			'product'    => Product::class,

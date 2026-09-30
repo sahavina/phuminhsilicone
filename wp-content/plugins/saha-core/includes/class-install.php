@@ -62,6 +62,8 @@ final class Install {
 	public function deactivate(): void {
 		( new Roles() )->remove_roles();
 
+		Maintenance::unschedule();
+
 		flush_rewrite_rules();
 
 		/**
