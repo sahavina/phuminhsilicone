@@ -93,7 +93,13 @@ final class CssRules {
 			return $this;
 		}
 
-		$this->rules[ $device ][ $this->scope . self::cleanSelector( $selector ) ][ $property ] = $value;
+		$selector = self::cleanSelector( $selector );
+
+		if ( null === $selector ) {
+			return $this;
+		}
+
+		$this->rules[ $device ][ $this->scope . $selector ][ $property ] = $value;
 
 		return $this;
 	}
@@ -229,10 +235,21 @@ final class CssRules {
 	/**
 	 * Selector hậu tố: chỉ ký tự an toàn.
 	 *
+	 * Dấu phẩy chỉ được nằm trong ngoặc (`:where(h1, h2)`) — dấu phẩy cấp ngoài
+	 * sẽ tạo selector thứ hai KHÔNG có phạm vi `.saha-e-{id}` (áp cho cả trang).
+	 *
 	 * @param string $selector Selector.
+	 * @return string|null Null nếu không hợp lệ.
 	 */
-	private static function cleanSelector( string $selector ): string {
-		return (string) preg_replace( '/[^a-zA-Z0-9 _\-.:>*()]/', '', $selector );
+	private static function cleanSelector( string $selector ): ?string {
+		$selector = (string) preg_replace( '/[^a-zA-Z0-9 _\-.:>*(),]/', '', $selector );
+		$outer    = (string) preg_replace( '/\([^()]*\)/', '', $selector );
+
+		if ( false !== strpos( $outer, ',' ) || substr_count( $selector, '(' ) !== substr_count( $selector, ')' ) ) {
+			return null;
+		}
+
+		return $selector;
 	}
 
 	/**

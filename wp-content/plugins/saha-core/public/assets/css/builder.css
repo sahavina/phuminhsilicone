@@ -107,17 +107,19 @@
 	opacity: 0.5;
 }
 
-/* Button */
+/* Button
+ * Màu của nút KHÔNG bọc :where(): theme thường có `a { color }` / `a:hover { color }`
+ * (specificity 0,0,1–0,1,1) sẽ đè mất màu chữ. Style riêng từng nút (.saha-e-{id} .saha-btn)
+ * vẫn thắng vì cụ thể hơn.
+ */
 :where(.saha-btn) {
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
 	gap: 8px;
 	padding: 10px 20px;
-	border: 2px solid var(--saha-primary, #0b5cab);
+	border: 2px solid;
 	border-radius: var(--saha-radius, 6px);
-	background: var(--saha-primary, #0b5cab);
-	color: #fff;
 	font-family: var(--saha-type-button-font, inherit);
 	font-weight: var(--saha-type-button-weight, 600);
 	line-height: 1.2;
@@ -126,38 +128,49 @@
 	transition: filter 0.15s ease, background-color 0.15s ease, color 0.15s ease;
 }
 
-:where(a.saha-btn):hover,
-:where(a.saha-btn):focus-visible {
+.saha-btn,
+.saha-btn:visited {
+	border-color: var(--saha-primary, #0b5cab);
+	background-color: var(--saha-primary, #0b5cab);
+	color: #fff;
+}
+
+a.saha-btn:hover,
+a.saha-btn:focus-visible {
 	color: #fff;
 	filter: brightness(0.92);
 }
 
-:where(.saha-btn--secondary) {
+.saha-btn--secondary,
+.saha-btn--secondary:visited {
 	border-color: var(--saha-secondary, #1f2937);
-	background: var(--saha-secondary, #1f2937);
+	background-color: var(--saha-secondary, #1f2937);
 }
 
-:where(.saha-btn--outline) {
-	background: transparent;
+.saha-btn--outline,
+.saha-btn--outline:visited {
+	background-color: transparent;
 	color: var(--saha-primary, #0b5cab);
 }
 
-:where(a.saha-btn--outline):hover,
-:where(a.saha-btn--outline):focus-visible {
-	background: var(--saha-primary, #0b5cab);
+a.saha-btn--outline:hover,
+a.saha-btn--outline:focus-visible {
+	background-color: var(--saha-primary, #0b5cab);
 	color: #fff;
 	filter: none;
 }
 
-:where(.saha-btn--link) {
+.saha-btn--link,
+.saha-btn--link:visited {
 	padding-inline: 0;
 	border-color: transparent;
-	background: transparent;
+	background-color: transparent;
 	color: var(--saha-primary, #0b5cab);
 	text-decoration: underline;
 }
 
-:where(a.saha-btn--link):hover {
+a.saha-btn--link:hover,
+a.saha-btn--link:focus-visible {
 	color: var(--saha-secondary, #1f2937);
 	filter: none;
 }

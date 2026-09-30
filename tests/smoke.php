@@ -500,5 +500,19 @@ check( 'giá trị CSS bẩn trong DB bị bỏ', false === strpos( $saha_dirty_
 check( 'url() lạ trong giá trị bị bỏ', Saha\Core\Builder\CssRules::cleanValue( 'url("javascript:alert(1)")' ), '' );
 check( 'url() ảnh hợp lệ được giữ', Saha\Core\Builder\CssRules::cleanValue( 'url("https://tongkhokeodan.com/a.jpg")' ), 'url("https://tongkhokeodan.com/a.jpg")' );
 
+echo "Builder\\CssRules — selector (SCC 1.3)\n";
+$saha_rules = ( new Saha\Core\Builder\CssRules() )->forNode( 'aaaaaaaa' );
+$saha_rules->put( 'desktop', ' :where(h1, h2)', 'color', 'red' );
+$saha_rules->put( 'desktop', ' a, body', 'display', 'none' );
+$saha_rules->put( 'desktop', ' :where(a', 'color', 'blue' );
+$saha_sel_css = $saha_rules->toCss();
+check( 'dấu phẩy trong :where() được giữ', false !== strpos( $saha_sel_css, '.saha-e-aaaaaaaa :where(h1, h2){color:red}' ), true );
+check( 'dấu phẩy cấp ngoài (thoát phạm vi) bị bỏ cả luật', false === strpos( $saha_sel_css, 'display:none' ), true );
+check( 'ngoặc không cân bị bỏ', false === strpos( $saha_sel_css, 'blue' ), true );
+$saha_sec = saha_bs( array( 'elements' => array( array( 'id' => 'secccccc', 'type' => 'section', 'props' => array( 'textColor' => '#ffffff' ), 'children' => array( array( 'id' => 'hhhhhhhh', 'type' => 'heading', 'props' => array( 'color' => '#ff0000' ) ) ) ) ) ) )['document'];
+$saha_sec_css = ( new CssGenerator() )->document( $saha_sec );
+check( 'màu chữ section áp cho tiêu đề bên trong', false !== strpos( $saha_sec_css, '.saha-e-secccccc :where(h1, h2, h3, h4, h5, h6){color:#ffffff}' ), true );
+check( 'màu riêng của tiêu đề đứng sau (thắng)', strpos( $saha_sec_css, '.saha-e-hhhhhhhh{' ) > strpos( $saha_sec_css, ':where(h1' ), true );
+
 echo "\n$pass passed, $fail failed\n";
 exit( $fail > 0 ? 1 : 0 );

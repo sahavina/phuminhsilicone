@@ -1,0 +1,515 @@
+// SAHA Builder — màn hình toàn trang trong wp-admin.
+
+$toolbar-height: 52px;
+$left-width: 272px;
+$right-width: 320px;
+$border: #dcdcde;
+$accent: var(--wp-admin-theme-color, #3858e9);
+
+// Ẩn khung wp-admin.
+body.saha-builder-fullscreen {
+	overflow: hidden;
+
+	#adminmenumain,
+	#wpadminbar,
+	#wpfooter,
+	#screen-meta,
+	#screen-meta-links {
+		display: none;
+	}
+
+	#wpcontent,
+	#wpbody-content {
+		margin: 0;
+		padding: 0;
+	}
+}
+
+html.wp-toolbar:has(body.saha-builder-fullscreen) {
+	padding-top: 0;
+}
+
+.saha-builder-root {
+	position: fixed;
+	inset: 0;
+	z-index: 99990;
+	background: #f0f0f1;
+	color: #1e1e1e;
+	font-size: 13px;
+}
+
+.saha-builder-loading,
+.saha-b-fatal {
+	display: grid;
+	gap: 12px;
+	place-content: center;
+	height: 100%;
+}
+
+.saha-b-app {
+	display: flex;
+	flex-direction: column;
+	height: 100%;
+}
+
+// Thanh công cụ
+.saha-b-toolbar {
+	display: grid;
+	flex: 0 0 $toolbar-height;
+	grid-template-columns: 1fr auto 1fr;
+	align-items: center;
+	gap: 8px;
+	padding: 0 8px;
+	border-bottom: 1px solid $border;
+	background: #fff;
+
+	&__start,
+	&__end {
+		display: flex;
+		align-items: center;
+		gap: 4px;
+		min-width: 0;
+	}
+
+	&__end {
+		justify-content: flex-end;
+	}
+
+	&__center {
+		display: flex;
+		gap: 2px;
+	}
+
+	&__title {
+		display: flex;
+		flex-direction: column;
+		min-width: 0;
+		line-height: 1.3;
+
+		span {
+			overflow: hidden;
+			color: #50575e;
+			text-overflow: ellipsis;
+			white-space: nowrap;
+		}
+	}
+}
+
+.saha-b-notices {
+	position: absolute;
+	top: $toolbar-height + 8;
+	left: 50%;
+	z-index: 20;
+	display: grid;
+	gap: 8px;
+	width: min(640px, 90vw);
+	transform: translateX(-50%);
+
+	.components-notice {
+		margin: 0;
+		box-shadow: 0 4px 12px rgb(0 0 0 / 15%);
+	}
+}
+
+.saha-b-body {
+	display: flex;
+	flex: 1;
+	min-height: 0;
+}
+
+// Sidebar
+.saha-b-sidebar {
+	display: flex;
+	flex-direction: column;
+	min-height: 0;
+	background: #fff;
+
+	&--left {
+		flex: 0 0 $left-width;
+		border-right: 1px solid $border;
+	}
+
+	&--right {
+		flex: 0 0 $right-width;
+		border-left: 1px solid $border;
+	}
+
+	&__scroll {
+		flex: 1;
+		min-height: 0;
+		overflow-y: auto;
+		padding: 12px;
+	}
+}
+
+.saha-b-tabs {
+	display: flex;
+	border-bottom: 1px solid $border;
+
+	&__tab {
+		flex: 1;
+		padding: 10px 8px;
+		border: 0;
+		border-bottom: 2px solid transparent;
+		background: none;
+		color: #50575e;
+		font-weight: 500;
+		cursor: pointer;
+
+		&:hover {
+			color: $accent;
+		}
+
+		&.is-active {
+			border-bottom-color: $accent;
+			color: #1e1e1e;
+		}
+
+		&:focus-visible {
+			outline: 2px solid $accent;
+			outline-offset: -2px;
+		}
+	}
+
+	&__error {
+		color: #d63638;
+	}
+}
+
+.saha-b-hint {
+	margin: 0 0 12px;
+	color: #50575e;
+}
+
+// Bảng Thêm
+.saha-b-inserter {
+
+	&__group h3 {
+		margin: 16px 0 8px;
+		color: #50575e;
+		font-size: 11px;
+		font-weight: 600;
+		text-transform: uppercase;
+	}
+
+	&__grid {
+		display: grid;
+		grid-template-columns: repeat(3, 1fr);
+		gap: 6px;
+	}
+
+	&__item {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 6px;
+		padding: 12px 4px;
+		border: 1px solid $border;
+		border-radius: 4px;
+		background: #fff;
+		font-size: 12px;
+		cursor: grab;
+
+		&:hover,
+		&:focus-visible {
+			border-color: $accent;
+			color: $accent;
+		}
+
+		&:disabled {
+			cursor: not-allowed;
+			opacity: 0.5;
+		}
+	}
+}
+
+// Navigator
+.saha-b-nav {
+
+	ul {
+		margin: 0;
+		padding: 0;
+		list-style: none;
+	}
+
+	li {
+		margin: 0;
+	}
+
+	&__row {
+		display: flex;
+		align-items: center;
+		gap: 2px;
+		border-radius: 3px;
+
+		&:hover {
+			background: #f0f0f1;
+		}
+
+		&.is-selected {
+			background: $accent;
+
+			button {
+				color: #fff;
+			}
+		}
+
+		&.has-error .saha-b-nav__label::after {
+			content: " ⚠";
+			color: #d63638;
+		}
+
+		&.is-drop-before {
+			box-shadow: inset 0 2px 0 $accent;
+		}
+
+		&.is-drop-after {
+			box-shadow: inset 0 -2px 0 $accent;
+		}
+
+		&.is-drop-inside {
+			outline: 2px dashed $accent;
+			outline-offset: -2px;
+		}
+	}
+
+	&__toggle {
+		flex: 0 0 18px;
+		padding: 0;
+		border: 0;
+		background: none;
+		cursor: pointer;
+	}
+
+	&__label {
+		flex: 1;
+		overflow: hidden;
+		padding: 6px 4px;
+		border: 0;
+		background: none;
+		text-align: left;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+		cursor: pointer;
+	}
+}
+
+// Canvas
+.saha-b-main {
+	position: relative;
+	flex: 1;
+	min-width: 0;
+}
+
+.saha-canvas {
+	position: absolute;
+	inset: 12px;
+	display: flex;
+	justify-content: center;
+	overflow: hidden;
+
+	&__stage {
+		overflow: hidden;
+		background: #fff;
+		box-shadow: 0 1px 4px rgb(0 0 0 / 12%);
+		transition: width 0.2s ease;
+
+		iframe {
+			display: block;
+			border: 0;
+			transform-origin: 0 0;
+		}
+	}
+
+	&__loading {
+		position: absolute;
+		inset: 0;
+		display: grid;
+		place-items: center;
+		background: #f0f0f1;
+	}
+}
+
+// Thiết lập
+.saha-b-settings {
+
+	&--empty {
+		color: #50575e;
+	}
+
+	&__head {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		justify-content: space-between;
+		gap: 4px;
+		margin-bottom: 8px;
+
+		h2 {
+			margin: 0;
+			font-size: 14px;
+		}
+	}
+
+	&__actions {
+		display: flex;
+	}
+
+	&__body {
+		min-width: 0;
+		margin: 12px 0 0;
+		padding: 0;
+		border: 0;
+	}
+}
+
+.saha-b-field {
+	margin-bottom: 16px;
+
+	&__label {
+		display: flex;
+		align-items: center;
+		gap: 6px;
+		margin-bottom: 6px;
+		font-size: 11px;
+		font-weight: 600;
+		text-transform: uppercase;
+	}
+
+	&__device {
+		display: inline-flex;
+		color: $accent;
+	}
+
+	&__help {
+		margin: 4px 0 0;
+		color: #757575;
+		font-size: 12px;
+	}
+
+	&__error {
+		margin: 4px 0 0;
+		color: #d63638;
+		font-size: 12px;
+	}
+
+	&.has-error input,
+	&.has-error select,
+	&.has-error textarea {
+		border-color: #d63638;
+		box-shadow: 0 0 0 1px #d63638;
+	}
+}
+
+.saha-b-buttons {
+	display: flex;
+	gap: 2px;
+
+	.is-inherited {
+		opacity: 0.6;
+	}
+}
+
+.saha-b-grid-2 {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 8px;
+}
+
+.saha-b-spacing {
+	display: grid;
+	grid-template-columns: repeat(4, 1fr) auto;
+	align-items: end;
+	gap: 4px;
+
+	.components-base-control__label {
+		font-size: 10px;
+	}
+}
+
+.saha-b-typography {
+	display: grid;
+	gap: 8px;
+}
+
+.saha-b-color {
+
+	&__palette {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 6px;
+		margin-bottom: 6px;
+	}
+
+	&__swatch {
+		width: 24px;
+		height: 24px;
+		padding: 0;
+		border: 1px solid rgb(0 0 0 / 20%);
+		border-radius: 50%;
+		cursor: pointer;
+
+		&.is-selected {
+			box-shadow: 0 0 0 2px #fff, 0 0 0 4px $accent;
+		}
+	}
+
+	&__row {
+		display: flex;
+		align-items: center;
+		gap: 6px;
+	}
+
+	&__current {
+		flex: 0 0 32px;
+		height: 32px;
+		padding: 0;
+		border: 1px solid $border;
+		border-radius: 4px;
+		background-image: linear-gradient(45deg, #eee 25%, transparent 25%, transparent 75%, #eee 75%), linear-gradient(45deg, #eee 25%, transparent 25%, transparent 75%, #eee 75%);
+		background-size: 8px 8px;
+		background-position: 0 0, 4px 4px;
+		cursor: pointer;
+	}
+}
+
+.saha-b-media {
+
+	&__preview {
+		margin-bottom: 8px;
+
+		img {
+			display: block;
+			max-width: 100%;
+			max-height: 140px;
+			border-radius: 4px;
+		}
+	}
+
+	&__actions {
+		display: flex;
+		align-items: center;
+		gap: 8px;
+		margin-bottom: 8px;
+	}
+}
+
+.saha-b-background,
+.saha-b-link {
+	display: grid;
+	gap: 10px;
+}
+
+.saha-b-richtext {
+
+	.wp-editor-area {
+		width: 100%;
+	}
+}
+
+.saha-b-subfield__label {
+	margin-bottom: 6px;
+	color: #50575e;
+	font-size: 12px;
+	font-weight: 500;
+}

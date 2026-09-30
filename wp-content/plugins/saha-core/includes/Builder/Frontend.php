@@ -87,7 +87,17 @@ final class Frontend {
 	 * @param int $post_id Post ID.
 	 */
 	private function enqueueFor( int $post_id ): void {
-		wp_enqueue_style( self::BASE_STYLE, SAHA_CORE_URL . 'public/assets/css/builder.css', array(), SAHA_CORE_VERSION );
+		self::enqueueBase();
+
+		/**
+		 * Có nạp CSS đã lưu của layout không (canvas editor tắt: dùng CSS đang sửa).
+		 *
+		 * @param bool $enabled Mặc định true.
+		 * @param int  $post_id Post ID.
+		 */
+		if ( ! apply_filters( 'saha_builder_enqueue_layout_css', true, $post_id ) ) {
+			return;
+		}
 
 		$state = LayoutService::ensureCss( $post_id );
 
@@ -100,6 +110,13 @@ final class Frontend {
 		if ( $state['inline'] ) {
 			wp_add_inline_style( self::BASE_STYLE, LayoutService::inlineCss( $post_id ) );
 		}
+	}
+
+	/**
+	 * Nạp CSS nền của builder (canvas editor gọi trực tiếp).
+	 */
+	public static function enqueueBase(): void {
+		wp_enqueue_style( self::BASE_STYLE, SAHA_CORE_URL . 'public/assets/css/builder.css', array(), SAHA_CORE_VERSION );
 	}
 
 	/**

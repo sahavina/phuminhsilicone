@@ -108,6 +108,9 @@ final class Column extends Element {
 			)[ $v ] ?? null
 		);
 		$css->set( '', 'color', $node->prop( 'textColor' ) );
+		// Theme thường đặt màu riêng cho h1–h6: áp màu chữ cho tiêu đề bên trong, specificity
+		// (0,1,0) như style riêng của Heading — CSS của con sinh sau nên màu tự đặt vẫn thắng.
+		$css->set( ' :where(h1, h2, h3, h4, h5, h6)', 'color', $node->prop( 'textColor' ) );
 
 		Section::background( $css, '', $node->prop( 'background' ) );
 	}

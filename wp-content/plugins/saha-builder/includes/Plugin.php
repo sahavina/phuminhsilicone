@@ -9,6 +9,8 @@ declare( strict_types=1 );
 
 namespace Saha\Builder;
 
+use Saha\Builder\Admin\BuilderScreen;
+use Saha\Builder\Admin\EntryPoints;
 use Saha\Builder\Admin\ThemeOptionsScreen;
 
 defined( 'ABSPATH' ) || exit;
@@ -38,8 +40,12 @@ final class Plugin {
 			return;
 		}
 
+		( new Canvas() )->register();
+		( new EntryPoints() )->register();
+
 		if ( is_admin() ) {
 			( new ThemeOptionsScreen() )->register();
+			( new BuilderScreen() )->register();
 		}
 	}
 

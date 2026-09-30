@@ -59,6 +59,7 @@ module.exports = [
 		'saha-builder',
 		{
 			'theme-options': './wp-content/plugins/saha-builder/src/theme-options/index.js',
+			builder: './wp-content/plugins/saha-builder/src/builder/index.js',
 		},
 		'wp-content/plugins/saha-builder/build'
 	),

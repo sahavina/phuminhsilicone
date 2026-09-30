@@ -16,6 +16,7 @@
     "check-engines": "wp-scripts check-engines"
   },
   "devDependencies": {
-    "@wordpress/scripts": "36.0.0"
+    "@wordpress/scripts": "36.0.0",
+    "vitest": "5.0.3"
   }
 }
