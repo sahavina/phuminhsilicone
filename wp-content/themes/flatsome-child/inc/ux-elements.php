@@ -64,6 +64,50 @@ add_action(
 			)
 		);
 
+		add_ux_builder_shortcode(
+			'saha_brand_grid',
+			array(
+				'name'     => __( 'SAHA Brand Grid', 'flatsome-child' ),
+				'category' => __( 'SAHA', 'flatsome-child' ),
+				'priority' => 12,
+				'options'  => array(
+					'number'     => array(
+						'type'    => 'textfield',
+						'heading' => __( 'Số thương hiệu (0 = tất cả)', 'flatsome-child' ),
+						'default' => '0',
+					),
+					'orderby'    => array(
+						'type'    => 'select',
+						'heading' => __( 'Sắp xếp theo', 'flatsome-child' ),
+						'default' => 'name',
+						'options' => array(
+							'name'  => __( 'Tên', 'flatsome-child' ),
+							'count' => __( 'Số sản phẩm', 'flatsome-child' ),
+						),
+					),
+					'order'      => array(
+						'type'    => 'select',
+						'heading' => __( 'Thứ tự', 'flatsome-child' ),
+						'default' => 'ASC',
+						'options' => array(
+							'ASC'  => __( 'Tăng dần', 'flatsome-child' ),
+							'DESC' => __( 'Giảm dần', 'flatsome-child' ),
+						),
+					),
+					'hide_empty' => array(
+						'type'    => 'checkbox',
+						'heading' => __( 'Ẩn thương hiệu chưa có sản phẩm', 'flatsome-child' ),
+						'default' => '1',
+					),
+					'show_count' => array(
+						'type'    => 'checkbox',
+						'heading' => __( 'Hiện số sản phẩm', 'flatsome-child' ),
+						'default' => '1',
+					),
+				),
+			)
+		);
+
 		/**
 		 * Cho phép phase sau đăng ký thêm UX element.
 		 */

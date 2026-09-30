@@ -146,3 +146,117 @@ if ( ! function_exists( 'saha_api_url' ) ) {
 		return rest_url( 'saha/v1/' . ltrim( $path, '/' ) );
 	}
 }
+
+if ( ! function_exists( 'saha_get_brand' ) ) {
+	/**
+	 * Dữ liệu một thương hiệu.
+	 *
+	 * @param int|string|WP_Term $brand Term ID, slug hoặc WP_Term.
+	 * @return array<string, mixed> Rỗng nếu không tìm thấy.
+	 */
+	function saha_get_brand( $brand ): array {
+		return Saha\Core\Brand::get( $brand );
+	}
+}
+
+if ( ! function_exists( 'saha_get_brands' ) ) {
+	/**
+	 * Danh sách thương hiệu (có cache).
+	 *
+	 * @param array<string, mixed> $args orderby, order, number, hide_empty, include.
+	 * @return array<int, array<string, mixed>>
+	 */
+	function saha_get_brands( array $args = array() ): array {
+		return Saha\Core\Brand::get_all( $args );
+	}
+}
+
+if ( ! function_exists( 'saha_get_product_brand' ) ) {
+	/**
+	 * Thương hiệu của một sản phẩm.
+	 *
+	 * @param int $product_id Product ID.
+	 * @return array<string, mixed>
+	 */
+	function saha_get_product_brand( int $product_id ): array {
+		return Saha\Core\Brand::get_for_product( $product_id );
+	}
+}
+
+if ( ! function_exists( 'saha_get_product_meta' ) ) {
+	/**
+	 * Một meta tuỳ biến của sản phẩm.
+	 *
+	 * @param int    $product_id Product ID.
+	 * @param string $key        Key không prefix, ví dụ `unit`.
+	 * @return mixed
+	 */
+	function saha_get_product_meta( int $product_id, string $key ) {
+		return Saha\Core\Product::get_meta( $product_id, $key );
+	}
+}
+
+if ( ! function_exists( 'saha_get_product_specs' ) ) {
+	/**
+	 * Thông số kỹ thuật của sản phẩm.
+	 *
+	 * @param int $product_id Product ID.
+	 * @return array<int, array<string, string>>
+	 */
+	function saha_get_product_specs( int $product_id ): array {
+		return Saha\Core\Product::get_specs( $product_id );
+	}
+}
+
+if ( ! function_exists( 'saha_get_product_documents' ) ) {
+	/**
+	 * Tài liệu của sản phẩm (TDS/SDS/Catalogue/Manual).
+	 *
+	 * @param int $product_id Product ID.
+	 * @return array<int, array<string, mixed>>
+	 */
+	function saha_get_product_documents( int $product_id ): array {
+		return Saha\Core\Product::get_documents( $product_id );
+	}
+}
+
+if ( ! function_exists( 'saha_get_availability_label' ) ) {
+	/**
+	 * Nhãn tình trạng hàng.
+	 *
+	 * @param int $product_id Product ID.
+	 */
+	function saha_get_availability_label( int $product_id ): string {
+		return Saha\Core\Product::get_availability_label( $product_id );
+	}
+}
+
+if ( ! function_exists( 'saha_get_product_card_data' ) ) {
+	/**
+	 * Dữ liệu product card.
+	 *
+	 * @param int $product_id Product ID.
+	 * @return array<string, mixed>
+	 */
+	function saha_get_product_card_data( int $product_id ): array {
+		return Saha\Core\Product::get_card_data( $product_id );
+	}
+}
+
+if ( ! function_exists( 'saha_get_product_cta' ) ) {
+	/**
+	 * Chế độ và nhãn CTA của sản phẩm, đã áp dụng fallback về cấu hình chung.
+	 *
+	 * @param int $product_id Product ID.
+	 * @return array{mode: string, label: string}
+	 */
+	function saha_get_product_cta( int $product_id ): array {
+		$mode  = (string) Saha\Core\Product::get_meta( $product_id, 'cta_mode' );
+		$label = (string) Saha\Core\Product::get_meta( $product_id, 'cta_label' );
+
+		return array(
+			'mode'  => '' !== $mode ? $mode : 'quote',
+			'label' => '' !== $label ? $label : saha_cta_label(),
+		);
+	}
+}

@@ -96,6 +96,9 @@ final class Install {
 			( new Roles() )->install();
 			update_option( self::VERSION_OPTION, SAHA_CORE_VERSION );
 
+			// Taxonomy/rewrite có thể thay đổi giữa các version.
+			update_option( 'saha_core_flush_rewrite', 1 );
+
 			/**
 			 * Plugin vừa được nâng cấp.
 			 *

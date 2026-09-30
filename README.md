@@ -25,6 +25,7 @@ WordPress core, Flatsome, WooCommerce, uploads, cache, `wp-config.php` **không*
 |---|---|
 | [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) | kiến trúc tổng thể, data model, taxonomy, API, security, SEO, performance |
 | [docs/PHASE-1.md](docs/PHASE-1.md) | Foundation — goal, files, DB, hooks, security, testing, acceptance |
+| [docs/PHASE-2.md](docs/PHASE-2.md) | Catalogue — taxonomy, term meta, product fields, frontend sản phẩm & thương hiệu |
 | [wp-content/plugins/saha-core/README.md](wp-content/plugins/saha-core/README.md) | module plugin |
 | [wp-content/themes/flatsome-child/README.md](wp-content/themes/flatsome-child/README.md) | module theme |
 
@@ -42,7 +43,7 @@ WordPress core, Flatsome, WooCommerce, uploads, cache, `wp-config.php` **không*
 | Phase | Nội dung | Trạng thái |
 |---|---|---|
 | 1 | Foundation | ✅ hoàn thành |
-| 2 | Catalogue (brand, product fields, frontend) | ⏳ |
+| 2 | Catalogue (brand, product fields, frontend) | ✅ hoàn thành |
 | 3 | Search + filter | ⏳ |
 | 4 | Quote + Lead + admin CRM | ⏳ |
 | 5 | Homepage + UX elements | ⏳ |

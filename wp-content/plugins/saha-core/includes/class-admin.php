@@ -80,18 +80,68 @@ final class Admin {
 	 * @param string $hook_suffix Hook hiện tại.
 	 */
 	public function enqueue( string $hook_suffix ): void {
-		if ( false === strpos( $hook_suffix, self::MENU_SLUG ) ) {
+		$on_saha_page = false !== strpos( $hook_suffix, self::MENU_SLUG );
+		$needs_editor = $this->screen_needs_field_ui();
+
+		if ( ! $on_saha_page && ! $needs_editor ) {
 			return;
 		}
-
-		$path = SAHA_CORE_PATH . 'admin/assets/admin.css';
 
 		wp_enqueue_style(
 			'saha-core-admin',
 			SAHA_CORE_URL . 'admin/assets/admin.css',
 			array(),
-			is_readable( $path ) ? (string) filemtime( $path ) : SAHA_CORE_VERSION
+			self::asset_version( 'admin/assets/admin.css' )
 		);
+
+		if ( ! $needs_editor ) {
+			return;
+		}
+
+		// Media picker cho logo/banner thương hiệu và tài liệu sản phẩm.
+		wp_enqueue_media();
+
+		wp_enqueue_script(
+			'saha-core-admin',
+			SAHA_CORE_URL . 'admin/assets/admin.js',
+			array(),
+			self::asset_version( 'admin/assets/admin.js' ),
+			true
+		);
+	}
+
+	/**
+	 * Screen hiện tại có chứa field tuỳ biến của SAHA?
+	 */
+	private function screen_needs_field_ui(): bool {
+		if ( ! function_exists( 'get_current_screen' ) ) {
+			return false;
+		}
+
+		$screen = get_current_screen();
+
+		if ( ! $screen ) {
+			return false;
+		}
+
+		if ( 'product' === $screen->post_type && in_array( $screen->base, array( 'post', 'post-new' ), true ) ) {
+			return true;
+		}
+
+		return 'edit-tags' === $screen->base || 'term' === $screen->base
+			? in_array( $screen->taxonomy, Taxonomies::active(), true )
+			: false;
+	}
+
+	/**
+	 * Version asset theo filemtime.
+	 *
+	 * @param string $relative Đường dẫn tương đối trong plugin.
+	 */
+	private static function asset_version( string $relative ): string {
+		$path = SAHA_CORE_PATH . ltrim( $relative, '/' );
+
+		return is_readable( $path ) ? (string) filemtime( $path ) : SAHA_CORE_VERSION;
 	}
 
 	/**

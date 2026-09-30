@@ -61,8 +61,16 @@ add_action(
 			wp_enqueue_style( 'saha-product' );
 		}
 
-		// Brand archive (taxonomy đăng ký ở phase 2).
-		if ( is_tax( array( 'product_brand', 'product_application' ) ) ) {
+		// Brand archive, hoặc trang có block/shortcode thương hiệu.
+		if (
+			is_tax( array( 'product_brand', 'product_application' ) )
+			|| saha_theme_content_has_shortcode( 'saha_brand_grid' )
+		) {
+			wp_enqueue_style( 'saha-brand' );
+		}
+
+		// Grid sản phẩm cùng thương hiệu nằm trong trang single product.
+		if ( is_singular( 'product' ) ) {
 			wp_enqueue_style( 'saha-brand' );
 		}
 
