@@ -63,6 +63,10 @@ Cột **Thêm** có 3 mục ở trên cùng: **Element · Khối mẫu · Block 
 - **Khối mẫu**: section dựng sẵn (hero, danh mục, sản phẩm nổi bật, quảng bá, vì sao chọn, thương hiệu, tin tức + đánh giá, hỏi đáp, CTA báo giá, ảnh + nội dung…). Bấm hoặc kéo vào trang → được **bản sao** để sửa tự do. Trang đã có tiêu đề H1 thì H1 của khối mẫu tự thành H2. Khối "Tin tức + khách hàng nói" có đánh giá **mẫu** — thay bằng đánh giá thật.
 - **Block đã lưu**: các Block dùng chung đã tạo. Chèn vào là **liên kết** tới block — sửa block một nơi, mọi trang dùng nó cùng đổi. Tạo block: chọn element → tab **Nội dung** → **Lưu thành block**.
 
+### Bảng Cấu trúc
+
+Tab **Cấu trúc** (cột trái) hiện trang dạng khối: mỗi Section một thẻ, mặc định thu gọn — bấm ▸ để mở. Tên cạnh "Section" là tiêu đề đầu tiên bên trong; muốn đặt tên riêng: chọn element → tab **Nâng cao** → **Tên trong Cấu trúc** (chỉ hiện trong builder). Khối ẩn trên mọi thiết bị có nền sọc. **+ Thêm vào Section** / **+ Thêm element** mở bảng Thêm đúng chỗ. Kéo thẻ để đổi thứ tự.
+
 ### Element hay dùng
 
 | Element | Ghi chú |

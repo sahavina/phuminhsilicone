@@ -244,6 +244,13 @@ final class ElementRegistry {
 	 */
 	public static function advancedControls(): array {
 		return array(
+			// Chỉ hiện trong bảng Cấu trúc của builder (không in ra website).
+			'label'       => array(
+				'type'      => 'text',
+				'label'     => __( 'Tên trong Cấu trúc', 'saha-core' ),
+				'section'   => 'advanced',
+				'maxLength' => 60,
+			),
 			'margin'      => array(
 				'type'       => 'spacing',
 				'label'      => __( 'Lề ngoài (margin)', 'saha-core' ),

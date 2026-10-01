@@ -531,7 +531,11 @@ function Layout( {
 						</button>
 					</div>
 					<div className="saha-b-sidebar__scroll">
-						{ 'insert' === leftTab ? <Inserter /> : <Navigator /> }
+						{ 'insert' === leftTab ? (
+							<Inserter />
+						) : (
+							<Navigator onAdd={ () => setLeftTab( 'insert' ) } />
+						) }
 					</div>
 				</aside>
 

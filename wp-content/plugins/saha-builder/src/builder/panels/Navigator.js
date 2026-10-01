@@ -1,20 +1,26 @@
 /**
- * Bảng "Cấu trúc": cây element — chọn, thu gọn, kéo để sắp xếp lại.
+ * Bảng "Cấu trúc": cây element dạng khối — chọn, thu gọn, kéo để sắp xếp lại.
+ *
+ * - Section (cấp ngoài cùng) mặc định thu gọn; element đang chọn luôn được mở ra và cuộn tới.
+ * - Mỗi dòng: tên loại + mô tả (tên tự đặt ở Nâng cao, không có thì chữ đầu tiên bên trong).
+ * - Ẩn trên mọi thiết bị → nền sọc; ẩn trên một số thiết bị → nhãn nhỏ.
+ * - "+ Thêm vào …" dưới Section / Hàng đang mở và "+ Thêm element" cuối danh sách:
+ *   chọn đúng chỗ rồi mở bảng Thêm.
  */
 import { Button } from '@wordpress/components';
-import { useState } from '@wordpress/element';
-import { __ } from '@wordpress/i18n';
+import { useEffect, useRef, useState } from '@wordpress/element';
+import { __, sprintf } from '@wordpress/i18n';
 
 import { useActions } from '../actions';
 import { drag, useBuilder } from '../context';
-import {
-	ROOT,
-	ancestors,
-	canContain,
-	findNode,
-	isWithin,
-	nodeLabel,
-} from '../store/tree';
+import { hasCustomLabel, hiddenState, nodeCaption } from '../store/outline';
+import { ROOT, ancestors, canContain, findNode, isWithin } from '../store/tree';
+
+const DEVICE_LABELS = {
+	desktop: __( 'desktop', 'saha-builder' ),
+	tablet: __( 'tablet', 'saha-builder' ),
+	mobile: __( 'mobile', 'saha-builder' ),
+};
 
 /**
  * Vị trí thả trên một dòng: 1/4 trên = trước, 1/4 dưới = sau, giữa = vào trong (nếu chứa được).
@@ -73,32 +79,51 @@ function dropOnRow( { doc, defs, node, parentId, index, event } ) {
 	return null;
 }
 
-function Row( { node, parentId, index, depth, collapsed, toggle } ) {
+function Row( { node, parentId, index, depth, collapsed, toggle, onAdd } ) {
 	const { state, dispatch, defs } = useBuilder();
 	const { insertType, insertCopy, moveTo } = useActions();
 	const [ dropMode, setDropMode ] = useState( null );
-	const hasChildren = ( node.children || [] ).length > 0;
+	const rowRef = useRef( null );
+	const children = node.children || [];
+	const hasChildren = children.length > 0;
 	const isCollapsed = collapsed.has( node.id );
+	const isSelected = state.selectedId === node.id;
+	const canHaveChildren = ( defs[ node.type ]?.allowedChildren || [] ).length;
 	const hasError = Object.keys( state.errors ).some(
 		( key ) => key === node.id || key.startsWith( node.id + '.' )
 	);
+	const name = defs[ node.type ]?.name || node.type;
+	const caption = nodeCaption( node );
+	const hidden = hiddenState( node );
+
+	// Element vừa được chọn (trên canvas hoặc ở đây) → cuộn tới dòng của nó.
+	useEffect( () => {
+		if ( isSelected && rowRef.current ) {
+			rowRef.current.scrollIntoView( { block: 'nearest' } );
+		}
+	}, [ isSelected ] );
+
+	const select = () => dispatch( { type: 'SELECT', id: node.id } );
 
 	return (
 		<li
 			role="treeitem"
 			aria-expanded={ hasChildren ? ! isCollapsed : undefined }
-			aria-selected={ state.selectedId === node.id }
+			aria-selected={ isSelected }
+			className={ 'saha-b-nav__item is-depth-' + Math.min( depth, 3 ) }
 		>
 			<div
+				ref={ rowRef }
 				className={ [
 					'saha-b-nav__row',
-					state.selectedId === node.id && 'is-selected',
+					0 === depth && 'is-top',
+					isSelected && 'is-selected',
+					hidden.all && 'is-hidden',
 					dropMode && 'is-drop-' + dropMode,
 					hasError && 'has-error',
 				]
 					.filter( Boolean )
 					.join( ' ' ) }
-				style={ { paddingLeft: 8 + depth * 14 } }
 				draggable={ ! state.readOnly }
 				onDragStart={ ( event ) => {
 					event.stopPropagation();
@@ -160,8 +185,16 @@ function Row( { node, parentId, index, depth, collapsed, toggle } ) {
 						className="saha-b-nav__toggle"
 						aria-label={
 							isCollapsed
-								? __( 'Mở rộng', 'saha-builder' )
-								: __( 'Thu gọn', 'saha-builder' )
+								? sprintf(
+										/* translators: %s: tên element */
+										__( 'Mở rộng %s', 'saha-builder' ),
+										name
+									)
+								: sprintf(
+										/* translators: %s: tên element */
+										__( 'Thu gọn %s', 'saha-builder' ),
+										name
+									)
 						}
 						onClick={ () => toggle( node.id ) }
 					>
@@ -173,16 +206,51 @@ function Row( { node, parentId, index, depth, collapsed, toggle } ) {
 				<button
 					type="button"
 					className="saha-b-nav__label"
-					onClick={ () =>
-						dispatch( { type: 'SELECT', id: node.id } )
-					}
+					onClick={ select }
 				>
-					{ nodeLabel( defs, node ) }
+					<span className="saha-b-nav__type">{ name }</span>
+					{ caption ? (
+						<span
+							className={
+								'saha-b-nav__caption' +
+								( hasCustomLabel( node ) ? ' is-custom' : '' )
+							}
+						>
+							{ caption }
+						</span>
+					) : null }
+					{ hidden.all ? (
+						<span className="saha-b-nav__tag">
+							{ __( 'Ẩn', 'saha-builder' ) }
+						</span>
+					) : null }
+					{ ! hidden.all && hidden.devices.length ? (
+						<span className="saha-b-nav__tag">
+							{ sprintf(
+								/* translators: %s: danh sách thiết bị */
+								__( 'Ẩn: %s', 'saha-builder' ),
+								hidden.devices
+									.map( ( d ) => DEVICE_LABELS[ d ] )
+									.join( ', ' )
+							) }
+						</span>
+					) : null }
+				</button>
+				{ /* Cùng việc với bấm tên (mở thiết lập) — chỉ là điểm bấm quen tay, không thêm vào thứ tự Tab. */ }
+				<button
+					type="button"
+					className="saha-b-nav__gear"
+					tabIndex={ -1 }
+					aria-hidden="true"
+					title={ __( 'Thiết lập', 'saha-builder' ) }
+					onClick={ select }
+				>
+					⚙
 				</button>
 			</div>
 			{ hasChildren && ! isCollapsed && (
 				<ul role="group">
-					{ node.children.map( ( child, i ) => (
+					{ children.map( ( child, i ) => (
 						<Row
 							key={ child.id }
 							node={ child }
@@ -191,17 +259,77 @@ function Row( { node, parentId, index, depth, collapsed, toggle } ) {
 							depth={ depth + 1 }
 							collapsed={ collapsed }
 							toggle={ toggle }
+							onAdd={ onAdd }
 						/>
 					) ) }
 				</ul>
 			) }
+			{ ! state.readOnly &&
+			canHaveChildren &&
+			depth <= 1 &&
+			( ! hasChildren || ! isCollapsed ) ? (
+				<button
+					type="button"
+					className="saha-b-nav__add"
+					onClick={ () => {
+						select();
+						onAdd();
+					} }
+				>
+					{ sprintf(
+						/* translators: %s: tên element chứa */
+						__( '+ Thêm vào %s', 'saha-builder' ),
+						name
+					) }
+				</button>
+			) : null }
 		</li>
 	);
 }
 
-export default function Navigator() {
+export default function Navigator( { onAdd = () => {} } ) {
 	const { state, dispatch } = useBuilder();
-	const [ collapsed, setCollapsed ] = useState( () => new Set() );
+
+	// Mặc định: mọi section (cấp ngoài cùng) thu gọn — trừ nhánh chứa element đang chọn.
+	const [ collapsed, setCollapsed ] = useState( () => {
+		const open = new Set(
+			state.selectedId
+				? [
+						...ancestors( state.doc, state.selectedId ).map(
+							( a ) => a.id
+						),
+						state.selectedId,
+					]
+				: []
+		);
+
+		return new Set(
+			state.doc.elements
+				.filter(
+					( n ) => ( n.children || [] ).length && ! open.has( n.id )
+				)
+				.map( ( n ) => n.id )
+		);
+	} );
+
+	// Chọn element nằm trong nhánh đang thu gọn → mở các nhánh cha.
+	useEffect( () => {
+		if ( ! state.selectedId ) {
+			return;
+		}
+
+		const chain = ancestors( state.doc, state.selectedId ).map(
+			( a ) => a.id
+		);
+
+		setCollapsed( ( prev ) =>
+			chain.some( ( id ) => prev.has( id ) )
+				? new Set(
+						[ ...prev ].filter( ( id ) => ! chain.includes( id ) )
+					)
+				: prev
+		);
+	}, [ state.selectedId, state.doc ] );
 
 	const toggle = ( id ) =>
 		setCollapsed( ( prev ) => {
@@ -214,31 +342,58 @@ export default function Navigator() {
 			return next;
 		} );
 
-	// Element đang chọn luôn nhìn thấy: mở các nhánh cha.
-	const hidden = state.selectedId
-		? ancestors( state.doc, state.selectedId ).some( ( a ) =>
-				collapsed.has( a.id )
+	const collapseAll = () =>
+		setCollapsed(
+			new Set(
+				state.doc.elements
+					.filter( ( n ) => ( n.children || [] ).length )
+					.map( ( n ) => n.id )
 			)
-		: false;
+		);
+
+	const addAtEnd = () => {
+		dispatch( { type: 'SELECT', id: null } );
+		onAdd();
+	};
 
 	if ( ! state.doc.elements.length ) {
 		return (
-			<p className="saha-b-hint">
-				{ __( 'Trang chưa có element nào.', 'saha-builder' ) }
-			</p>
+			<div className="saha-b-nav">
+				<p className="saha-b-hint">
+					{ __( 'Trang chưa có element nào.', 'saha-builder' ) }
+				</p>
+				{ ! state.readOnly && (
+					<button
+						type="button"
+						className="saha-b-nav__add saha-b-nav__add--end"
+						onClick={ addAtEnd }
+					>
+						{ __( '+ Thêm element', 'saha-builder' ) }
+					</button>
+				) }
+			</div>
 		);
 	}
 
 	return (
 		<div className="saha-b-nav">
-			{ hidden && (
+			<div className="saha-b-nav__tools">
 				<Button
 					variant="link"
 					onClick={ () => setCollapsed( new Set() ) }
 				>
-					{ __( 'Mở hết để thấy element đang chọn', 'saha-builder' ) }
+					{ __( 'Mở hết', 'saha-builder' ) }
 				</Button>
-			) }
+				<Button variant="link" onClick={ collapseAll }>
+					{ __( 'Thu gọn hết', 'saha-builder' ) }
+				</Button>
+				<Button
+					variant="link"
+					onClick={ () => dispatch( { type: 'SELECT', id: null } ) }
+				>
+					{ __( 'Bỏ chọn', 'saha-builder' ) }
+				</Button>
+			</div>
 			<ul
 				role="tree"
 				aria-label={ __( 'Cấu trúc trang', 'saha-builder' ) }
@@ -252,15 +407,19 @@ export default function Navigator() {
 						depth={ 0 }
 						collapsed={ collapsed }
 						toggle={ toggle }
+						onAdd={ onAdd }
 					/>
 				) ) }
 			</ul>
-			<Button
-				variant="link"
-				onClick={ () => dispatch( { type: 'SELECT', id: null } ) }
-			>
-				{ __( 'Bỏ chọn', 'saha-builder' ) }
-			</Button>
+			{ ! state.readOnly && (
+				<button
+					type="button"
+					className="saha-b-nav__add saha-b-nav__add--end"
+					onClick={ addAtEnd }
+				>
+					{ __( '+ Thêm element', 'saha-builder' ) }
+				</button>
+			) }
 		</div>
 	);
 }
