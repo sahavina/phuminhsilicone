@@ -108,13 +108,8 @@ Phiên bản: SAHA Core **1.29.0**, SAHA Theme **0.2.6**.
 - Xuất site local → nhập vào site **khác** thật (ảnh tải qua mạng) — mục 14 đã chạy giả lập (đổi `source`) ở 2.6.
 - `wp saha qa --strict` không cảnh báo — cần plugin SEO, object cache, số Zalo trên staging.
 
-## 7. Dữ liệu thử còn trên local (tạo trong Phase 2)
+## 7. Dữ liệu thử trên local — đã dọn (01/10/2026)
 
-| Dữ liệu | Ở đâu |
-|---|---|
-| Trang thử | #121 (D1), #125 (D3), #174 (2.7) |
-| Template nhập thử | #159–#167 (nháp, tên "[Thử import 2.6] …"); trang #157 trong thùng rác |
-| Ảnh tải lại khi thử import | #155, #156 |
-| Báo giá / lead mẫu | "[Mẫu] QA http-smoke…", "QA Khách thử" (#16), 2 lead nhận tin `qa-nl-*@example.com` |
+Đã xoá (sao lưu database trước khi xoá): trang thử #121, #125, #174; trang trong thùng rác #148, #149, #157; template nhập thử #159–#167; sản phẩm QA biến thể #136 + 8 biến thể; ảnh #155, #156 (chỉ trang thử dùng); 19 báo giá + 38 lead do QA tạo ("[Mẫu] QA http-smoke…", "QA …", lead liên hệ "[Mẫu]", đăng ký nhận tin `qa-nl-*`); option `saha_test_p27`, `saha_theme_options_before_import`.
 
-Dọn trước khi đưa dữ liệu local lên đâu khác: `wp saha unseed` (dữ liệu seed) + xoá các mục trên.
+Giữ lại: dữ liệu mẫu của `wp saha seed --with-crm` (3 báo giá, 4 lead "[Mẫu] …" — gỡ bằng `wp saha unseed`); template "(thử)" #109–#117 (đang dùng cho bài viết, blog, tìm kiếm, trang, 404); trang Phase 1 "Builder demo" #47, "Trang thử SAHA Builder" #50, "Trang chủ" #83.
