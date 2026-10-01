@@ -33,6 +33,8 @@ use Saha\Core\Builder\Elements\PostContent;
 use Saha\Core\Builder\Elements\PostExcerpt;
 use Saha\Core\Builder\Elements\PostMeta;
 use Saha\Core\Builder\Elements\PostTitle;
+use Saha\Core\Builder\Elements\QuoteList;
+use Saha\Core\Builder\Elements\QuoteListLink;
 use Saha\Core\Builder\Elements\ProductAddToCart;
 use Saha\Core\Builder\Elements\ProductAfterSummary;
 use Saha\Core\Builder\Elements\ProductArchive;
@@ -146,10 +148,12 @@ final class ElementRegistry {
 				new CategoryMenu(),
 				new Account(),
 				new Cart(),
+				new QuoteListLink(),
 				new Contact(),
 				new Social(),
 				new Copyright(),
 				// Template Builder — element động (mốc 2.2).
+				new QuoteList(),
 				new PostTitle(),
 				new PostContent(),
 				new PostExcerpt(),

@@ -84,6 +84,13 @@ $saha_win_rate    = $saha_closed > 0 ? round( $saha_won / $saha_closed * 100, 1 
 				<p class="description"><?php esc_html_e( 'Chưa có dữ liệu.', 'saha-core' ); ?></p>
 			<?php else : ?>
 				<table class="widefat striped">
+					<thead>
+						<tr>
+							<th scope="col"><?php esc_html_e( 'Sản phẩm', 'saha-core' ); ?></th>
+							<th scope="col" class="saha-num"><?php esc_html_e( 'Số yêu cầu', 'saha-core' ); ?></th>
+							<th scope="col" class="saha-num"><?php esc_html_e( 'Tổng SL (danh sách báo giá)', 'saha-core' ); ?></th>
+						</tr>
+					</thead>
 					<tbody>
 						<?php foreach ( $top_products as $saha_row ) : ?>
 							<tr>
@@ -93,6 +100,7 @@ $saha_win_rate    = $saha_closed > 0 ? round( $saha_won / $saha_closed * 100, 1 
 									</a>
 								</td>
 								<td class="saha-num"><?php echo esc_html( (string) $saha_row['total'] ); ?></td>
+								<td class="saha-num"><?php echo esc_html( (int) ( $saha_row['quantity'] ?? 0 ) > 0 ? number_format_i18n( (int) $saha_row['quantity'] ) : '—' ); ?></td>
 							</tr>
 						<?php endforeach; ?>
 					</tbody>

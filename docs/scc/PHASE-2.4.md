@@ -58,7 +58,7 @@ Element Tìm kiếm (live) [data-saha-live-search] ─► live-search.js ─► 
 |---|---|
 | `tests/smoke.php` (thêm: mặc định `mini_cart`, `live`; giá rỗng ở catalogue; selector HeaderRow) | 240 passed |
 | `tests/http-smoke.php` (thêm: `/search` trả `price` cho từng kết quả) | 35 passed, 2 skipped |
-| `npm run lint:js`, `lint:css`, `test:js` | đạt |
+| `npm run lint:js`, `lint:css`, `test:js` | đạt — lưu ý: hai script lint chỉ quét theme + saha-builder, **không** quét JS/CSS trong `saha-core/public/assets` của mốc này (bổ sung ở mốc 2.5: `node --check`) |
 | `wp saha qa` | 91 đạt, 3 cảnh báo (môi trường local), 0 lỗi; debug.log không có dòng mới |
 | Trình duyệt — gợi ý | gõ "243" → "Keo khoá ren Loctite 243", mũi tên chọn (`aria-activedescendant`), Enter mở trang sản phẩm; catalogue → không có giá, tắt catalogue → có giá |
 | Trình duyệt — ngăn giỏ (tắt catalogue tạm thời) | thêm từ thẻ → ngăn mở; + → số lượng 2, tạm tính và số trên icon cập nhật, focus giữ ở nút +; xoá → "Giỏ hàng đang trống", icon 0; đóng → focus về icon; Xem nhanh → thêm → hộp đóng, ngăn mở, đóng ngăn → focus về nút Xem nhanh |

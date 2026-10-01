@@ -324,6 +324,38 @@ if ( ! $write ) {
 		ok( '6. lần thứ 6 trong 10 phút → 429', 429 === $r['status'], 'status ' . $r['status'] );
 	}
 
+	echo "Danh sách báo giá nhiều sản phẩm (mốc 2.5) — rate limit 5 lần / 10 phút\n";
+	$found = json_decode( http( 'GET', $api . '/search?q=keo&limit=2' )['body'], true )['data']['items'] ?? array();
+	$ids   = array_map( static fn( $i ) => (int) $i['id'], $found );
+	$list  = array(
+		'name'    => '[Mẫu] QA http-smoke danh sách',
+		'phone'   => $phone,
+		'message' => 'Test tự động — có thể xoá.',
+		'items'   => array_map( static fn( $id ) => array( 'product_id' => $id, 'quantity' => 3, 'note' => 'QA' ), $ids ),
+	);
+
+	$r = http( 'POST', $api . '/quote/list', array(), $list );
+
+	if ( 429 === $r['status'] ) {
+		skip( 'toàn bộ test POST /quote/list', 'IP đang bị rate limit — chờ 10 phút' );
+	} elseif ( count( $ids ) < 2 ) {
+		skip( 'toàn bộ test POST /quote/list', 'cần ít nhất 2 sản phẩm khớp "keo"' );
+	} else {
+		ok( 'danh sách: thiếu nonce → 403', 403 === $r['status'], 'status ' . $r['status'] );
+
+		$r = http( 'POST', $api . '/quote/list', $auth, array_merge( $list, array( 'items' => array() ) ) );
+		ok( 'danh sách rỗng → 422 + errors.items', 422 === $r['status'] && isset( $r['json']['errors']['items'] ), 'status ' . $r['status'] );
+
+		$r = http( 'POST', $api . '/quote/list', $auth, array_merge( $list, array( 'items' => array_merge( $list['items'], array( array( 'product_id' => 999999999, 'quantity' => 1 ) ) ) ) ) );
+		ok( 'sản phẩm giả trong danh sách → 422 + data.invalid', 422 === $r['status'] && array( 999999999 ) === ( $r['json']['data']['invalid'] ?? null ), 'status ' . $r['status'] );
+
+		$r = http( 'POST', $api . '/quote/list', $auth, $list );
+		ok( 'danh sách 2 sản phẩm hợp lệ → 201, count 2', 201 === $r['status'] && 2 === ( $r['json']['data']['count'] ?? null ), 'status ' . $r['status'] . ' ' . substr( $r['body'], 0, 200 ) );
+
+		$r = http( 'POST', $api . '/quote/list', $auth, $list );
+		ok( 'gửi lại cùng danh sách → 200 duplicate', 200 === $r['status'] && true === ( $r['json']['data']['duplicate'] ?? null ), 'status ' . $r['status'] );
+	}
+
 	echo "Form liên hệ (spec §32)\n";
 	$contact = array(
 		'name'    => '[Mẫu] QA http-smoke liên hệ',

@@ -180,6 +180,7 @@ final class Qa {
 			'leads'       => array( 'phone', 'source', 'status', 'assigned_user_id', 'created_at' ),
 			'logs'        => array( 'level', 'channel', 'created_at' ),
 			'search_logs' => array( 'query', 'created_at' ),
+			'quote_items' => array( 'quote_id', 'product_id' ),
 		);
 
 		foreach ( $expected_indexes as $name => $columns ) {

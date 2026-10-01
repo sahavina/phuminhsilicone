@@ -198,6 +198,16 @@ Trước khi tắt để bán hàng: bật ít nhất một phương thức ở 
 
 ## 8. Báo giá & khách liên hệ
 
+### Danh sách báo giá nhiều sản phẩm
+
+1. **Theme Options → Cửa hàng** → bật **Danh sách báo giá nhiều sản phẩm**. Lần đầu bật, hệ thống tự tạo trang **Danh sách báo giá** (`/danh-sach-bao-gia/`) — sửa bằng SAHA Builder như trang thường.
+2. **Header Builder** → thêm element **Icon danh sách báo giá** (nhóm Header) cạnh hotline / giỏ hàng: hiện số sản phẩm khách đã chọn, bấm để mở trang danh sách.
+3. Trang sản phẩm và hộp Xem nhanh có nút **Thêm vào danh sách báo giá**. Khách sửa số lượng, ghi chú (quy cách, màu…) rồi gửi **một** yêu cầu.
+
+Trong **SAHA → Yêu cầu báo giá**: yêu cầu nhiều sản phẩm hiện tên "Sản phẩm đầu (+N sản phẩm khác)"; mở chi tiết để xem bảng từng dòng (sản phẩm, SKU, số lượng, ghi chú). Email báo admin và lead cũng có đủ danh sách. **Báo cáo → Top sản phẩm được hỏi giá** đếm cả danh sách và báo giá một sản phẩm cũ.
+
+Danh sách lưu trong trình duyệt của khách cho tới khi gửi (đổi máy thì không còn).
+
 **SAHA → Yêu cầu báo giá / Liên hệ / Khách hàng tiềm năng / Báo cáo.**
 
 - Mỗi yêu cầu có sản phẩm, mã, số lượng, trang khách gửi; đổi trạng thái (Mới → Đã liên hệ → Đã báo giá → Thành công / Thất bại) và ghi chú nội bộ.

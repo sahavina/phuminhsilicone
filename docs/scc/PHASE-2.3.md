@@ -62,7 +62,7 @@ woocommerce_after_shop_loop_item (15) ─► QuickView: <button data-saha-quick-
 |---|---|
 | `tests/smoke.php` (thêm: chuẩn hoá mã màu, kiểu thuộc tính, mặc định Theme Options) | 230 passed |
 | `tests/http-smoke.php` (thêm: quick-view ID không tồn tại → 404) | 34 passed, 2 skipped |
-| `npm run lint:js`, `lint:css`, `test:js` | đạt |
+| `npm run lint:js`, `lint:css`, `test:js` | đạt — lưu ý: hai script lint chỉ quét theme + saha-builder, **không** quét JS/CSS trong `saha-core/public/assets` của mốc này (bổ sung ở mốc 2.5: `node --check`) |
 | `wp saha qa` | 91 đạt, 3 cảnh báo (môi trường local), 0 lỗi |
 | Trình duyệt (sản phẩm biến thể QA #136: Màu = ô màu, Dung tích = ô chữ) | chọn Đen + 300ml → đúng biến thể và giá; tổ hợp hết hàng hiện "Hết hàng"; phím mũi tên chạy |
 | Thanh dính | hiện khi cuộn qua form; thêm giỏ qua nút gốc; chưa chọn biến thể → cuộn về form |

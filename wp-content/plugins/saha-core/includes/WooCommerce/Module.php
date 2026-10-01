@@ -30,5 +30,6 @@ final class Module {
 		( new StickyCart() )->register();
 		( new QuickView() )->register();
 		( new MiniCart() )->register();
+		( new QuoteList() )->register();
 	}
 }

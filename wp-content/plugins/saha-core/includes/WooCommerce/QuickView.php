@@ -179,6 +179,8 @@ final class QuickView {
 			);
 		}
 
+		echo QuoteList::button( $product, 'saha-ql-add--qv' ); // phpcs:ignore WordPress.Security.EscapeOutput -- button() đã escape.
+
 		echo '<p class="saha-qv__more"><a href="' . esc_url( (string) $product->get_permalink() ) . '">' . esc_html__( 'Xem chi tiết sản phẩm →', 'saha-core' ) . '</a></p>';
 		echo '<div class="saha-qv__notice" role="status" aria-live="polite"></div>';
 		echo '</div></div>';

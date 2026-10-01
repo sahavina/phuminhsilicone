@@ -224,7 +224,13 @@ final class Lead {
 			$heading .= ': ' . implode( ' — ', $parts );
 		}
 
-		$message = trim( $heading . "\n" . (string) ( $data['message'] ?? '' ) );
+		// Danh sách nhiều sản phẩm: mỗi dòng một sản phẩm để sales đọc ngay trong lead.
+		$lines = array_map(
+			static fn( array $item ): string => '- ' . (string) $item['product_name'] . ( '' !== (string) $item['sku'] ? ' [' . (string) $item['sku'] . ']' : '' ) . ' × ' . (int) $item['quantity'] . ( '' !== (string) $item['note'] ? ' (' . (string) $item['note'] . ')' : '' ),
+			(array) ( $data['items'] ?? array() )
+		);
+
+		$message = trim( $heading . ( $lines ? "\n" . implode( "\n", $lines ) : '' ) . "\n" . (string) ( $data['message'] ?? '' ) );
 
 		self::create(
 			array(

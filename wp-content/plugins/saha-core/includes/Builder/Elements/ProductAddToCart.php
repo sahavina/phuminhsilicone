@@ -11,6 +11,7 @@ namespace Saha\Core\Builder\Elements;
 
 use Saha\Core\Builder\Schema\Node;
 use Saha\Core\WooCommerce\CatalogMode;
+use Saha\Core\WooCommerce\QuoteList;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -83,5 +84,7 @@ final class ProductAddToCart extends ProductElement {
 			esc_attr( (string) $product->get_sku() ),
 			esc_html( (string) $this->prop( $node, 'quoteLabel' ) )
 		);
+
+		echo QuoteList::button( $product ); // phpcs:ignore WordPress.Security.EscapeOutput -- button() đã escape.
 	}
 }

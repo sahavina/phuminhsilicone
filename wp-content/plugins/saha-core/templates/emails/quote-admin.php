@@ -14,7 +14,13 @@ declare( strict_types=1 );
 
 defined( 'ABSPATH' ) || exit;
 
-$saha_data = (array) ( $vars['data'] ?? array() );
+$saha_data  = (array) ( $vars['data'] ?? array() );
+$saha_items = (array) ( $saha_data['items'] ?? array() );
+
+// Danh sách nhiều sản phẩm: bảng dòng bên dưới thay cho ô Sản phẩm / SKU / Số lượng.
+if ( $saha_items ) {
+	unset( $saha_data['product_name'], $saha_data['sku'], $saha_data['quantity'] );
+}
 
 $saha_rows = array(
 	__( 'Họ tên', 'saha-core' )       => $saha_data['customer_name'] ?? '',
@@ -59,6 +65,31 @@ $saha_rows = array(
 						</tr>
 					<?php endforeach; ?>
 				</table>
+
+				<?php if ( $saha_items ) : ?>
+					<p style="margin:16px 0 4px;color:#5b6570;font-size:13px;">
+						<?php
+						/* translators: %d: số sản phẩm */
+						echo esc_html( sprintf( __( 'Danh sách báo giá (%d sản phẩm)', 'saha-core' ), count( $saha_items ) ) );
+						?>
+					</p>
+					<table role="presentation" width="100%" cellpadding="6" cellspacing="0" style="border-collapse:collapse;font-size:14px;">
+						<?php foreach ( $saha_items as $saha_item ) : ?>
+							<tr>
+								<td style="vertical-align:top;border-bottom:1px solid #f0f0f1;">
+									<strong><?php echo esc_html( (string) ( $saha_item['product_name'] ?? '' ) ); ?></strong>
+									<?php if ( '' !== (string) ( $saha_item['sku'] ?? '' ) ) : ?>
+										<br><span style="color:#5b6570;font-size:12px;"><?php echo esc_html( (string) $saha_item['sku'] ); ?></span>
+									<?php endif; ?>
+									<?php if ( '' !== (string) ( $saha_item['note'] ?? '' ) ) : ?>
+										<br><em style="color:#5b6570;font-size:12px;"><?php echo esc_html( (string) $saha_item['note'] ); ?></em>
+									<?php endif; ?>
+								</td>
+								<td style="width:80px;text-align:right;vertical-align:top;border-bottom:1px solid #f0f0f1;">&times; <?php echo esc_html( (string) (int) ( $saha_item['quantity'] ?? 0 ) ); ?></td>
+							</tr>
+						<?php endforeach; ?>
+					</table>
+				<?php endif; ?>
 
 				<?php if ( '' !== (string) ( $saha_data['message'] ?? '' ) ) : ?>
 					<p style="margin:16px 0 4px;color:#5b6570;font-size:13px;"><?php esc_html_e( 'Nội dung', 'saha-core' ); ?></p>

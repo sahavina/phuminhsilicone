@@ -375,6 +375,12 @@ final class Schema {
 						'label'   => __( 'Nút "Xem nhanh" trên thẻ sản phẩm', 'saha-core' ),
 						'default' => false,
 					),
+					'quote_list'      => array(
+						'type'    => 'toggle',
+						'label'   => __( 'Danh sách báo giá nhiều sản phẩm (nút "Thêm vào danh sách báo giá")', 'saha-core' ),
+						'default' => false,
+						'help'    => __( 'Bật lần đầu: tự tạo trang "Danh sách báo giá". Thêm element "Icon danh sách báo giá" vào header để khách mở danh sách.', 'saha-core' ),
+					),
 					'mini_cart'       => array(
 						'type'    => 'toggle',
 						'label'   => __( 'Bấm icon giỏ / thêm vào giỏ → mở ngăn giỏ hàng (không chuyển trang)', 'saha-core' ),

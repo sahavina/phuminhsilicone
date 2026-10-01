@@ -36,11 +36,14 @@ $saha_fields = array(
 	__( 'Công ty', 'saha-core' )    => (string) $record['company'],
 );
 
-if ( $saha_is_quote ) {
+// Danh sách báo giá nhiều sản phẩm (mốc 2.5): bảng dòng riêng thay cho 3 ô sản phẩm / SKU / số lượng.
+$saha_lines = $saha_is_quote ? Quote::list_rows( (int) $record['id'] ) : array();
+
+if ( $saha_is_quote && ! $saha_lines ) {
 	$saha_fields[ __( 'Sản phẩm', 'saha-core' ) ] = (string) $record['product_name'];
 	$saha_fields[ __( 'SKU', 'saha-core' ) ]      = (string) $record['sku'];
 	$saha_fields[ __( 'Số lượng', 'saha-core' ) ] = (string) $record['quantity'];
-} else {
+} elseif ( ! $saha_is_quote ) {
 	$saha_source                              = (string) $record['source'];
 	$saha_fields[ __( 'Nguồn', 'saha-core' ) ] = Lead::sources()[ $saha_source ] ?? $saha_source;
 }
@@ -100,6 +103,42 @@ $saha_tel = saha_tel_href( (string) $record['phone'] );
 						</tr>
 					</tbody>
 				</table>
+
+				<?php if ( $saha_lines ) : ?>
+					<h3>
+						<?php
+						/* translators: %d: số sản phẩm */
+						echo esc_html( sprintf( _n( 'Danh sách báo giá (%d sản phẩm)', 'Danh sách báo giá (%d sản phẩm)', count( $saha_lines ), 'saha-core' ), count( $saha_lines ) ) );
+						?>
+					</h3>
+					<table class="widefat striped saha-quote-lines">
+						<thead>
+							<tr>
+								<th scope="col"><?php esc_html_e( 'Sản phẩm', 'saha-core' ); ?></th>
+								<th scope="col"><?php esc_html_e( 'SKU', 'saha-core' ); ?></th>
+								<th scope="col" class="saha-num"><?php esc_html_e( 'Số lượng', 'saha-core' ); ?></th>
+								<th scope="col"><?php esc_html_e( 'Ghi chú của khách', 'saha-core' ); ?></th>
+							</tr>
+						</thead>
+						<tbody>
+							<?php foreach ( $saha_lines as $saha_line ) : ?>
+								<?php $saha_pid = (int) $saha_line['product_id']; ?>
+								<tr>
+									<td>
+										<?php if ( 'product' === get_post_type( $saha_pid ) ) : ?>
+											<a href="<?php echo esc_url( (string) get_permalink( $saha_pid ) ); ?>" target="_blank" rel="noopener"><?php echo esc_html( (string) $saha_line['product_name'] ); ?></a>
+										<?php else : ?>
+											<?php echo esc_html( (string) $saha_line['product_name'] ); ?>
+										<?php endif; ?>
+									</td>
+									<td><?php echo '' !== (string) $saha_line['sku'] ? '<code>' . esc_html( (string) $saha_line['sku'] ) . '</code>' : '—'; ?></td>
+									<td class="saha-num"><?php echo esc_html( number_format_i18n( (int) $saha_line['quantity'] ) ); ?></td>
+									<td><?php echo esc_html( '' !== (string) $saha_line['note'] ? (string) $saha_line['note'] : '—' ); ?></td>
+								</tr>
+							<?php endforeach; ?>
+						</tbody>
+					</table>
+				<?php endif; ?>
 
 				<?php if ( '' !== trim( (string) $record['message'] ) ) : ?>
 					<h3><?php esc_html_e( 'Nội dung khách gửi', 'saha-core' ); ?></h3>

@@ -530,7 +530,7 @@ echo "Builder — element mốc 1.4\n";
 $saha_reg   = Saha\Core\Builder\ElementRegistry::instance();
 $saha_ctrls = Saha\Core\Builder\Controls\ControlRegistry::instance();
 $saha_types = array_keys( $saha_reg->all() );
-check( 'đủ 60 element (20 nội dung + 14 header/footer + 17 động + 9 giao diện D1)', count( $saha_types ), 60 );
+check( 'đủ 62 element (20 nội dung + 15 header/footer + 17 động + 9 giao diện D1 + danh sách báo giá)', count( $saha_types ), 62 );
 $saha_bad_ctrl = array();
 foreach ( $saha_reg->all() as $saha_t => $saha_el ) {
 	foreach ( (array) $saha_el->def()['controls'] as $saha_k => $saha_c ) {
@@ -570,7 +570,7 @@ $saha_banner = saha_bs( array( 'elements' => array( array( 'type' => 'banner', '
 $saha_banner_html = ( new Renderer() )->document( $saha_banner, new RenderContext( 0, false, false ) );
 check( 'banner ưu tiên: ảnh fetchpriority=high, loading=eager', false !== strpos( $saha_banner_html, 'fetchpriority="high"' ) && false !== strpos( $saha_banner_html, 'loading="eager"' ), true );
 check( 'banner: ảnh nền alt rỗng, tiêu đề H1', false !== strpos( $saha_banner_html, 'alt=""' ) && false !== strpos( $saha_banner_html, '<h1 class="saha-banner__title">Hero</h1>' ), true );
-check( 'element động (shortcode, block, sản phẩm, bài viết, menu, tìm kiếm, giỏ + mọi element Template Builder) không vào render cache', array_values( array_filter( $saha_types, static fn( $t ) => ! empty( $saha_reg->get( $t )->def()['dynamic'] ) ) ), array( 'shortcode', 'block', 'products', 'posts', 'nav-menu', 'search', 'cart', 'post-title', 'post-content', 'post-excerpt', 'featured-image', 'post-meta', 'breadcrumb', 'archive-title', 'archive-posts', 'product-gallery', 'product-price', 'product-add-to-cart', 'product-meta', 'product-tabs', 'product-related', 'product-summary', 'product-after-summary', 'product-archive' ) );
+check( 'element động (shortcode, block, sản phẩm, bài viết, menu, tìm kiếm, giỏ + mọi element Template Builder) không vào render cache', array_values( array_filter( $saha_types, static fn( $t ) => ! empty( $saha_reg->get( $t )->def()['dynamic'] ) ) ), array( 'shortcode', 'block', 'products', 'posts', 'nav-menu', 'search', 'cart', 'quote-list-link', 'post-title', 'post-content', 'post-excerpt', 'featured-image', 'post-meta', 'breadcrumb', 'archive-title', 'archive-posts', 'product-gallery', 'product-price', 'product-add-to-cart', 'product-meta', 'product-tabs', 'product-related', 'product-summary', 'product-after-summary', 'product-archive' ) );
 
 echo "Header & footer (mốc 1.5)\n";
 require_once SAHA_CORE_PATH . 'includes/functions.php'; // saha_hotline(), saha_tel_href()…
@@ -789,6 +789,16 @@ echo "Ngăn giỏ hàng, gợi ý tìm kiếm (mốc 2.4)\n";
 check( 'Theme Options: ngăn giỏ hàng bật mặc định', Saha\Core\ThemeOptions\Schema::groups()['shop']['fields']['mini_cart']['default'], true );
 check( 'element Tìm kiếm: gợi ý khi gõ bật mặc định', $saha_reg->get( 'search' )->def()['controls']['live']['default'], true );
 check( 'gợi ý tìm kiếm: chế độ catalogue → giá rỗng (không lộ giá)', Search::with_prices( array( array( 'id' => 42, 'name' => 'Loctite 243' ) ) ), array( array( 'id' => 42, 'name' => 'Loctite 243', 'price' => '' ) ) );
+
+echo "Danh sách báo giá nhiều sản phẩm (mốc 2.5)\n";
+check( 'Theme Options: danh sách báo giá tắt mặc định', Saha\Core\ThemeOptions\Schema::groups()['shop']['fields']['quote_list']['default'], false );
+check( 'danh sách: không phải mảng / rỗng → lỗi items', array( isset( Saha\Core\Quote::validate_items( 'x' )['errors']['items'] ), isset( Saha\Core\Quote::validate_items( array() )['errors']['items'] ) ), array( true, true ) );
+check( 'danh sách: quá số dòng tối đa → lỗi, không xử lý dòng nào', array( isset( Saha\Core\Quote::validate_items( array_fill( 0, Saha\Core\Quote::MAX_ITEMS + 1, array( 'product_id' => 42 ) ) )['errors']['items'] ), Saha\Core\Quote::validate_items( array_fill( 0, Saha\Core\Quote::MAX_ITEMS + 1, array( 'product_id' => 42 ) ) )['items'] ), array( true, array() ) );
+$saha_l1 = array( array( 'product_id' => 5, 'variation_id' => 0, 'quantity' => 2, 'product_name' => 'Keo A', 'sku' => 'A' ), array( 'product_id' => 7, 'variation_id' => 9, 'quantity' => 1, 'product_name' => 'Keo B', 'sku' => 'B' ) );
+check( 'danh sách: tên tóm tắt "dòng đầu (+N sản phẩm khác)"', array( Saha\Core\Quote::summary( $saha_l1 ), Saha\Core\Quote::summary( array( $saha_l1[0] ) ), Saha\Core\Quote::summary( array() ) ), array( 'Keo A (+1 sản phẩm khác)', 'Keo A', '' ) );
+check( 'danh sách: chữ ký chống trùng không phụ thuộc thứ tự dòng', Saha\Core\Quote::signature( $saha_l1 ) === Saha\Core\Quote::signature( array_reverse( $saha_l1 ) ), true );
+check( 'danh sách: đổi số lượng → chữ ký khác', Saha\Core\Quote::signature( $saha_l1 ) === Saha\Core\Quote::signature( array( array_merge( $saha_l1[0], array( 'quantity' => 3 ) ), $saha_l1[1] ) ), false );
+check( 'element danh sách báo giá + icon header đã đăng ký', array( null !== $saha_reg->get( 'quote-list' ), null !== $saha_reg->get( 'quote-list-link' ) ), array( true, true ) );
 
 echo "\n$pass passed, $fail failed\n";
 exit( $fail > 0 ? 1 : 0 );
