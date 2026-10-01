@@ -147,6 +147,7 @@ final class Banner extends Element {
 					'options' => array(
 						'primary'   => __( 'Chính', 'saha-core' ),
 						'secondary' => __( 'Phụ', 'saha-core' ),
+						'accent'    => __( 'Nhấn (màu nhấn)', 'saha-core' ),
 						'outline'   => __( 'Viền', 'saha-core' ),
 					),
 				),

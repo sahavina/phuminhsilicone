@@ -33,5 +33,6 @@ final class Module {
 		( new BlockPostType() )->register();
 		( new Frontend() )->register();
 		( new Starter() )->register();
+		( new StoreKit() )->register();
 	}
 }

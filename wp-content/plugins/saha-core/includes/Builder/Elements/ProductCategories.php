@@ -81,6 +81,12 @@ final class ProductCategories extends Element {
 					'section' => 'content',
 					'default' => true,
 				),
+				'showDescription' => array(
+					'type'    => 'toggle',
+					'label'   => __( 'Hiện mô tả ngắn (từ mô tả danh mục)', 'saha-core' ),
+					'section' => 'content',
+					'default' => false,
+				),
 				'columns'   => array(
 					'type'       => 'number',
 					'label'      => __( 'Số cột', 'saha-core' ),
@@ -140,6 +146,7 @@ final class ProductCategories extends Element {
 		}
 
 		$count = (bool) $this->prop( $node, 'showCount' );
+		$desc  = (bool) $this->prop( $node, 'showDescription' );
 		$items = '';
 
 		foreach ( $terms as $term ) {
@@ -150,6 +157,7 @@ final class ProductCategories extends Element {
 			$items .= '<li class="saha-terms__item"><a class="saha-terms__link" href="' . esc_url( (string) $term['url'] ) . '">'
 				. ( '' !== $image ? '<span class="saha-terms__media">' . $image . '</span>' : '' )
 				. '<span class="saha-terms__name">' . esc_html( (string) $term['name'] ) . '</span>'
+				. ( $desc && '' !== trim( (string) ( $term['description'] ?? '' ) ) ? '<span class="saha-terms__desc">' . esc_html( wp_trim_words( wp_strip_all_tags( (string) $term['description'] ), 10 ) ) . '</span>' : '' )
 				. ( $count ? '<span class="saha-terms__count">' . esc_html(
 					/* translators: %d: số sản phẩm */
 					sprintf( _n( '%d sản phẩm', '%d sản phẩm', (int) $term['count'], 'saha-core' ), (int) $term['count'] )

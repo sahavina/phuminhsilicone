@@ -149,6 +149,7 @@ wp saha qa [--strict]          # kiểm tra hệ thống (exit 1 khi lỗi; --st
 wp saha seed [--with-crm]      # dữ liệu mẫu (local/staging) — gỡ: wp saha unseed
 wp saha homepage [--front]     # trang chủ mẫu 14 khối dựng bằng builder
 wp saha flush-cache            # xoá cache SAHA + render cache (sửa element mà không đổi version)
+wp saha starter-store [--front] [--no-palette] [--restore-options]   # bộ giao diện kiểu cửa hàng
 wp saha maintenance …          # dọn log, cache
 ```
 

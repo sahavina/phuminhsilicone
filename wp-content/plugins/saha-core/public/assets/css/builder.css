@@ -158,8 +158,22 @@ a.saha-btn:focus-visible {
 	background-color: var(--saha-secondary, #1f2937);
 }
 
+.saha-btn--accent,
+.saha-btn--accent:visited {
+	border-color: var(--saha-accent, #f5a623);
+	background-color: var(--saha-accent, #f5a623);
+	color: var(--saha-secondary, #1f2937);
+}
+
+a.saha-btn--accent:hover,
+a.saha-btn--accent:focus-visible {
+	color: var(--saha-secondary, #1f2937);
+}
+
+/* Viền theo màu chữ: đổi màu chữ nút (ví dụ trắng trên nền tối) là viền đổi theo. */
 .saha-btn--outline,
 .saha-btn--outline:visited {
+	border-color: currentcolor;
 	background-color: transparent;
 	color: var(--saha-primary, #0b5cab);
 }
@@ -412,6 +426,12 @@ a.saha-btn--link:focus-visible {
 
 :where(.saha-terms__name) {
 	font-weight: 600;
+}
+
+:where(.saha-terms__desc) {
+	color: var(--saha-muted, #5f6b7a);
+	font-size: 0.85em;
+	line-height: 1.4;
 }
 
 :where(.saha-terms__count) {

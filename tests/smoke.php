@@ -737,5 +737,20 @@ check( 'sản phẩm: giá trị tab lạ bị từ chối', count( saha_bs( arr
 $saha_shop = Saha\Core\ThemeOptions\Schema::groups()['shop']['fields'];
 check( 'Theme Options: thẻ mặc định, thanh "Đã bán" tắt mặc định', array( $saha_shop['card_style']['default'], $saha_shop['card_sold']['default'] ), array( 'default', false ) );
 
+echo "Giao diện kiểu cửa hàng (D4)\n";
+function wc_get_page_permalink( $p ) { return 'https://tongkhokeodan.com/shop/'; }
+function get_posts( $a = array() ) { return array(); }
+function get_post_thumbnail_id( $id ) { return 0; }
+$saha_store = saha_bs( Saha\Core\Builder\StoreKit::homepage() );
+$saha_store_json = (string) json_encode( $saha_store['document'] ? $saha_store['document']->toArray() : array(), JSON_UNESCAPED_UNICODE );
+check( 'trang chủ kiểu cửa hàng hợp lệ, 9 section, đúng 1 H1, không shortcode', array( $saha_store['errors'], count( $saha_store['document']->toArray()['elements'] ), substr_count( $saha_store_json, '"tag":"h1"' ), false === strpos( $saha_store_json, '"shortcode"' ) ), array( array(), 9, 1, true ) );
+check( 'trang chủ kiểu cửa hàng: không có ảnh sản phẩm → hero một cột, không slider rỗng', false === strpos( $saha_store_json, '"slider"' ), true );
+check( 'trang chủ kiểu cửa hàng: tab danh mục + đánh giá mẫu ghi rõ là mẫu', array( false !== strpos( $saha_store_json, '"tabs":"categories"' ), substr_count( $saha_store_json, 'Đánh giá mẫu' ) ), array( true, 3 ) );
+check( 'footer kiểu cửa hàng hợp lệ', saha_bs( Saha\Core\Builder\StoreKit::footer() )['errors'], array() );
+check( 'nút kiểu Nhấn (màu nhấn)', false !== strpos( $saha_r1( array( 'type' => 'button', 'props' => array( 'text' => 'Xem', 'variant' => 'accent' ) ) ), 'saha-btn--accent' ), true );
+$saha_one = $saha_r1( array( 'type' => 'slider', 'children' => array( array( 'type' => 'slide' ) ) ) );
+check( 'slider 1 slide: không nút trước/sau, không chấm, không tự chạy', array( false === strpos( $saha_one, 'saha-slider__arrow' ), false === strpos( $saha_one, 'data-saha-slider-dots' ), false === strpos( $saha_one, 'data-autoplay' ) ), array( true, true, true ) );
+check( 'bộ màu cửa hàng: navy + vàng đồng', array_intersect_key( Saha\Core\Builder\StoreKit::palette(), array_flip( array( 'secondary', 'accent', 'surface' ) ) ), array( 'secondary' => '#0e1f3a', 'accent' => '#d4a33b', 'surface' => '#f4f6fa' ) );
+
 echo "\n$pass passed, $fail failed\n";
 exit( $fail > 0 ? 1 : 0 );

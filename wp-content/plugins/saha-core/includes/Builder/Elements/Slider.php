@@ -140,13 +140,18 @@ final class Slider extends Element {
 		}
 
 		$controls = '';
+		$multiple = count( $node->children ) > 1;
 
-		if ( $this->prop( $node, 'arrows' ) ) {
+		if ( ! $multiple ) {
+			unset( $attrs['data-autoplay'] );
+		}
+
+		if ( $multiple && $this->prop( $node, 'arrows' ) ) {
 			$controls .= '<button type="button" class="saha-slider__arrow saha-slider__arrow--prev" data-saha-slider-prev aria-label="' . esc_attr__( 'Slide trước', 'saha-core' ) . '">' . Icons::svg( 'chevron-right' ) . '</button>'
 				. '<button type="button" class="saha-slider__arrow saha-slider__arrow--next" data-saha-slider-next aria-label="' . esc_attr__( 'Slide sau', 'saha-core' ) . '">' . Icons::svg( 'chevron-right' ) . '</button>';
 		}
 
-		if ( $this->prop( $node, 'dots' ) ) {
+		if ( $multiple && $this->prop( $node, 'dots' ) ) {
 			$controls .= '<div class="saha-slider__dots" data-saha-slider-dots></div>';
 		}
 

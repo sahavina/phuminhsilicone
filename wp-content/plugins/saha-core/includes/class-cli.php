@@ -125,6 +125,50 @@ final class Cli {
 	}
 
 	/**
+	 * Áp dụng giao diện kiểu cửa hàng: header + footer (dùng cho toàn site), trang chủ, bộ màu/font.
+	 *
+	 * ## OPTIONS
+	 *
+	 * [--front]
+	 * : Xuất bản và đặt trang chủ mới làm trang chủ của site.
+	 *
+	 * [--no-palette]
+	 * : Không đổi Theme Options (màu, font, kiểu thẻ, nút nổi).
+	 *
+	 * [--restore-options]
+	 * : Chỉ khôi phục Theme Options đã lưu trước lần áp dụng gần nhất.
+	 *
+	 * ## EXAMPLES
+	 *
+	 *     wp saha starter-store --front
+	 *     wp saha starter-store --restore-options
+	 *
+	 * @subcommand starter-store
+	 *
+	 * @param string[]             $args       Positional.
+	 * @param array<string, mixed> $assoc_args Tuỳ chọn.
+	 */
+	public function starter_store( array $args, array $assoc_args ): void {
+		unset( $args );
+
+		if ( ! empty( $assoc_args['restore-options'] ) ) {
+			Builder\StoreKit::restoreOptions()
+				? \WP_CLI::success( 'Đã khôi phục Theme Options.' )
+				: \WP_CLI::error( 'Không có bản Theme Options đã lưu.' );
+			return;
+		}
+
+		$result = Builder\StoreKit::install( ! empty( $assoc_args['front'] ), \WP_CLI\Utils\get_flag_value( $assoc_args, 'palette', true ) );
+
+		if ( is_wp_error( $result ) ) {
+			\WP_CLI::error( $result->get_error_message() . ' ' . wp_json_encode( $result->get_error_data() ) );
+			return;
+		}
+
+		\WP_CLI::success( sprintf( 'Header #%d, footer #%d, trang chủ #%d%s.', $result['header'], $result['footer'], $result['homepage'], $result['palette'] ? ', đã đổi bộ màu/font' : '' ) );
+	}
+
+	/**
 	 * Xoá cache SAHA (dữ liệu catalogue + HTML render cache của builder) bằng cách tăng thế hệ cache.
 	 *
 	 * Dùng khi sửa code element/template trong lúc phát triển mà không đổi version plugin.

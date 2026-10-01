@@ -21,7 +21,7 @@ defined( 'ABSPATH' ) || exit;
  */
 final class Button extends Element {
 
-	public const VARIANTS = array( 'primary', 'secondary', 'outline', 'link' );
+	public const VARIANTS = array( 'primary', 'secondary', 'accent', 'outline', 'link' );
 	public const SIZES    = array( 'sm', 'md', 'lg' );
 
 	/**
@@ -57,6 +57,7 @@ final class Button extends Element {
 					'options' => array(
 						'primary'   => __( 'Chính', 'saha-core' ),
 						'secondary' => __( 'Phụ', 'saha-core' ),
+						'accent'    => __( 'Nhấn (màu nhấn)', 'saha-core' ),
 						'outline'   => __( 'Viền', 'saha-core' ),
 						'link'      => __( 'Dạng liên kết', 'saha-core' ),
 					),
