@@ -11,7 +11,7 @@ declare( strict_types=1 );
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'SAHA_THEME_VERSION', '0.2.0' );
+define( 'SAHA_THEME_VERSION', '0.2.1' );
 define( 'SAHA_THEME_DIR', get_template_directory() );
 define( 'SAHA_THEME_URI', get_template_directory_uri() );
 

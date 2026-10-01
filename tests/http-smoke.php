@@ -232,8 +232,19 @@ if ( ! $theme_active ) {
 } elseif ( preg_match( '/<link[^>]+rel=["\']preload["\'][^>]+as=["\']image["\']/i', $r['body'] ) ) {
 	ok( 'trang chủ preload ảnh hero (Phase 7)', true );
 } else {
-	skip( 'trang chủ preload ảnh hero', 'trang chủ chưa có [ux_banner] chọn ảnh' );
+	skip( 'trang chủ preload ảnh hero', 'trang chủ chưa có ảnh hero (Banner bật "Ưu tiên tải", hoặc [ux_banner] ở Flatsome)' );
 }
+
+// SCC 1.7: shortcode không còn được xử lý (đổi theme, tắt plugin) hiện nguyên văn ra trang.
+$raw = array();
+foreach ( array( '/', '/lien-he/', '/bao-gia/', '/thuong-hieu/' ) as $path ) {
+	$body = (string) http( 'GET', $base . $path )['body'];
+
+	if ( preg_match( '/\[(saha_|ux_|section|row|col )[^\]]*\]/', (string) preg_replace( '/<(script|style|textarea)\b.*?<\/\1>/is', '', $body ), $m ) ) {
+		$raw[] = $path . ' ' . $m[0];
+	}
+}
+ok( 'không có shortcode thô trên trang chủ, liên hệ, báo giá, thương hiệu', ! $raw, implode( '; ', $raw ) );
 
 $r = http( 'GET', $base . '/?saha_form=quote_sent' );
 ok( 'trang kết quả form không bị cache', (bool) preg_match( '/no-cache|no-store|max-age=0/i', $r['headers']['cache-control'] ?? '' ), 'Cache-Control: ' . ( $r['headers']['cache-control'] ?? '(trống)' ) );

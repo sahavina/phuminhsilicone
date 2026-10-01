@@ -67,6 +67,9 @@ WooCommerce: `includes/WooCommerce/` — `CatalogMode` (chế độ catalogue ph
 form/AJAX/Store API, giá thay bằng "Liên hệ báo giá") và `BuyNow` (nút "Mua ngay" → thanh toán).
 Chạy với mọi theme. Chi tiết: `docs/scc/PHASE-1.6.md`.
 
+Trang chủ mẫu: `includes/Builder/Starter.php` — 14 khối dựng bằng element (không shortcode); nút ở
+Trang → Tất cả trang hoặc `wp saha homepage --front`.
+
 Thêm element: class kế thừa `Builder\Elements\Element` (definition + render + styles), đăng ký
 qua `add_action( 'saha_builder_elements', fn( $r ) => $r->register( new My_Element() ) )`.
 Chi tiết: `docs/scc/PHASE-1.2.md`.
@@ -76,7 +79,7 @@ Chi tiết: `docs/scc/PHASE-1.2.md`.
 Action: `saha_core_loaded`, `saha_core_activated`, `saha_core_deactivated`,
 `saha_core_upgraded`, `saha_core_migrated`, `saha_core_admin_menu`, `saha_log`,
 `saha_theme_options_saved`, `saha_builder_elements`, `saha_builder_register_controls`,
-`saha_builder_render_before`, `saha_builder_render_after`, `saha_builder_saved`, `saha_template_saved`.
+`saha_builder_render_before`, `saha_builder_render_after`, `saha_builder_saved`, `saha_template_saved`, `saha_quote_modal_needed`.
 
 ## Filters
 
@@ -141,5 +144,5 @@ WooCommerce cần cho module sản phẩm (Phase 2+).
 
 ## Testing
 
-`php tests/smoke.php` (không cần WordPress) · `wp saha qa` · `php tests/http-smoke.php <url>`.
+`php tests/smoke.php` (không cần WordPress) · `wp saha qa [--strict]` · `php tests/http-smoke.php <url>`. Hướng dẫn đầy đủ: `docs/scc/DEV-GUIDE.md`.
 Checklist từng phase: `docs/PHASE-*.md`, `docs/scc/PHASE-1.x.md` mục 8.

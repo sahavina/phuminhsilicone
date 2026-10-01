@@ -614,5 +614,25 @@ $_REQUEST = array();
 check( 'Thêm vào giỏ thường: không đổi nơi chuyển hướng', $saha_bn->redirect( 'https://tongkhokeodan.com/cart/' ), 'https://tongkhokeodan.com/cart/' );
 check( 'Catalogue: nhãn thay giá', Saha\Core\WooCommerce\CatalogMode::priceHtml(), '<span class="saha-price-hidden">Liên hệ báo giá</span>' );
 
+echo "Trang chủ mẫu (mốc 1.7)\n";
+function get_page_by_path( $p ) { return null; }
+function taxonomy_exists( $t ) { return true; }
+function term_exists( $slug, $tax = '' ) { return ! in_array( $slug, $GLOBALS['__missing_terms'] ?? array(), true ); }
+$saha_home = saha_bs( Saha\Core\Builder\Starter::homepage() );
+check( 'trang chủ mẫu hợp lệ (qua Sanitizer)', $saha_home['errors'], array() );
+$saha_home_json = (string) json_encode( $saha_home['document']->toArray(), JSON_UNESCAPED_UNICODE );
+check( 'trang chủ mẫu: đúng 1 H1', substr_count( $saha_home_json, '"tag":"h1"' ), 1 );
+check( 'trang chủ mẫu: không dùng shortcode', false === strpos( $saha_home_json, '"shortcode"' ) && false === strpos( $saha_home_json, '[saha_' ), true );
+check( 'trang chủ mẫu: 9 section chứa đủ 14 khối của PHASE-5', count( $saha_home['document']->toArray()['elements'] ), 9 );
+$GLOBALS['__missing_terms'] = array( 'loctite', 'pu-foam' );
+$saha_home_min = saha_bs( Saha\Core\Builder\Starter::homepage() );
+$saha_home_min_json = (string) json_encode( $saha_home_min['document']->toArray(), JSON_UNESCAPED_UNICODE );
+$GLOBALS['__missing_terms'] = array();
+check( 'site thiếu danh mục/thương hiệu: vẫn tạo được, bỏ đúng khối đó', array( $saha_home_min['errors'], false !== strpos( $saha_home_min_json, 'Keo Loctite' ), false !== strpos( $saha_home_min_json, 'PU Foam"' ), false !== strpos( $saha_home_min_json, 'Keo Silicone' ) ), array( array(), false, false, true ) );
+$saha_cta_doc = saha_bs( array( 'elements' => array( array( 'type' => 'section', 'children' => array( array( 'type' => 'cta', 'props' => array( 'action1' => 'quote', 'button1' => 'Báo giá' ) ) ) ) ) ) )['document'];
+$saha_cta_html = ( new Renderer() )->document( $saha_cta_doc, new RenderContext( 0, false, false ) );
+check( 'CTA "Mở form báo giá": nút data-saha-open-quote, không có href', (bool) preg_match( '/<button type="button" class="saha-btn[^"]*" data-saha-open-quote="1">Báo giá<\/button>/', $saha_cta_html ), true );
+check( 'CTA báo giá không vào render cache, CTA link thì có', array( $saha_reg->get( 'cta' )->isDynamic( $saha_cta_doc->elements[0]->children[0] ), $saha_reg->get( 'cta' )->isDynamic( saha_bs( array( 'elements' => array( array( 'type' => 'section', 'children' => array( array( 'type' => 'cta' ) ) ) ) ) )['document']->elements[0]->children[0] ) ), array( true, false ) );
+
 echo "\n$pass passed, $fail failed\n";
 exit( $fail > 0 ? 1 : 0 );

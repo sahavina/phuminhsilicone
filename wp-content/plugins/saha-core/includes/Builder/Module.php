@@ -32,5 +32,6 @@ final class Module {
 		add_action( 'rest_api_init', array( new BlocksController(), 'registerRoutes' ) );
 		( new BlockPostType() )->register();
 		( new Frontend() )->register();
+		( new Starter() )->register();
 	}
 }

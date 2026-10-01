@@ -125,6 +125,34 @@ final class Cli {
 	}
 
 	/**
+	 * Tạo trang chủ mẫu 14 khối dựng bằng SAHA Builder (không shortcode).
+	 *
+	 * ## OPTIONS
+	 *
+	 * [--front]
+	 * : Xuất bản và đặt làm trang chủ của site. Không có cờ này: tạo bản nháp.
+	 *
+	 * ## EXAMPLES
+	 *
+	 *     wp saha homepage --front
+	 *
+	 * @param string[]             $args       Positional.
+	 * @param array<string, mixed> $assoc_args Tuỳ chọn.
+	 */
+	public function homepage( array $args, array $assoc_args ): void {
+		unset( $args );
+
+		$id = Builder\Starter::installHomepage( ! empty( $assoc_args['front'] ) );
+
+		if ( is_wp_error( $id ) ) {
+			\WP_CLI::error( $id->get_error_message() . ' ' . wp_json_encode( $id->get_error_data() ) );
+			return;
+		}
+
+		\WP_CLI::success( sprintf( 'Đã tạo trang chủ #%d: %s', $id, get_permalink( $id ) ) );
+	}
+
+	/**
 	 * Gỡ toàn bộ dữ liệu mẫu do `wp saha seed` tạo. Không đụng dữ liệu thật.
 	 *
 	 * ## OPTIONS

@@ -3,15 +3,15 @@
 > File này được sinh bởi `tests/build-qa-checklist.py` từ mục 8 của các `docs/PHASE-*.md`.
 > Không sửa tay — sửa ở PHASE-*.md rồi chạy lại script.
 
-Tổng: **188 test thủ công**, trong đó **27** đã có công cụ tự động kiểm tra (một phần hoặc toàn bộ).
+Tổng: **218 test thủ công**, trong đó **44** đã có công cụ tự động kiểm tra (một phần hoặc toàn bộ).
 
 ## 1. Công cụ tự động — chạy trước
 
 | Công cụ | Chạy ở đâu | Phủ | Ghi dữ liệu? |
 |---|---|---|---|
-| `php tests/smoke.php` | máy dev, không cần WordPress | logic thuần: validate, sanitize, tokenizer, cache, robots, SEO | Không |
-| `wp saha qa` hoặc **SAHA → Kiểm tra hệ thống** | trên site | môi trường, bảng + index, quyền, cấu hình, taxonomy, REST route + permission_callback, relevance tìm kiếm, robots, bảo mật upload/debug, cron, object cache | Không |
-| `php tests/http-smoke.php <url>` | máy bất kỳ | REST từ ngoài vào, mã HTTP, robots.txt, noindex, no-cache, lỗi PHP lộ ra trang, số H1 | Không |
+| `php tests/smoke.php` | máy dev, không cần WordPress | logic thuần: validate, sanitize, tokenizer, cache, robots, SEO; builder (schema, sanitize mọi control, render, CSS), Theme Options, header/footer, trang chủ mẫu, Mua ngay | Không |
+| `wp saha qa` hoặc **SAHA → Kiểm tra hệ thống** | trên site | môi trường, bảng + index, quyền, cấu hình, taxonomy, REST route + permission_callback, builder (quyền, file CSS, header/footer, trang chủ, shortcode Flatsome còn sót), WooCommerce (catalogue thật sự chặn mua, template override lỗi thời), relevance tìm kiếm, robots, bảo mật upload/debug, cron, object cache | Không |
+| `php tests/http-smoke.php <url>` | máy bất kỳ | REST từ ngoài vào, mã HTTP, robots.txt, noindex, no-cache, lỗi PHP lộ ra trang, số H1, shortcode thô, route builder từ chối khách | Không |
 | `php tests/http-smoke.php <url> --write` | máy bất kỳ → **chỉ local/staging** | spec §57: thiếu nonce, email sai, product giả, chống trùng, rate limit, honeypot | Có — 2 báo giá + 1 lead "[Mẫu] QA…" |
 | `wp saha seed --with-crm` | trên site **local/staging** | tạo dữ liệu mẫu để các test trên có dữ liệu | Có — gỡ bằng `wp saha unseed` |
 
@@ -19,8 +19,9 @@ Thứ tự khuyến nghị trên staging:
 
 ```bash
 # chạy tại thư mục gốc WordPress (cũng là gốc repo)
-wp saha seed --with-crm --homepage-layout=docs/layouts/homepage.ux.txt
-wp saha qa
+wp saha seed --with-crm
+wp saha homepage --front        # trang chủ mẫu dựng bằng SAHA Builder (saha-theme)
+wp saha qa --strict
 php tests/http-smoke.php https://staging.example.com --write
 ```
 
@@ -270,6 +271,43 @@ Kết quả: ☐ chưa chạy · ✅ đạt · ❌ lỗi (ghi chú + link issue)
 | P7-19 | Nâng cấp từ 1.5.0 | option `saha_brand_cache_keys`, `saha_catalog_cache_gen` biến mất |  | ☐ | |
 | P7-20 | INP: gõ vào ô tìm kiếm, bấm lọc, mở modal báo giá trên mobile | phản hồi < 200ms (Chrome DevTools → Performance → Interactions) |  | ☐ | |
 
+### SCC — SAHA Commerce Core: saha-theme + SAHA Builder ([scc/PHASE-1.7.md](scc/PHASE-1.7.md))
+
+Trên `saha-theme`, các mục của P5 nói về UX Builder/Flatsome thay bằng mục SCC tương ứng.
+
+| ID | Test | Kỳ vọng | Tự động | Kết quả | Ghi chú |
+|---|---|---|---|---|---|
+| SCC-01 | Kích hoạt SAHA Core, SAHA Builder, SAHA Theme rồi chạy `wp saha qa` | 0 lỗi; "Theme SAHA Theme đang bật" | qa | ☐ | |
+| SCC-02 | Theme Options: đổi màu chính, font chữ, số cột shop | toàn site đổi (nút, giá, tab sản phẩm, header, footer, thanh toán) — không sửa CSS | smoke | ☐ | |
+| SCC-03 | Tắt plugin SAHA Builder, mở trang chủ và một trang dựng bằng builder | HTML giống hệt khi bật; bật lại sửa tiếp được |  | ☐ | |
+| SCC-04 | Dựng trang mới: Section › Hàng › Cột › Tiêu đề, Văn bản, Nút, Ảnh → Lưu → Xem trang | frontend giống canvas |  | ☐ | |
+| SCC-05 | Undo/redo, copy/paste, nhân đôi, xem theo thiết bị | đúng thao tác; giá trị tablet/mobile kế thừa desktop khi để trống | js | ☐ | |
+| SCC-06 | Editor (không `unfiltered_html`) lưu element HTML có `<script>` | script bị lọc | smoke | ☐ | |
+| SCC-07 | Hai tài khoản cùng mở một trang trong builder, cả hai bấm Lưu | người sau bị báo đang có người sửa / tải lại bản mới; không ai bị ghi đè |  | ☐ | |
+| SCC-08 | Lưu link `javascript:` hoặc dữ liệu sai | không lưu; lỗi chỉ đúng ô | smoke | ☐ | |
+| SCC-09 | Gọi REST `/builder/*` khi chưa đăng nhập | 401/403 | http | ☐ | |
+| SCC-10 | Mở trang ngoài frontend | không nạp JS/CSS của ứng dụng builder | http | ☐ | |
+| SCC-11 | Sửa một Block đang dùng ở 2 trang | cả hai trang cập nhật |  | ☐ | |
+| SCC-12 | Block chèn chính nó (trực tiếp/gián tiếp) | không treo; editor báo lỗi vòng lặp |  | ☐ | |
+| SCC-13 | SAHA → Header & Footer → Tạo mặc định | header/footer builder "✓ Đang dùng" | qa | ☐ | |
+| SCC-14 | Header: dính khi cuộn; mobile ☰ mở off-canvas; Tab/Esc/focus | `aria-expanded`, `aria-controls` đúng; Esc đóng, focus về ☰ | smoke | ☐ | |
+| SCC-15 | Đăng nhập editor | không thấy Header & Footer |  | ☐ | |
+| SCC-16 | Trang → "Tạo trang chủ mẫu (SAHA Builder)" | mở builder; trang chủ 14 khối, đúng 1 H1, không shortcode | smoke + qa + http | ☐ | |
+| SCC-17 | Tạo trang chủ mẫu trên site thiếu danh mục "pu-foam" | vẫn tạo được, khối PU Foam bị bỏ | smoke | ☐ | |
+| SCC-18 | CTA "Mở form báo giá" trên trang chủ | modal báo giá mở tại chỗ; gửi được | smoke | ☐ | |
+| SCC-19 | Tìm "243" | tới thẳng trang Keo khoá ren Loctite 243 | http | ☐ | |
+| SCC-20 | Bật catalogue: trang sản phẩm, shop, gọi `?add-to-cart=ID` | giá "Liên hệ báo giá"; không có nút giỏ; không thêm được vào giỏ | qa | ☐ | |
+| SCC-21 | Tắt catalogue, bật COD: Mua ngay sản phẩm đơn giản → đặt đơn | tới thẳng Checkout; "Đơn hàng đã nhận" | smoke | ☐ | |
+| SCC-22 | Mua ngay sản phẩm biến thể (chọn thuộc tính) | Checkout đúng biến thể, đúng giá |  | ☐ | |
+| SCC-23 | Cart/Checkout block, Tài khoản (đăng nhập, đơn hàng, địa chỉ) | màu theo Theme Options; mobile gọn |  | ☐ | |
+| SCC-24 | Trang sản phẩm có 3+ ảnh | ảnh chính, thumbnail, chuyển ảnh, zoom, lightbox |  | ☐ | |
+| SCC-25 | `wp saha qa` sau khi cập nhật WooCommerce | không có template override lỗi thời | qa | ☐ | |
+| SCC-26 | Trang chủ, liên hệ, báo giá, thương hiệu | không còn shortcode thô `[saha_…]`/`[ux_…]`; QA không liệt kê trang dùng UX Builder | qa + http | ☐ | |
+| SCC-27 | Ma trận 1920 · 1440 · 1366 · 1024 · 768 · 430 · 390 · 375 | không tràn ngang; CTA dính không che nội dung |  | ☐ | |
+| SCC-28 | Lighthouse mobile trang chủ, sản phẩm, thương hiệu (staging) | LCP < 2.5s, CLS < 0.1 |  | ☐ | |
+| SCC-29 | Chỉ dùng bàn phím: header, off-canvas, modal báo giá, builder | đi được hết, thấy focus |  | ☐ | |
+| SCC-30 | Chạy hết checklist | `debug.log` không có lỗi mới; Console sạch |  | ☐ | |
+
 ## 4. Nghiệm thu (spec §98)
 
 Một module chỉ được coi hoàn thành khi:
@@ -281,8 +319,9 @@ Một module chỉ được coi hoàn thành khi:
 | Không JS error (Console sạch ở mọi trang trong ma trận mục 2) | ☐ | | |
 | Responsive — ma trận mục 2 đạt | ☐ | | |
 | Security validation — P1, P4, P6 phần bảo mật đạt | ☐ | | |
-| Không conflict Flatsome (UX Builder mở/lưu được mọi trang) | ☐ | | |
-| Không sửa core (`git status` của WordPress/WooCommerce/Flatsome sạch) | ☐ | | |
+| Tắt plugin SAHA Builder → mọi trang đã dựng hiển thị y hệt (SCC-03) | ☐ | | |
+| Không còn trang nào dùng shortcode UX Builder/Flatsome (`wp saha qa`) | ☐ | | |
+| Không sửa core (`git status` của WordPress/WooCommerce sạch) | ☐ | | |
 | `wp saha qa --strict` đạt | ☐ | | |
 | `php tests/http-smoke.php <staging> --write` đạt | ☐ | | |
 | PageSpeed mobile: LCP < 2.5s, CLS < 0.1 (trang chủ, sản phẩm, thương hiệu) | ☐ | | |

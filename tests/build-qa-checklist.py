@@ -1,5 +1,6 @@
 """
-Sinh docs/QA.md từ mục "## 8. Testing" của docs/PHASE-1.md … PHASE-7.md.
+Sinh docs/QA.md từ mục "## 8. Testing" của docs/PHASE-1.md … PHASE-7.md
+và checklist SAHA Commerce Core ở docs/scc/PHASE-1.7.md.
 
 Chạy lại mỗi khi checklist của một phase thay đổi:
 
@@ -33,6 +34,15 @@ AUTO = {
     (7, 7): "http", (7, 14): "qa", (7, 17): "http",
 }
 
+# Checklist SCC (docs/scc/PHASE-1.7.md, mục 8 — bảng "Checklist SCC").
+SCC_DOC = DOCS / "scc" / "PHASE-1.7.md"
+#   smoke = php tests/smoke.php · js = npm run test:js · qa / http như trên
+SCC_AUTO = {
+    1: "qa", 2: "smoke", 5: "js", 6: "smoke", 8: "smoke", 9: "http", 10: "http",
+    13: "qa", 14: "smoke", 16: "smoke + qa + http", 17: "smoke", 18: "smoke", 19: "http",
+    20: "qa", 21: "smoke", 25: "qa", 26: "qa + http",
+}
+
 TITLES = {
     1: "Foundation",
     2: "Catalogue",
@@ -64,6 +74,20 @@ def rows_for(phase: int):
     return out
 
 
+def scc_rows():
+    text = SCC_DOC.read_text(encoding="utf-8")
+    match = re.search(r"### Checklist SCC(.*?)\n## 9\.", text, re.S)
+
+    if not match:
+        return []
+
+    return [
+        (int(m.group(1)), m.group(2), m.group(3))
+        for m in (ROW.match(line) for line in match.group(1).splitlines())
+        if m
+    ]
+
+
 def main() -> None:
     sections = []
     total = 0
@@ -87,6 +111,24 @@ def main() -> None:
 
         sections.append("\n".join(lines))
 
+    rows = scc_rows()
+    total += len(rows)
+    lines = [
+        "### SCC — SAHA Commerce Core: saha-theme + SAHA Builder ([scc/PHASE-1.7.md](scc/PHASE-1.7.md))",
+        "",
+        "Trên `saha-theme`, các mục của P5 nói về UX Builder/Flatsome thay bằng mục SCC tương ứng.",
+        "",
+        "| ID | Test | Kỳ vọng | Tự động | Kết quả | Ghi chú |",
+        "|---|---|---|---|---|---|",
+    ]
+
+    for num, test, expect in rows:
+        auto = SCC_AUTO.get(num, "")
+        auto_total += 1 if auto else 0
+        lines.append(f"| SCC-{num:02d} | {test} | {expect} | {auto} | ☐ | |")
+
+    sections.append("\n".join(lines))
+
     header = f"""# QA — Tổng Kho Keo Dán SAHA
 
 > File này được sinh bởi `tests/build-qa-checklist.py` từ mục 8 của các `docs/PHASE-*.md`.
@@ -98,9 +140,9 @@ Tổng: **{total} test thủ công**, trong đó **{auto_total}** đã có công
 
 | Công cụ | Chạy ở đâu | Phủ | Ghi dữ liệu? |
 |---|---|---|---|
-| `php tests/smoke.php` | máy dev, không cần WordPress | logic thuần: validate, sanitize, tokenizer, cache, robots, SEO | Không |
-| `wp saha qa` hoặc **SAHA → Kiểm tra hệ thống** | trên site | môi trường, bảng + index, quyền, cấu hình, taxonomy, REST route + permission_callback, relevance tìm kiếm, robots, bảo mật upload/debug, cron, object cache | Không |
-| `php tests/http-smoke.php <url>` | máy bất kỳ | REST từ ngoài vào, mã HTTP, robots.txt, noindex, no-cache, lỗi PHP lộ ra trang, số H1 | Không |
+| `php tests/smoke.php` | máy dev, không cần WordPress | logic thuần: validate, sanitize, tokenizer, cache, robots, SEO; builder (schema, sanitize mọi control, render, CSS), Theme Options, header/footer, trang chủ mẫu, Mua ngay | Không |
+| `wp saha qa` hoặc **SAHA → Kiểm tra hệ thống** | trên site | môi trường, bảng + index, quyền, cấu hình, taxonomy, REST route + permission_callback, builder (quyền, file CSS, header/footer, trang chủ, shortcode Flatsome còn sót), WooCommerce (catalogue thật sự chặn mua, template override lỗi thời), relevance tìm kiếm, robots, bảo mật upload/debug, cron, object cache | Không |
+| `php tests/http-smoke.php <url>` | máy bất kỳ | REST từ ngoài vào, mã HTTP, robots.txt, noindex, no-cache, lỗi PHP lộ ra trang, số H1, shortcode thô, route builder từ chối khách | Không |
 | `php tests/http-smoke.php <url> --write` | máy bất kỳ → **chỉ local/staging** | spec §57: thiếu nonce, email sai, product giả, chống trùng, rate limit, honeypot | Có — 2 báo giá + 1 lead "[Mẫu] QA…" |
 | `wp saha seed --with-crm` | trên site **local/staging** | tạo dữ liệu mẫu để các test trên có dữ liệu | Có — gỡ bằng `wp saha unseed` |
 
@@ -108,8 +150,9 @@ Thứ tự khuyến nghị trên staging:
 
 ```bash
 # chạy tại thư mục gốc WordPress (cũng là gốc repo)
-wp saha seed --with-crm --homepage-layout=docs/layouts/homepage.ux.txt
-wp saha qa
+wp saha seed --with-crm
+wp saha homepage --front        # trang chủ mẫu dựng bằng SAHA Builder (saha-theme)
+wp saha qa --strict
 php tests/http-smoke.php https://staging.example.com --write
 ```
 
@@ -150,8 +193,9 @@ Một module chỉ được coi hoàn thành khi:
 | Không JS error (Console sạch ở mọi trang trong ma trận mục 2) | ☐ | | |
 | Responsive — ma trận mục 2 đạt | ☐ | | |
 | Security validation — P1, P4, P6 phần bảo mật đạt | ☐ | | |
-| Không conflict Flatsome (UX Builder mở/lưu được mọi trang) | ☐ | | |
-| Không sửa core (`git status` của WordPress/WooCommerce/Flatsome sạch) | ☐ | | |
+| Tắt plugin SAHA Builder → mọi trang đã dựng hiển thị y hệt (SCC-03) | ☐ | | |
+| Không còn trang nào dùng shortcode UX Builder/Flatsome (`wp saha qa`) | ☐ | | |
+| Không sửa core (`git status` của WordPress/WooCommerce sạch) | ☐ | | |
 | `wp saha qa --strict` đạt | ☐ | | |
 | `php tests/http-smoke.php <staging> --write` đạt | ☐ | | |
 | PageSpeed mobile: LCP < 2.5s, CLS < 0.1 (trang chủ, sản phẩm, thương hiệu) | ☐ | | |

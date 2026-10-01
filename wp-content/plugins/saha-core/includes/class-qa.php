@@ -129,14 +129,14 @@ final class Qa {
 		$theme  = wp_get_theme();
 		$parent = $theme->parent();
 
-		$this->expect(
-			$g,
-			'Theme Flatsome Child — SAHA đang bật, theme cha là Flatsome',
-			'flatsome' === $theme->get_template() && $parent instanceof \WP_Theme && $parent->exists(),
-			'Theme hiện tại: ' . $theme->get( 'Name' ) . ' (template: ' . $theme->get_template() . ').',
-			self::WARN,
-			$parent instanceof \WP_Theme ? 'Flatsome ' . $parent->get( 'Version' ) : ''
-		);
+		// SCC: saha-theme là giao diện chính; flatsome-child đã đóng băng (vẫn chạy được).
+		if ( 'saha-theme' === $theme->get_template() ) {
+			$this->add( $g, 'Theme SAHA Theme đang bật', self::PASS, $theme->get( 'Version' ) );
+		} elseif ( 'flatsome' === $theme->get_template() && $parent instanceof \WP_Theme && $parent->exists() ) {
+			$this->add( $g, 'Theme SAHA Theme đang bật', self::WARN, 'Đang dùng Flatsome Child (đã đóng băng, không phát triển thêm). Giao diện → Giao diện → kích hoạt SAHA Theme.' );
+		} else {
+			$this->add( $g, 'Theme SAHA Theme đang bật', self::WARN, 'Theme hiện tại: ' . $theme->get( 'Name' ) . ' (template: ' . $theme->get_template() . ').' );
+		}
 
 		$this->expect( $g, 'Permalink dạng đẹp (không phải ?p=123)', '' !== (string) get_option( 'permalink_structure' ), 'Settings → Permalinks: chọn Post name hoặc /tin-tuc/%postname%/.' );
 
@@ -409,6 +409,50 @@ final class Qa {
 				null !== $id ? get_the_title( $id ) . ' (#' . $id . ')' : __( 'Chưa có — đang dùng bản PHP của theme. Tạo ở SAHA → Header & Footer.', 'saha-core' )
 			);
 		}
+
+		$this->add(
+			$g,
+			'Plugin SAHA Builder (trình soạn thảo) đang bật',
+			defined( 'SAHA_BUILDER_VERSION' ) ? self::PASS : self::WARN,
+			defined( 'SAHA_BUILDER_VERSION' ) ? SAHA_BUILDER_VERSION : __( 'Đang tắt — trang đã dựng vẫn hiển thị nhưng không sửa được.', 'saha-core' )
+		);
+
+		$front = 'page' === get_option( 'show_on_front' ) ? (int) get_option( 'page_on_front' ) : 0;
+		$this->expect(
+			$g,
+			'Trang chủ dựng bằng builder',
+			$front > 0 && Builder\LayoutRepository::isEnabled( $front ),
+			__( 'Chưa — Trang → Tất cả trang → "Tạo trang chủ mẫu (SAHA Builder)", hoặc wp saha homepage --front.', 'saha-core' ),
+			current_theme_supports( 'saha-theme-options' ) ? self::WARN : self::SKIP,
+			$front > 0 ? get_the_title( $front ) . ' (#' . $front . ')' : ''
+		);
+
+		// Nội dung còn shortcode Flatsome/UX Builder: không hiển thị được trên saha-theme (rủi ro R12).
+		$legacy = array();
+		foreach ( get_posts(
+			array(
+				'post_type'      => array( 'page', 'post' ),
+				'post_status'    => 'publish',
+				'posts_per_page' => 200,
+				'no_found_rows'  => true,
+			)
+		) as $post ) {
+			if ( ! Builder\LayoutRepository::isEnabled( $post->ID ) && preg_match( '/\[(ux_|section|row|col|featured_box|blog_posts|text_box)\b/', (string) $post->post_content ) ) {
+				$legacy[] = get_the_title( $post ) . ' (#' . $post->ID . ')';
+			}
+		}
+
+		$this->expect(
+			$g,
+			'Không còn trang dùng shortcode UX Builder (Flatsome)',
+			! $legacy,
+			sprintf(
+				/* translators: %s: danh sách trang */
+				__( 'Cần dựng lại bằng builder: %s', 'saha-core' ),
+				implode( ', ', array_slice( $legacy, 0, 5 ) ) . ( count( $legacy ) > 5 ? '…' : '' )
+			),
+			'saha-theme' === get_template() ? self::WARN : self::SKIP
+		);
 	}
 
 	/**
@@ -449,10 +493,65 @@ final class Qa {
 			$this->expect( $g, 'Nút "Mua ngay" đã gắn', false !== has_action( 'woocommerce_after_add_to_cart_button' ), 'Thiếu hook BuyNow.' );
 		}
 
+		$this->check_wc_overrides( $g );
+
 		foreach ( array( 'cart', 'checkout', 'myaccount' ) as $page ) {
 			$id = (int) wc_get_page_id( $page );
 			$this->expect( $g, "Trang {$page} đã gán", $id > 0 && 'publish' === get_post_status( $id ), 'Chưa gán — WooCommerce → Cài đặt → Nâng cao.', 'myaccount' === $page ? self::WARN : self::FAIL );
 		}
+	}
+
+	/**
+	 * Template WooCommerce theme override cũ hơn bản gốc (rủi ro R7 — WooCommerce đổi
+	 * template theo phiên bản). Cùng nguồn dữ liệu với WooCommerce → Trạng thái.
+	 *
+	 * @param string $g Nhóm.
+	 */
+	private function check_wc_overrides( string $g ): void {
+		if ( ! class_exists( 'WC_Admin_Status' ) ) {
+			$status_file = WC()->plugin_path() . '/includes/admin/class-wc-admin-status.php';
+
+			if ( is_readable( $status_file ) ) {
+				require_once $status_file;
+			}
+		}
+
+		if ( ! class_exists( 'WC_Admin_Status' ) || ! method_exists( 'WC_Admin_Status', 'scan_template_files' ) ) {
+			$this->add( $g, 'Template WooCommerce override', self::SKIP, 'Không đọc được WC_Admin_Status.' );
+			return;
+		}
+
+		$core     = WC()->plugin_path() . '/templates/';
+		$outdated = array();
+		$count    = 0;
+
+		foreach ( \WC_Admin_Status::scan_template_files( $core ) as $file ) {
+			foreach ( array( get_stylesheet_directory(), get_template_directory() ) as $dir ) {
+				$theme_file = $dir . '/woocommerce/' . $file;
+
+				if ( ! is_readable( $theme_file ) ) {
+					continue;
+				}
+
+				++$count;
+				$theirs = \WC_Admin_Status::get_file_version( $theme_file );
+				$ours   = \WC_Admin_Status::get_file_version( $core . $file );
+
+				if ( $ours && ( ! $theirs || version_compare( $theirs, $ours, '<' ) ) ) {
+					$outdated[] = str_replace( '\\', '/', $file ) . ' (' . ( $theirs ? $theirs : '?' ) . ' < ' . $ours . ')';
+				}
+				break;
+			}
+		}
+
+		$this->expect(
+			$g,
+			'Template WooCommerce override không lỗi thời',
+			! $outdated,
+			'Cần cập nhật: ' . implode( ', ', $outdated ),
+			self::WARN,
+			0 === $count ? 'Theme không override template nào' : $count . ' file'
+		);
 	}
 
 	/**

@@ -66,7 +66,8 @@ add_action(
 
 		$is_wc = function_exists( 'is_woocommerce' ) && ( is_woocommerce() || is_cart() || is_checkout() || is_account_page() );
 
-		if ( $is_wc ) {
+		// Trang dựng bằng builder có thể chứa lưới sản phẩm (thẻ có thương hiệu + SKU).
+		if ( $is_wc || ( is_singular() && saha_theme_builder_active() ) ) {
 			wp_enqueue_style( 'saha-catalog-product' );
 		}
 
@@ -372,7 +373,8 @@ add_action(
 			return;
 		}
 
-		if ( saha_theme_content_has_shortcode( 'saha_quote_cta' ) ) {
+		// Shortcode cũ, hoặc CTA của builder có nút "Mở form báo giá".
+		if ( saha_theme_content_has_shortcode( 'saha_quote_cta' ) || did_action( 'saha_quote_modal_needed' ) ) {
 			wp_enqueue_script( 'saha-catalog-quote-form' );
 			saha_theme_part( 'quote/modal' );
 		}

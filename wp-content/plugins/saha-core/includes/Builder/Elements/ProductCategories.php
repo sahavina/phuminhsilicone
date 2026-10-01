@@ -46,6 +46,7 @@ final class ProductCategories extends Element {
 					'options' => array(
 						'product_cat'           => __( 'Danh mục sản phẩm', 'saha-core' ),
 						Taxonomies::APPLICATION => __( 'Ứng dụng', 'saha-core' ),
+						Taxonomies::BRAND       => __( 'Thương hiệu', 'saha-core' ),
 					),
 				),
 				'parent'    => array(

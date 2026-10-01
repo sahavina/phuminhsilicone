@@ -303,14 +303,14 @@ final class Catalog {
 	 */
 
 	/**
-	 * Danh sách term để render grid danh mục / ứng dụng.
+	 * Danh sách term để render grid danh mục / ứng dụng / thương hiệu.
 	 *
-	 * @param string               $taxonomy product_cat | product_application.
+	 * @param string               $taxonomy product_cat | product_application | product_brand.
 	 * @param array<string, mixed> $args     parent, include, limit, hide_empty, orderby.
 	 * @return array<int, array<string, mixed>>
 	 */
 	public static function terms( string $taxonomy, array $args = array() ): array {
-		$allowed = array( 'product_cat', Taxonomies::APPLICATION );
+		$allowed = array( 'product_cat', Taxonomies::APPLICATION, Taxonomies::BRAND );
 
 		if ( ! in_array( $taxonomy, $allowed, true ) || ! taxonomy_exists( $taxonomy ) ) {
 			return array();

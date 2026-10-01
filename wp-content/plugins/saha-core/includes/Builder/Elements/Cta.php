@@ -17,6 +17,10 @@ defined( 'ABSPATH' ) || exit;
 
 /**
  * CTA — khối kêu gọi hành động: tiêu đề, mô tả, tối đa hai nút.
+ *
+ * Nút chính có thể mở form báo giá tại chỗ (modal của theme) thay vì đi tới một
+ * liên kết: render `data-saha-open-quote` và báo cho theme qua action
+ * `saha_quote_modal_needed` để in modal ở footer.
  */
 final class Cta extends Element {
 
@@ -52,6 +56,16 @@ final class Cta extends Element {
 					'section'   => 'content',
 					'default'   => __( 'Yêu cầu báo giá', 'saha-core' ),
 					'maxLength' => 80,
+				),
+				'action1'     => array(
+					'type'    => 'select',
+					'label'   => __( 'Nút chính làm gì', 'saha-core' ),
+					'section' => 'content',
+					'default' => 'link',
+					'options' => array(
+						'link'  => __( 'Đi tới liên kết', 'saha-core' ),
+						'quote' => __( 'Mở form báo giá', 'saha-core' ),
+					),
 				),
 				'link1'       => array(
 					'type'    => 'link',
@@ -125,8 +139,12 @@ final class Cta extends Element {
 			$body .= '<p class="saha-cta__text">' . nl2br( esc_html( $text ) ) . '</p>';
 		}
 
-		$buttons = Button::markup( $node->prop( 'link1' ), (string) $this->prop( $node, 'button1' ), 'primary', 'lg' )
-			. Button::markup( $node->prop( 'link2' ), (string) $node->prop( 'button2', '' ), 'outline', 'lg' );
+		$label   = (string) $this->prop( $node, 'button1' );
+		$buttons = 'quote' === $this->prop( $node, 'action1' ) && '' !== trim( $label )
+			? $this->quoteButton( $label, $ctx )
+			: Button::markup( $node->prop( 'link1' ), $label, 'primary', 'lg' );
+
+		$buttons .= Button::markup( $node->prop( 'link2' ), (string) $node->prop( 'button2', '' ), 'outline', 'lg' );
 
 		$html = '<div class="saha-cta__body">' . $body . '</div>';
 
@@ -135,6 +153,32 @@ final class Cta extends Element {
 		}
 
 		return '<div' . $this->rootAttributes( $node, $ctx, array( 'saha-cta' ) ) . '>' . $html . '</div>';
+	}
+
+	/**
+	 * Nút báo giá báo cho theme in modal mỗi lần render → không cache HTML.
+	 *
+	 * @param Node $node Node.
+	 */
+	public function isDynamic( Node $node ): bool {
+		return 'quote' === $node->prop( 'action1', 'link' );
+	}
+
+	/**
+	 * Nút mở form báo giá.
+	 *
+	 * @param string        $label Nhãn.
+	 * @param RenderContext $ctx   Ngữ cảnh.
+	 */
+	private function quoteButton( string $label, RenderContext $ctx ): string {
+		if ( ! $ctx->editor ) {
+			/**
+			 * Trang cần modal báo giá (theme in modal + nạp JS ở footer).
+			 */
+			do_action( 'saha_quote_modal_needed' );
+		}
+
+		return '<button type="button" class="saha-btn saha-btn--primary saha-btn--lg" data-saha-open-quote="1">' . esc_html( $label ) . '</button>';
 	}
 
 	/**

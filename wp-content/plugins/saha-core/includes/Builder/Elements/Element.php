@@ -67,6 +67,18 @@ abstract class Element {
 	public function styles( Node $node, CssRules $css ): void {}
 
 	/**
+	 * Node này có HTML động không (không được vào render cache).
+	 *
+	 * Mặc định theo `dynamic` của định nghĩa; element ghi đè khi chỉ một số
+	 * thiết lập mới làm HTML động.
+	 *
+	 * @param Node $node Node.
+	 */
+	public function isDynamic( Node $node ): bool {
+		return ! empty( $this->def()['dynamic'] );
+	}
+
+	/**
 	 * Định nghĩa đầy đủ (có mặc định, qua filter).
 	 *
 	 * @return array<string, mixed>

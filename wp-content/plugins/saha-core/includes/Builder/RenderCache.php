@@ -77,7 +77,7 @@ final class RenderCache {
 	public function isStatic( Node $node ): bool {
 		$element = $this->elements->get( $node->type );
 
-		if ( null === $element || ! empty( $element->def()['dynamic'] ) ) {
+		if ( null === $element || $element->isDynamic( $node ) ) {
 			return false;
 		}
 
