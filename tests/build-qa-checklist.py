@@ -43,6 +43,14 @@ SCC_AUTO = {
     20: "qa", 21: "smoke", 25: "qa", 26: "qa + http",
 }
 
+# Checklist SCC Phase 2 (docs/scc/PHASE-2.8.md — bảng "Checklist SCC Phase 2").
+SCC2_DOC = DOCS / "scc" / "PHASE-2.8.md"
+SCC2_AUTO = {
+    2: "smoke", 3: "smoke", 5: "smoke", 7: "http", 9: "http", 11: "smoke + http --write",
+    14: "smoke", 16: "js + qa", 17: "js", 18: "smoke", 20: "smoke",
+    23: "http", 24: "smoke", 26: "http", 27: "http", 28: "smoke + http + qa", 29: "qa",
+}
+
 TITLES = {
     1: "Foundation",
     2: "Catalogue",
@@ -74,9 +82,9 @@ def rows_for(phase: int):
     return out
 
 
-def scc_rows():
-    text = SCC_DOC.read_text(encoding="utf-8")
-    match = re.search(r"### Checklist SCC(.*?)\n## 9\.", text, re.S)
+def scc_rows(doc=None, heading="### Checklist SCC", end=r"\n## 9\."):
+    text = (doc or SCC_DOC).read_text(encoding="utf-8")
+    match = re.search(re.escape(heading) + r"\n(.*?)" + end, text, re.S)
 
     if not match:
         return []
@@ -126,6 +134,22 @@ def main() -> None:
         auto = SCC_AUTO.get(num, "")
         auto_total += 1 if auto else 0
         lines.append(f"| SCC-{num:02d} | {test} | {expect} | {auto} | ☐ | |")
+
+    sections.append("\n".join(lines))
+
+    rows = scc_rows(SCC2_DOC, "### Checklist SCC Phase 2", r"\n## ")
+    total += len(rows)
+    lines = [
+        "### SCC Phase 2 — mega menu, template, cửa hàng, báo giá, import/export, element ([scc/PHASE-2.8.md](scc/PHASE-2.8.md))",
+        "",
+        "| ID | Test | Kỳ vọng | Tự động | Kết quả | Ghi chú |",
+        "|---|---|---|---|---|---|",
+    ]
+
+    for num, test, expect in rows:
+        auto = SCC2_AUTO.get(num, "")
+        auto_total += 1 if auto else 0
+        lines.append(f"| SCC2-{num:02d} | {test} | {expect} | {auto} | ☐ | |")
 
     sections.append("\n".join(lines))
 

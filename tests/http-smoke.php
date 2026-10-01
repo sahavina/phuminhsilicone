@@ -229,8 +229,10 @@ ok( 'trang chủ có đúng 1 thẻ H1', 1 === preg_match_all( '/<h1[\s>]/i', $r
 
 if ( ! $theme_active ) {
 	skip( 'trang chủ preload ảnh hero', 'theme SAHA (saha-theme hoặc flatsome-child) chưa bật' );
-} elseif ( preg_match( '/<link[^>]+rel=["\']preload["\'][^>]+as=["\']image["\']/i', $r['body'] ) ) {
-	ok( 'trang chủ preload ảnh hero (Phase 7)', true );
+} elseif ( preg_match( '/<link[^>]+rel=["\']preload["\'][^>]+as=["\']image["\']/i', $r['body'] ) || false !== strpos( $r['body'], 'fetchpriority="high"' ) ) {
+	// SCC: Banner / Slide "Ưu tiên tải" dùng fetchpriority="high" (không cần <link rel=preload>).
+	$high = substr_count( $r['body'], 'fetchpriority="high"' );
+	ok( 'trang chủ ưu tiên tải ảnh hero, chỉ 1 ảnh fetchpriority=high (QA 2.8)', $high <= 1, $high . ' ảnh fetchpriority=high — logo / ảnh khác đang tranh băng thông với ảnh hero' );
 } else {
 	skip( 'trang chủ preload ảnh hero', 'trang chủ chưa có ảnh hero (Banner bật "Ưu tiên tải", hoặc [ux_banner] ở Flatsome)' );
 }

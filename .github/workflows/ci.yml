@@ -51,6 +51,12 @@ jobs:
       - name: Lint SCSS
         run: npm run lint:css
 
+      # JS không qua build (saha-core public, theme assets) không nằm trong lint:js — ít nhất phải parse được.
+      - name: Cú pháp JS không qua build
+        run: |
+          set -e
+          git ls-files 'wp-content/plugins/saha-core/*.js' 'wp-content/themes/saha-theme/assets/js/*.js' | xargs -n1 node --check
+
       - name: Unit test JS (store builder)
         run: npm run test:js
 

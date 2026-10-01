@@ -872,5 +872,21 @@ check( 'tabs trong editor: không ẩn tab nào (sửa được trên canvas)', 
 check( 'tab chỉ đặt được trong tabs; ảnh đặt được trong thư viện ảnh / logo; element nội dung đặt được trong lưới và tab', array( count( saha_bs( array( 'elements' => array( array( 'type' => 'section', 'children' => array( array( 'type' => 'tab' ) ) ) ) ) )['errors'] ) > 0, saha_bs( array( 'elements' => array( array( 'type' => 'section', 'children' => array( array( 'type' => 'gallery', 'children' => array( array( 'type' => 'image' ) ) ), array( 'type' => 'grid', 'children' => array( array( 'type' => 'heading' ), array( 'type' => 'button' ) ) ) ) ) ) ) )['errors'] ), array( true, array() ) );
 check( 'thư viện ảnh / logo: element khác ảnh bị từ chối', count( saha_bs( array( 'elements' => array( array( 'type' => 'section', 'children' => array( array( 'type' => 'gallery', 'children' => array( array( 'type' => 'heading' ) ) ) ) ) ) ) )['errors'] ) > 0, true );
 
+echo "QA Phase 2 (mốc 2.8)\n";
+if ( ! function_exists( 'rest_url' ) ) {
+	function rest_url( $path = '' ) { return 'https://tongkhokeodan.com/wp-json/' . ltrim( (string) $path, '/' ); }
+}
+$saha_xss = '"><script>alert(1)</script><img src=x onerror=alert(2)>';
+$saha_x   = saha_bs( array( 'elements' => array( array( 'type' => 'section', 'children' => array(
+	array( 'type' => 'tabs', 'props' => array( 'label' => $saha_xss ), 'children' => array( array( 'type' => 'tab', 'props' => array( 'title' => $saha_xss ) ) ) ),
+	array( 'type' => 'video', 'props' => array( 'url' => 'https://youtu.be/dQw4w9WgXcQ', 'title' => $saha_xss ) ),
+	array( 'type' => 'countdown', 'props' => array( 'until' => '2099-01-01 00:00', 'doneText' => $saha_xss ) ),
+	array( 'type' => 'newsletter', 'props' => array( 'placeholder' => $saha_xss, 'button' => $saha_xss, 'note' => $saha_xss ) ),
+	array( 'type' => 'grid', 'children' => array( array( 'type' => 'heading', 'props' => array( 'text' => $saha_xss ) ) ) ),
+) ) ) ) );
+$saha_x_html = $saha_x['document'] ? ( new Renderer() )->document( $saha_x['document'], new RenderContext( 0, false, false ) ) : '';
+check( 'element Phase 2: chuỗi tấn công trong mọi ô chữ không thành thẻ / thuộc tính HTML', array( '' !== $saha_x_html, false === stripos( $saha_x_html, '<script' ), false === stripos( $saha_x_html, '<img src=x' ), 0 === preg_match( '/\sonerror=/i', $saha_x_html ) ), array( true, true, true, true ) );
+check( 'video: link javascript: / data: không được nhận', array( SahaVideo::parse( 'javascript:alert(1)' ), SahaVideo::parse( 'data:text/html,<script>' ) ), array( null, null ) );
+
 echo "\n$pass passed, $fail failed\n";
 exit( $fail > 0 ? 1 : 0 );

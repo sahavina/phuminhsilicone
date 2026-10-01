@@ -3,7 +3,7 @@
 > File này được sinh bởi `tests/build-qa-checklist.py` từ mục 8 của các `docs/PHASE-*.md`.
 > Không sửa tay — sửa ở PHASE-*.md rồi chạy lại script.
 
-Tổng: **218 test thủ công**, trong đó **44** đã có công cụ tự động kiểm tra (một phần hoặc toàn bộ).
+Tổng: **248 test thủ công**, trong đó **61** đã có công cụ tự động kiểm tra (một phần hoặc toàn bộ).
 
 ## 1. Công cụ tự động — chạy trước
 
@@ -307,6 +307,41 @@ Trên `saha-theme`, các mục của P5 nói về UX Builder/Flatsome thay bằn
 | SCC-28 | Lighthouse mobile trang chủ, sản phẩm, thương hiệu (staging) | LCP < 2.5s, CLS < 0.1 |  | ☐ | |
 | SCC-29 | Chỉ dùng bàn phím: header, off-canvas, modal báo giá, builder | đi được hết, thấy focus |  | ☐ | |
 | SCC-30 | Chạy hết checklist | `debug.log` không có lỗi mới; Console sạch |  | ☐ | |
+
+### SCC Phase 2 — mega menu, template, cửa hàng, báo giá, import/export, element ([scc/PHASE-2.8.md](scc/PHASE-2.8.md))
+
+| ID | Test | Kỳ vọng | Tự động | Kết quả | Ghi chú |
+|---|---|---|---|---|---|
+| SCC2-01 | Mega menu: mục menu kiểu Mega + Block, rê chuột / Tab / Esc trên desktop; mobile mở được | bảng mega hiện cột + block; Esc đóng; mobile dạng xổ xuống, không tràn |  | ☐ | |
+| SCC2-02 | Template trang sản phẩm theo danh mục, trừ một sản phẩm | sản phẩm trong danh mục dùng template, sản phẩm bị trừ dùng mặc định | smoke | ☐ | |
+| SCC2-03 | Độ cụ thể / ưu tiên template (sản phẩm cụ thể > danh mục > tất cả) | template cụ thể hơn thắng; cùng mức → ưu tiên cao hơn | smoke | ☐ | |
+| SCC2-04 | Header / footer dựng bằng builder theo điều kiện | đúng header / footer; header dính hoạt động |  | ☐ | |
+| SCC2-05 | Swatches: chọn màu + dung tích bằng chuột và bàn phím | đúng biến thể, giá, tình trạng; tổ hợp hết hàng bị khoá | smoke | ☐ | |
+| SCC2-06 | Thanh "Thêm vào giỏ" dính | hiện khi cuộn qua nút mua; thêm đúng biến thể; chưa chọn → cuộn về form |  | ☐ | |
+| SCC2-07 | Xem nhanh từ thẻ sản phẩm (bật / tắt catalogue) | mở hộp, Esc trả focus; thêm giỏ qua Store API; catalogue → nút báo giá | http | ☐ | |
+| SCC2-08 | Ngăn giỏ hàng: thêm từ thẻ / Xem nhanh, đổi số lượng, xoá | ngăn mở, số trên icon đúng; không có ở trang giỏ / thanh toán / catalogue |  | ☐ | |
+| SCC2-09 | Gợi ý tìm kiếm: gõ "243", ↑↓ Enter, Esc | gợi ý có ảnh / mã / giá; catalogue không lộ giá | http | ☐ | |
+| SCC2-10 | Lọc / sắp xếp / bỏ chip ở shop + danh mục, có và không JS | không tải lại trang (JS), URL đổi; không JS vẫn lọc được |  | ☐ | |
+| SCC2-11 | Danh sách báo giá: thêm 2 sản phẩm, sửa số lượng / ghi chú, gửi | 1 yêu cầu nhiều dòng; email + lead có đủ dòng | smoke + http --write | ☐ | |
+| SCC2-12 | Admin: chi tiết báo giá danh sách + báo cáo sản phẩm được hỏi | bảng từng dòng; báo cáo gộp số yêu cầu + tổng SL |  | ☐ | |
+| SCC2-13 | Báo giá một sản phẩm cũ (trước 2.5) | vẫn đọc được ở admin và báo cáo |  | ☐ | |
+| SCC2-14 | Xuất site A → nhập site B (chạy thử rồi nhập thật) | cùng giao diện; ảnh tải về; điều kiện template theo slug; báo cáo cảnh báo rõ | smoke | ☐ | |
+| SCC2-15 | Nhập file sai / quá lớn / không phải SAHA | báo lỗi, không ghi gì |  | ☐ | |
+| SCC2-16 | Builder → Thêm → Khối mẫu, Block đã lưu (trang + header) | chèn bản sao (H1 → H2 khi trang đã có H1); block chèn dạng liên kết; header không có khối mẫu | js + qa | ☐ | |
+| SCC2-17 | Builder → Cấu trúc: thu gọn, tên section, nền sọc khi ẩn, "+ Thêm vào …" | đúng như mô tả; chọn trên canvas → cây mở + cuộn tới | js | ☐ | |
+| SCC2-18 | Tabs: chuột, ←/→/Home/End; sửa tab 2 trong builder | chuyển đúng tab; builder hiện mọi tab | smoke | ☐ | |
+| SCC2-19 | Thư viện ảnh: bấm ảnh, ←/→, Esc | xem lớn, đếm "2 / 4", focus trả về ảnh |  | ☐ | |
+| SCC2-20 | Video YouTube / Vimeo / mp4 | chỉ tải iframe khi bấm; không JS → link mở video | smoke | ☐ | |
+| SCC2-21 | Logo thương hiệu (tự động + tự chọn, lưới + băng chuyền) | đủ logo, link trang thương hiệu, nút ‹ › |  | ☐ | |
+| SCC2-22 | Đếm ngược + khi hết giờ | số giảm mỗi giây; hết giờ hiện chữ / ẩn |  | ☐ | |
+| SCC2-23 | Đăng ký nhận tin (khách và khi đang đăng nhập; email trùng) | lead nguồn "Đăng ký nhận tin"; lần 2 báo đã đăng ký | http | ☐ | |
+| SCC2-24 | Lưới; Sản phẩm / Bài viết dạng băng chuyền | số cột đúng từng thiết bị; băng chuyền cuộn + nút | smoke | ☐ | |
+| SCC2-25 | Ma trận thiết bị (QA.md mục 2) cho trang có element Phase 2 | không tràn ngang; chạm được nút ‹ ›, swatch, ngăn giỏ |  | ☐ | |
+| SCC2-26 | Audit trang: H1, alt, tên nút / link, nhãn ô nhập, ID trùng | 1 H1; không thiếu; không trùng ID | http | ☐ | |
+| SCC2-27 | Hiệu năng: PageSpeed mobile trang chủ, danh mục, sản phẩm (staging) | LCP < 2.5s, CLS < 0.1; chỉ 1 ảnh `fetchpriority=high` | http | ☐ | |
+| SCC2-28 | Bảo mật: quyền route `saha/v1`, chuỗi tấn công trong element, form công khai | khách chỉ dùng được route công khai; không XSS; nonce + rate limit + honeypot | smoke + http + qa | ☐ | |
+| SCC2-29 | `wp saha qa --strict` trên staging | 0 lỗi, 0 cảnh báo (staging có plugin SEO, Zalo, object cache) | qa | ☐ | |
+| SCC2-30 | Bộ giao diện cửa hàng một nút + "Khôi phục" Theme Options | áp đủ header / footer / trang chủ / bộ màu; khôi phục về bản trước |  | ☐ | |
 
 ## 4. Nghiệm thu (spec §98)
 

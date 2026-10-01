@@ -88,11 +88,13 @@ final class Logo extends Element {
 			$id = (int) get_theme_mod( 'custom_logo' );
 		}
 
+		// Tải ngay (đầu trang) nhưng không `fetchpriority="high"`: header thường in logo 2–3 lần
+		// (desktop, mobile, menu trượt) và logo nhỏ hiếm khi là LCP — ưu tiên dành cho ảnh hero
+		// (Banner / Slide bật "Ưu tiên tải"). QA 2.8.
 		$attrs = array(
-			'class'         => 'saha-logo-el__img',
-			'alt'           => $name,
-			'loading'       => 'eager',
-			'fetchpriority' => 'high',
+			'class'   => 'saha-logo-el__img',
+			'alt'     => $name,
+			'loading' => 'eager',
 		);
 
 		$html = $id > 0 ? (string) wp_get_attachment_image( $id, is_array( $image ) ? (string) ( $image['size'] ?? 'medium' ) : 'medium', false, $attrs ) : '';
@@ -101,7 +103,6 @@ final class Logo extends Element {
 
 		if ( '' !== $html && $mid > 0 && $mid !== $id ) {
 			$attrs['class'] = 'saha-logo-el__img saha-logo-el__img--mobile';
-			unset( $attrs['fetchpriority'] );
 			$html  = str_replace( 'class="saha-logo-el__img"', 'class="saha-logo-el__img saha-logo-el__img--desktop"', $html );
 			$html .= (string) wp_get_attachment_image( $mid, (string) ( $mobile['size'] ?? 'medium' ), false, $attrs );
 			$cls[] = 'has-mobile';

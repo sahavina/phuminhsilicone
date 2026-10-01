@@ -34,7 +34,7 @@ $saha_source = sanitize_key( (string) ( $args['source'] ?? 'contact' ) );
 		<h2 class="saha-form__title"><?php echo esc_html( (string) $args['title'] ); ?></h2>
 	<?php endif; ?>
 
-	<div class="saha-form__notice" data-saha-form-notice role="status" aria-live="polite" id="saha-form-result"
+	<div class="saha-form__notice" data-saha-form-notice role="status" aria-live="polite" id="saha-form-result-contact"
 		<?php echo $saha_result ? '' : 'hidden'; ?>
 		<?php echo $saha_result ? 'data-type="' . esc_attr( $saha_result['type'] ) . '"' : ''; ?>
 	>

@@ -43,7 +43,8 @@ Site local mẫu: XAMPP, WordPress ở `C:\xampp\htdocs\saha`, các plugin/theme
 |---|---|---|
 | `php tests/smoke.php` | Không | logic thuần: sanitize mọi control, schema, renderer, CSS, Theme Options, header/footer, trang chủ mẫu, Mua ngay… |
 | `npm run test:js` | Không | store builder (thêm/xoá/di chuyển, undo/redo, responsive, copy/paste) — Vitest |
-| `npm run lint:js` · `npm run lint:css` | Không | ESLint / Stylelint theo chuẩn WordPress |
+| `npm run lint:js` · `npm run lint:css` | Không | ESLint / Stylelint theo chuẩn WordPress — **chỉ** `saha-builder/src` và `saha-theme/src` |
+| `node --check <file>` | Không | JS không qua build (`saha-core/public/assets/js`, `saha-theme/assets/js`): kiểm cú pháp (CI chạy cho mọi file) |
 | `wp saha qa [--strict]` | Có | môi trường, DB, quyền, REST + `permission_callback`, builder, WooCommerce, SEO, bảo mật, hiệu năng |
 | `php tests/http-smoke.php <url> [--write]` | site chạy | HTTP từ ngoài: REST, quyền route builder, H1, shortcode thô, form báo giá/liên hệ (`--write` chỉ local/staging) |
 | `python tests/build-qa-checklist.py` | Không | sinh lại `docs/QA.md` (checklist thủ công) |
@@ -52,7 +53,11 @@ Trên Windows/Git Bash, chạy WP-CLI với tham số bắt đầu bằng `/` (v
 
 CI (`.github/workflows/ci.yml`): `php -l` toàn bộ, smoke, lint, test JS, build và `git diff --exit-code` trên thư mục build — quên build lại là CI đỏ.
 
-Trước khi commit: `php -l` file sửa · smoke · `npm run lint:js lint:css test:js build` · `wp saha qa` · http-smoke trên local · `debug.log` không có lỗi mới.
+Trước khi commit: `php -l` file sửa · smoke · `npm run lint:js lint:css test:js build` · `node --check` JS saha-core đã sửa · `wp saha qa` · http-smoke trên local · `debug.log` không có lỗi mới.
+
+**Không** chạy `wp-scripts lint-js --fix` (hay `npx eslint --fix`) không kèm đường dẫn: nó định dạng lại mọi JS trong repo, kể cả file ES5 của saha-core. Luôn chỉ rõ file.
+
+`npm start` (watch) ghi bản build **dev** (có `.map`) vào `build/` — trước khi commit chạy `npm run build` để `build/` là bản production (CI so khớp).
 
 ## 4. Builder
 
@@ -134,6 +139,13 @@ Schema: `saha-core/includes/ThemeOptions/Schema.php` → sanitize → option →
 |---|---|
 | `saha-core/includes/WooCommerce/CatalogMode.php` | catalogue phía server: `is_purchasable` false (chặn cả Store API), giá → "Liên hệ báo giá" |
 | `saha-core/includes/WooCommerce/BuyNow.php` | nút Mua ngay = submit thứ hai của form WC → chuyển thanh toán. Filter `saha_buy_now_enabled` |
+| `WooCommerce/Swatches.php` + `js/swatches.js` | ô chữ / màu / ảnh điều khiển `<select>` gốc (kiểu ở option `saha_woocommerce_settings`, màu / ảnh ở term meta) |
+| `WooCommerce/StickyCart.php` | thanh mua dính — bấm **nút gốc** của form (một đường thêm giỏ) |
+| `WooCommerce/QuickView.php` + `GET /products/{id}/quick-view` | HTML hộp xem nhanh; thêm giỏ qua Store API |
+| `WooCommerce/MiniCart.php` + `js/mini-cart.js` | ngăn giỏ hàng từ Store API (`cart`, `update-item`, `remove-item`); mở khi `added_to_cart` hoặc `sahaMiniCart.open( cart )` |
+| `WooCommerce/QuoteList.php` + `js/quote-list.js` | danh sách báo giá ở localStorage → `POST /quote/list`; trang tự tạo (option `saha_quote_list_page`) |
+
+Tuỳ chọn cửa hàng (Theme Options → Cửa hàng): `swatches`, `sticky_cart`, `quick_view`, `mini_cart`, `quote_list`. JS của các tính năng này nằm trong `saha-core/public/assets/js/` (ES5, không qua build; kiểm cú pháp bằng `node --check`).
 | `saha-theme/inc/woocommerce.php`, `inc/catalog.php` | hook trình bày (thương hiệu, SKU, CTA báo giá, bộ lọc, modal) |
 | `saha-theme/src/scss/_woocommerce.scss` | giao diện; selector phải cụ thể bằng `woocommerce.css` |
 
@@ -152,13 +164,28 @@ Schema: `saha-core/includes/ThemeOptions/Schema.php` → sanitize → option →
 | `saha_template_resolved` | filter | đổi header/footer cho một request |
 | `saha_quote_modal_needed` | action | element báo theme cần in modal báo giá |
 | `saha_buy_now_enabled` | filter | bật/tắt Mua ngay theo sản phẩm |
+| `saha_builder_patterns` | filter | thêm / bớt Khối mẫu của bảng Thêm |
+| `saha_quote_created` | action | sau khi tạo báo giá — `$data['items']` có các dòng khi là danh sách nhiều sản phẩm |
+| `saha_search_results` | filter | kết quả `/search` (giá thêm ở `Search::with_prices`, ngoài cache) |
 | `saha_theme_script_config` | filter (theme) | `SAHA_CONFIG` cho JS catalogue |
 
 Danh sách đủ: README của `saha-core`.
 
 ## 9. REST
 
-`/wp-json/saha/v1/` — mọi route có `permission_callback`. Builder: `builder/elements`, `builder/{id}`, `builder/save` (khoá bài + `baseHash` → 409, sai dữ liệu → 422 kèm lỗi theo `node.prop`), `builder/render`, `builder/lock/{id}`; `blocks`. Public: `search`, `products`, `brands`, `quote`, `contact` (nonce + honeypot + rate limit).
+`/wp-json/saha/v1/` — mọi route có `permission_callback` (`wp saha qa` kiểm).
+
+| Nhóm | Route |
+|---|---|
+| Builder (quyền `edit_saha_builder`) | `builder/elements`, `builder/patterns`, `builder/{id}`, `builder/save` (khoá bài + `baseHash` → 409, sai dữ liệu → 422 kèm lỗi theo `node.prop`), `builder/render`, `builder/lock/{id}`; `blocks` |
+| Public đọc (rate limit) | `nonce`, `search` (kèm `price`, rỗng ở catalogue), `products`, `products/{id}`, `products/{id}/quick-view` (404 nếu không công khai), `brands`, `brands/{slug}` |
+| Public ghi (rate limit + nonce + honeypot) | `quote`, `contact`, `quote/list`, `newsletter` |
+
+Nonce cho form trên trang có thể bị cache: `GET /nonce` trả `nonce` (`wp_rest`, gửi header `X-WP-Nonce`) và `form` (`saha_public_form`, gửi trong body `saha_nonce` **không kèm** header — request chạy như khách nên dùng được cả khi trình duyệt đang đăng nhập).
+
+## 9b. Import / Export
+
+`saha-core/includes/ImportExport/`: `Exporter` (gói `saha-export` v1), `Importer` (validate → ảnh → block → trang → template → Theme Options), `Walker` (đổi ID ảnh `{id,size}` và `blockId`, thuần PHP). Đổi định dạng gói → tăng `Exporter::VERSION` và giữ đọc được bản cũ. Element mới có prop chứa ID bài / term / ảnh khác dạng `{id,size}` → bổ sung `Walker`, nếu không ID sẽ sai khi chuyển site.
 
 ## 10. CLI
 

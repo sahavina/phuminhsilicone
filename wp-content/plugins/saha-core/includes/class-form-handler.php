@@ -137,7 +137,10 @@ final class Form_Handler {
 
 		$target = remove_query_arg( self::RESULT_VAR, $target );
 
-		wp_safe_redirect( add_query_arg( self::RESULT_VAR, rawurlencode( $result ), $target ) . '#saha-form-result', 303 );
+		// Neo tới vùng thông báo của đúng form (báo giá / liên hệ — ID riêng, QA 2.8).
+		$anchor = 0 === strpos( $result, 'contact' ) ? 'saha-form-result-contact' : 'saha-form-result-quote';
+
+		wp_safe_redirect( add_query_arg( self::RESULT_VAR, rawurlencode( $result ), $target ) . '#' . $anchor, 303 );
 		exit;
 	}
 
