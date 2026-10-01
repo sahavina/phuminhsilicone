@@ -1,0 +1,188 @@
+/**
+ * Xem nhanh (saha-core WooCommerce\QuickView).
+ */
+
+/* Nút trên thẻ: mặc định là dòng chữ nhỏ dưới thẻ; thẻ kiểu cửa hàng → nút tròn góc trên phải ảnh. */
+.saha-qv-btn {
+	display: inline-flex;
+	gap: 6px;
+	align-items: center;
+	margin-top: 8px;
+	padding: 6px 0;
+	border: 0;
+	background: none;
+	color: var(--saha-muted, #5f6b7a);
+	font: inherit;
+	font-size: 13px;
+	font-weight: 600;
+	cursor: pointer;
+}
+
+.saha-qv-btn:hover,
+.saha-qv-btn:focus-visible {
+	color: var(--saha-primary, #0b5cab);
+}
+
+.saha-cards-store ul.products li.product .saha-qv-btn {
+	position: absolute;
+	top: 20px;
+	right: 20px;
+	z-index: 2;
+	justify-content: center;
+	width: 36px;
+	height: 36px;
+	margin: 0;
+	padding: 0;
+	border-radius: 50%;
+	background: rgb(255 255 255 / 95%);
+	box-shadow: 0 2px 8px rgb(15 23 42 / 15%);
+	color: var(--saha-heading, #111827);
+	opacity: 0;
+	transition: opacity 0.15s ease;
+}
+
+.saha-cards-store ul.products li.product:hover .saha-qv-btn,
+.saha-cards-store ul.products li.product .saha-qv-btn:focus-visible {
+	opacity: 1;
+}
+
+.saha-cards-store .saha-qv-btn__text {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	overflow: hidden;
+	clip-path: inset(50%);
+	white-space: nowrap;
+}
+
+@media (hover: none) {
+
+	.saha-cards-store ul.products li.product .saha-qv-btn {
+		opacity: 1;
+	}
+}
+
+/* Hộp */
+.saha-qv-dialog {
+	width: min(920px, calc(100vw - 32px));
+	max-height: calc(100vh - 48px);
+	padding: 0;
+	overflow: auto;
+	border: 0;
+	border-radius: 12px;
+	background: var(--saha-background, #fff);
+	color: var(--saha-text, #1f2328);
+	box-shadow: 0 24px 60px rgb(15 23 42 / 35%);
+}
+
+.saha-qv-dialog::backdrop {
+	background: rgb(15 23 42 / 55%);
+}
+
+.saha-qv-dialog__close {
+	position: sticky;
+	top: 8px;
+	z-index: 2;
+	float: right;
+	width: 40px;
+	height: 40px;
+	margin: 8px 8px 0 0;
+	border: 0;
+	border-radius: 50%;
+	background: var(--saha-surface, #f6f7f9);
+	color: var(--saha-heading, #111827);
+	font-size: 26px;
+	line-height: 1;
+	cursor: pointer;
+}
+
+/* Selector cụ thể hơn lưới trang sản phẩm của theme (`.woocommerce div.product > *`):
+ * hộp nằm trong body.woocommerce ở trang shop. */
+.saha-qv-dialog div.saha-qv.product {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+	gap: 32px;
+	margin: 0;
+	padding: 24px;
+}
+
+.saha-qv-dialog div.saha-qv.product > * {
+	grid-column: auto;
+	width: auto;
+	margin: 0;
+	float: none;
+}
+
+.saha-qv__img {
+	display: block;
+	width: 100%;
+	height: auto;
+	border-radius: 8px;
+	background: var(--saha-surface, #f6f7f9);
+}
+
+.saha-qv__title {
+	margin: 0 0 8px;
+	font-size: 24px;
+}
+
+.saha-qv__title:focus {
+	outline: none;
+}
+
+.saha-qv__sku {
+	margin: 0 0 8px;
+	color: var(--saha-muted, #5f6b7a);
+	font-size: 14px;
+}
+
+.saha-qv__price {
+	margin-bottom: 12px;
+	color: var(--saha-error, #c62828);
+	font-size: 20px;
+	font-weight: 700;
+}
+
+.saha-qv form.cart {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 10px;
+	margin: 16px 0;
+}
+
+.saha-qv form.cart .variations {
+	width: 100%;
+}
+
+.saha-qv__more a {
+	font-weight: 600;
+}
+
+.saha-qv__notice:empty {
+	display: none;
+}
+
+.saha-qv__notice {
+	margin-top: 12px;
+	padding: 10px 12px;
+	border-radius: 8px;
+	background: var(--saha-surface, #f6f7f9);
+}
+
+.saha-qv__notice.is-error {
+	color: var(--saha-error, #c62828);
+}
+
+.saha-qv__loading {
+	padding: 48px 24px;
+	text-align: center;
+}
+
+@media (max-width: 767px) {
+
+	.saha-qv-dialog div.saha-qv.product {
+		grid-template-columns: minmax(0, 1fr);
+		gap: 16px;
+		padding: 16px;
+	}
+}

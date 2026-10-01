@@ -1,0 +1,87 @@
+/**
+ * Ô chọn biến thể (saha-core WooCommerce\Swatches).
+ */
+
+.saha-swatches {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px;
+	margin: 4px 0;
+}
+
+/* Select gốc vẫn trong form (WooCommerce đọc/ghi), chỉ ẩn khỏi mắt. */
+.saha-swatches__select select {
+	position: absolute !important;
+	width: 1px !important;
+	height: 1px !important;
+	overflow: hidden;
+	clip-path: inset(50%);
+	white-space: nowrap;
+}
+
+.saha-swatches .saha-swatch {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	min-width: 40px;
+	min-height: 40px;
+	padding: 4px;
+	border: 1px solid var(--saha-border, #e3e6ea);
+	border-radius: 8px;
+	background: var(--saha-background, #fff);
+	color: var(--saha-heading, #111827);
+	font: inherit;
+	font-size: 14px;
+	font-weight: 600;
+	line-height: 1.2;
+	cursor: pointer;
+	transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.saha-swatches--label .saha-swatch {
+	padding: 6px 14px;
+}
+
+.saha-swatches--color .saha-swatch {
+	border-radius: 50%;
+}
+
+.saha-swatches .saha-swatch:hover {
+	border-color: var(--saha-muted, #5f6b7a);
+}
+
+.saha-swatches .saha-swatch[aria-checked="true"] {
+	border-color: var(--saha-accent, #f5a623);
+	box-shadow: 0 0 0 2px var(--saha-accent, #f5a623);
+}
+
+.saha-swatches .saha-swatch:focus-visible {
+	outline: 3px solid var(--saha-primary, #0b5cab);
+	outline-offset: 2px;
+}
+
+.saha-swatches .saha-swatch:disabled {
+	opacity: 0.35;
+	cursor: not-allowed;
+	text-decoration: line-through;
+}
+
+.saha-swatch__color {
+	display: block;
+	width: 28px;
+	height: 28px;
+	border: 1px solid rgb(0 0 0 / 12%);
+	border-radius: 50%;
+}
+
+.saha-swatch__img {
+	display: block;
+	width: 40px;
+	height: 40px;
+	border-radius: 6px;
+	object-fit: cover;
+}
+
+.saha-swatches + .saha-swatches__select + .reset_variations {
+	margin-left: 4px;
+}

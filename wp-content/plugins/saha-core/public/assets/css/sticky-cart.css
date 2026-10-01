@@ -1,0 +1,93 @@
+/**
+ * Thanh "Thêm vào giỏ" dính (saha-core WooCommerce\StickyCart).
+ */
+
+.saha-sticky-cart {
+	position: fixed;
+	right: 0;
+	bottom: 0;
+	left: 0;
+	z-index: 9980;
+	border-top: 1px solid var(--saha-border, #e3e6ea);
+	background: var(--saha-background, #fff);
+	box-shadow: 0 -6px 20px rgb(15 23 42 / 10%);
+}
+
+.saha-sticky-cart[hidden] {
+	display: none;
+}
+
+.saha-sticky-cart__inner {
+	display: flex;
+	gap: 14px;
+	align-items: center;
+	max-width: calc(var(--saha-container, 1200px) + 2 * var(--saha-gutter, 16px));
+	margin-inline: auto;
+	padding: 10px var(--saha-gutter, 16px);
+}
+
+.saha-sticky-cart__img {
+	flex: 0 0 auto;
+	width: 48px;
+	height: 48px;
+	border-radius: 6px;
+	object-fit: cover;
+	background: var(--saha-surface, #f6f7f9);
+}
+
+.saha-sticky-cart__info {
+	display: flex;
+	flex: 1 1 auto;
+	flex-direction: column;
+	min-width: 0;
+}
+
+.saha-sticky-cart__name {
+	overflow: hidden;
+	color: var(--saha-heading, #111827);
+	font-weight: 700;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.saha-sticky-cart__price {
+	color: var(--saha-error, #c62828);
+	font-weight: 700;
+}
+
+.saha-sticky-cart__price del {
+	color: var(--saha-muted, #5f6b7a);
+	font-weight: 400;
+}
+
+.saha-sticky-cart__actions {
+	display: flex;
+	flex: 0 0 auto;
+	gap: 8px;
+}
+
+/* Nút nổi không bị thanh che */
+.saha-sticky-cart-open .saha-fab {
+	bottom: 90px;
+}
+
+@media (max-width: 767px) {
+
+	.saha-sticky-cart__img {
+		display: none;
+	}
+
+	.saha-sticky-cart__actions .saha-btn {
+		padding-inline: 12px;
+	}
+
+	/* Theme có thanh liên hệ dính (Gọi · Báo giá): đặt thanh mua phía trên nó. */
+	.saha-has-sticky-cta .saha-sticky-cart {
+		bottom: 64px;
+	}
+
+	/* Không bán trực tuyến: thanh của theme đã có nút báo giá. */
+	.saha-has-sticky-cta .saha-sticky-cart--quote {
+		display: none;
+	}
+}

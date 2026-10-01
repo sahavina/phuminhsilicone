@@ -272,6 +272,10 @@ ok( 'POST /blocks khi chưa đăng nhập → 401', 401 === $r['status'], 'statu
 $r = http( 'GET', $base . '/?saha_builder_canvas=1&_wpnonce=abc' );
 ok( 'canvas builder khi chưa đăng nhập / nonce sai → 403', 403 === $r['status'], 'status ' . $r['status'] );
 
+// Xem nhanh (mốc 2.3): sản phẩm không tồn tại / không công khai → 404 (không lộ bản nháp).
+$r = http( 'GET', $api . '/products/999999999/quick-view' );
+ok( 'GET /products/{id}/quick-view với ID không tồn tại → 404', 404 === $r['status'], 'status ' . $r['status'] );
+
 /*
  * ---------------------------------------------------------------------------
  * REST ghi (spec §57) — chỉ khi --write

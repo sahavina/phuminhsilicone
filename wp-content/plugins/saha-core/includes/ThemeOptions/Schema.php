@@ -359,6 +359,22 @@ final class Schema {
 						'help'    => __( 'Chỉ bật khi số bán là thật — không dùng để tạo cảm giác khan hiếm.', 'saha-core' ),
 					),
 					'card_sold_goal'  => array( 'type' => 'number', 'label' => __( 'Mốc đầy thanh "Đã bán"', 'saha-core' ), 'default' => 100, 'min' => 10, 'max' => 10000 ),
+					'swatches'        => array(
+						'type'    => 'toggle',
+						'label'   => __( 'Ô chọn màu / ảnh / chữ cho biến thể', 'saha-core' ),
+						'default' => true,
+						'help'    => __( 'Kiểu ô của từng thuộc tính đặt ở Sản phẩm → Thuộc tính. Thuộc tính để "Danh sách thả xuống" giữ nguyên.', 'saha-core' ),
+					),
+					'sticky_cart'     => array(
+						'type'    => 'toggle',
+						'label'   => __( 'Thanh "Thêm vào giỏ" dính khi cuộn qua nút mua (trang sản phẩm)', 'saha-core' ),
+						'default' => false,
+					),
+					'quick_view'      => array(
+						'type'    => 'toggle',
+						'label'   => __( 'Nút "Xem nhanh" trên thẻ sản phẩm', 'saha-core' ),
+						'default' => false,
+					),
 				),
 			),
 			'catalog'    => array(

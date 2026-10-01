@@ -26,5 +26,8 @@ final class Module {
 
 		( new CatalogMode() )->register();
 		( new BuyNow() )->register();
+		( new Swatches() )->register();
+		( new StickyCart() )->register();
+		( new QuickView() )->register();
 	}
 }

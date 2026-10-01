@@ -752,5 +752,13 @@ $saha_one = $saha_r1( array( 'type' => 'slider', 'children' => array( array( 'ty
 check( 'slider 1 slide: không nút trước/sau, không chấm, không tự chạy', array( false === strpos( $saha_one, 'saha-slider__arrow' ), false === strpos( $saha_one, 'data-saha-slider-dots' ), false === strpos( $saha_one, 'data-autoplay' ) ), array( true, true, true ) );
 check( 'bộ màu cửa hàng: navy + vàng đồng', array_intersect_key( Saha\Core\Builder\StoreKit::palette(), array_flip( array( 'secondary', 'accent', 'surface' ) ) ), array( 'secondary' => '#0e1f3a', 'accent' => '#d4a33b', 'surface' => '#f4f6fa' ) );
 
+echo "Swatches, thanh dính, xem nhanh (mốc 2.3)\n";
+use Saha\Core\WooCommerce\Swatches;
+check( 'swatch: mã màu hợp lệ #rgb/#rrggbb, chữ hoa → thường, giá trị lạ → rỗng', array( Swatches::color( '#FFF' ), Swatches::color( '#1a2B3c' ), Swatches::color( 'red' ), Swatches::color( '#12345' ), Swatches::color( 'javascript:x' ) ), array( '#fff', '#1a2b3c', '', '', '' ) );
+check( 'swatch: kiểu chưa đặt → danh sách thả xuống (giữ nguyên WooCommerce)', Swatches::type( 'pa_khong-co' ), 'select' );
+$GLOBALS['__options'][ Swatches::OPTION ] = array( 'swatches' => array( 'pa_mau' => 'color', 'pa_x' => 'evil' ) );
+check( 'swatch: đọc kiểu đã lưu; kiểu lạ → thả xuống', array( Swatches::type( 'pa_mau' ), Swatches::type( 'pa_x' ) ), array( 'color', 'select' ) );
+check( 'Theme Options: swatches bật; thanh dính, xem nhanh tắt mặc định', array( Saha\Core\ThemeOptions\Schema::groups()['shop']['fields']['swatches']['default'], Saha\Core\ThemeOptions\Schema::groups()['shop']['fields']['sticky_cart']['default'], Saha\Core\ThemeOptions\Schema::groups()['shop']['fields']['quick_view']['default'] ), array( true, false, false ) );
+
 echo "\n$pass passed, $fail failed\n";
 exit( $fail > 0 ? 1 : 0 );

@@ -177,6 +177,16 @@ Tạo nhanh trang chủ mẫu 14 khối: **Trang → Tất cả trang → Tạo 
 
 Trước khi tắt để bán hàng: bật ít nhất một phương thức ở **WooCommerce → Cài đặt → Thanh toán**, kiểm tra **tiền tệ** (VNĐ) và **giao hàng**.
 
+### Biến thể, thanh mua dính, xem nhanh
+
+**Theme Options → Cửa hàng**:
+
+| Tuỳ chọn | Mặc định | Tác dụng |
+|---|---|---|
+| **Ô chọn màu / ảnh / chữ cho biến thể** | Bật | Ô chọn biến thể (màu, dung tích…) thành nút bấm. Kiểu của từng thuộc tính đặt ở **Sản phẩm → Thuộc tính → Sửa**: **Kiểu chọn trên trang sản phẩm**: *Danh sách thả xuống*, *Ô chữ*, *Ô màu*, *Ô ảnh*. Ô màu/ảnh: vào **Cấu hình giá trị**, sửa từng giá trị để chọn màu hoặc ảnh. Tổ hợp hết hàng/không tồn tại tự mờ đi. |
+| **Thanh "Thêm vào giỏ" dính** | Tắt | Trang sản phẩm: khi cuộn qua nút mua, thanh dưới đáy hiện ảnh + tên + giá + nút. Chưa chọn biến thể → cuộn về form. Chế độ catalogue → nút **Yêu cầu báo giá**. |
+| **Nút "Xem nhanh"** | Tắt | Thẻ sản phẩm có nút **Xem nhanh** (thẻ kiểu cửa hàng: nút tròn góc ảnh) mở hộp ảnh + giá + chọn biến thể + thêm vào giỏ, không rời trang. |
+
 ## 8. Báo giá & khách liên hệ
 
 **SAHA → Yêu cầu báo giá / Liên hệ / Khách hàng tiềm năng / Báo cáo.**
