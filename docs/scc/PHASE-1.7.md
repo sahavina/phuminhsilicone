@@ -161,7 +161,7 @@ Cập nhật code → mở wp-admin bằng admin (saha-core 1.14.0). Trang chủ
 - Trang chủ mẫu: 9 section, 1 H1, mọi tiêu đề khối H2; modal báo giá mở từ CTA; không tràn ngang ở **80 tổ hợp** (10 trang × 8 độ rộng ở mục 27).
 - http-smoke: thêm "không có shortcode thô" — đạt.
 - Mua ngay biến thể: chọn "Đen" → Checkout đúng biến thể, 99.000.
-- Editor: tài liệu trang chủ #83 render ở chế độ canvas (phía server) không lỗi; nút "Tạo trang chủ mẫu" chỉ hiện với admin. **Mở trang chủ trong ứng dụng builder bằng trình duyệt cần anh/chị kiểm tra** (phiên đăng nhập của trình duyệt kiểm thử đã hết hạn).
+- Editor: mở trang chủ #83 trong SAHA Builder trên trình duyệt — tải đủ 9 section (REST `elements`, `{id}`, `lock`, `render` đều 200); nút "Tạo trang chủ mẫu" chỉ hiện với admin (editor không thấy).
 
 ### Lỗi phát hiện và đã sửa
 
