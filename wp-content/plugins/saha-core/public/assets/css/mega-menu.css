@@ -1,0 +1,133 @@
+/**
+ * Mega menu (SCC 2.1) — chỉ nạp khi có mục menu kiểu mega.
+ *
+ * Bảng "bằng khung" / "toàn màn hình" neo vào header (phần tử có position gần nhất:
+ * .saha-hb của header builder, .saha-header của header PHP): <li> và các lớp bọc
+ * giữa chúng phải static. Bảng "tuỳ chỉnh" neo vào chính <li>.
+ *
+ * Selector bắt đầu bằng `li.saha-mega-item` để thắng menu thả xuống của theme/builder
+ * (`.saha-menu .sub-menu`, `:where(.saha-nav) …`).
+ */
+
+li.saha-mega-item--container,
+li.saha-mega-item--full {
+	position: static;
+}
+
+/* Bảng: nội dung block, hoặc menu con chia cột */
+li.saha-mega-item > .saha-mega,
+li.saha-mega-item:not(.saha-mega-item--block) > .sub-menu {
+	position: absolute;
+	top: 100%;
+	right: 0;
+	left: 0;
+	z-index: 30;
+	min-width: 0;
+	margin: 0;
+	border: 0;
+	border-top: 1px solid var(--saha-border, #e3e6ea);
+	border-radius: 0;
+	background: var(--saha-background, #fff);
+	color: var(--saha-text, #1f2328);
+	box-shadow: var(--saha-shadow, 0 8px 24px rgb(15 23 42 / 12%));
+	visibility: hidden;
+	opacity: 0;
+	/* Đóng trễ một chút: rê chuột từ link xuống bảng không bị mất. */
+	transition: opacity 0.15s ease, visibility 0s linear 0.2s;
+}
+
+li.saha-mega-item--custom > .saha-mega,
+li.saha-mega-item--custom:not(.saha-mega-item--block) > .sub-menu {
+	right: auto;
+	left: -16px;
+	width: min(var(--saha-mega-width, 800px), calc(100vw - 32px));
+	border: 1px solid var(--saha-border, #e3e6ea);
+	border-radius: var(--saha-radius, 6px);
+}
+
+li.saha-mega-item:hover > .saha-mega,
+li.saha-mega-item:focus-within > .saha-mega,
+li.saha-mega-item:not(.saha-mega-item--block):hover > .sub-menu,
+li.saha-mega-item:not(.saha-mega-item--block):focus-within > .sub-menu {
+	visibility: visible;
+	opacity: 1;
+	transition-delay: 0s;
+}
+
+/* Esc đã đóng (mega-menu.js) — mở lại khi chuột/focus rời khỏi rồi quay lại. */
+li.saha-mega-item.is-closed > .saha-mega,
+li.saha-mega-item.is-closed:not(.saha-mega-item--block) > .sub-menu {
+	visibility: hidden;
+	opacity: 0;
+}
+
+/* Có block: menu con của mục này không hiện trên desktop (vẫn có trong menu mobile). */
+li.saha-mega-item--block > .sub-menu {
+	display: none;
+}
+
+.saha-mega__inner {
+	max-width: calc(var(--saha-container, 1200px) + 2 * var(--saha-gutter, 16px));
+	max-height: calc(100vh - 160px);
+	margin-inline: auto;
+	padding: 24px var(--saha-gutter, 16px);
+	overflow-y: auto;
+}
+
+li.saha-mega-item--full .saha-mega__inner {
+	max-width: none;
+}
+
+/* Menu con chia cột: mỗi mục cấp 2 là một cột, cấp 3 là danh sách bên dưới. */
+li.saha-mega-item:not(.saha-mega-item--block) > .sub-menu {
+	display: grid;
+	grid-template-columns: repeat(var(--saha-mega-cols, 4), minmax(0, 1fr));
+	gap: 8px 32px;
+	padding: 24px max(var(--saha-gutter, 16px), calc((100% - var(--saha-container, 1200px)) / 2));
+}
+
+li.saha-mega-item--custom:not(.saha-mega-item--block) > .sub-menu {
+	padding: 20px 24px;
+}
+
+li.saha-mega-item--full:not(.saha-mega-item--block) > .sub-menu {
+	padding-inline: var(--saha-gutter, 16px);
+}
+
+li.saha-mega-item--cols-1 { --saha-mega-cols: 1; }
+li.saha-mega-item--cols-2 { --saha-mega-cols: 2; }
+li.saha-mega-item--cols-3 { --saha-mega-cols: 3; }
+li.saha-mega-item--cols-4 { --saha-mega-cols: 4; }
+li.saha-mega-item--cols-5 { --saha-mega-cols: 5; }
+li.saha-mega-item--cols-6 { --saha-mega-cols: 6; }
+
+li.saha-mega-item > .sub-menu > li {
+	position: static;
+	min-width: 0;
+}
+
+li.saha-mega-item > .sub-menu > li > a {
+	font-weight: 700;
+}
+
+li.saha-mega-item > .sub-menu .sub-menu {
+	position: static;
+	min-width: 0;
+	padding: 0;
+	border: 0;
+	box-shadow: none;
+	visibility: inherit;
+	opacity: 1;
+}
+
+li.saha-mega-item > .sub-menu .sub-menu a {
+	padding: 4px 0;
+	font-weight: 400;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	li.saha-mega-item > .saha-mega,
+	li.saha-mega-item > .sub-menu {
+		transition: none;
+	}
+}

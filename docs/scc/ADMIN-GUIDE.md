@@ -116,6 +116,19 @@ Khi người khác đang mở trang trong builder, bấm Lưu sẽ báo **"… �
 - Hotline, email, mạng xã hội lấy từ **SAHA → Cấu hình**.
 - Có nhiều header: bấm **Dùng cho toàn site** ở header muốn dùng. Chuyển header đang dùng về Nháp → website quay về header mặc định của theme (không bao giờ trắng).
 
+### Mega menu
+
+**Giao diện → Menu** → mở một mục **cấp 1** → khung **SAHA — kiểu menu**:
+
+| Ô | Chọn |
+|---|---|
+| Kiểu | **Mega menu** |
+| Nội dung | **Menu con chia cột** — mỗi mục cấp 2 thành một cột, mục cấp 3 là danh sách dưới cột; hoặc **Block: …** — nội dung dựng bằng builder ở SAHA → Blocks (ảnh, lưới thương hiệu, nút báo giá…) |
+| Độ rộng | bằng khung nội dung / toàn màn hình / tuỳ chỉnh (px) |
+| Số cột menu con | 1–6 (khi dùng menu con chia cột) |
+
+Bấm **Lưu menu**. Mega chỉ hiện ở menu ngang trên máy tính; trên điện thoại, menu ☰ vẫn hiện menu con như thường (mục dùng Block thì hiện như một link). Nếu Block bị xoá/chuyển nháp, mục đó tự quay về kiểu menu con chia cột và **Kiểm tra hệ thống** sẽ cảnh báo.
+
 ## 6. Trang chủ
 
 Tạo nhanh trang chủ mẫu 14 khối: **Trang → Tất cả trang → Tạo trang chủ mẫu (SAHA Builder)**. Trang được đặt làm trang chủ và mở ngay trong builder để sửa chữ, chọn ảnh.

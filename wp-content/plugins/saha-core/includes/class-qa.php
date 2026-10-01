@@ -417,6 +417,21 @@ final class Qa {
 			defined( 'SAHA_BUILDER_VERSION' ) ? SAHA_BUILDER_VERSION : __( 'Đang tắt — trang đã dựng vẫn hiển thị nhưng không sửa được.', 'saha-core' )
 		);
 
+		$mega   = MegaMenu\Settings::compiled();
+		$broken = array_filter( $mega['blocks'], static fn( int $id ): bool => 'publish' !== get_post_status( $id ) );
+		$this->expect(
+			$g,
+			'Mega menu: Block nội dung còn tồn tại',
+			! $broken,
+			sprintf(
+				/* translators: %s: danh sách ID block */
+				__( 'Block #%s đã xoá hoặc chưa xuất bản — mục mega sẽ trống. Giao diện → Menu → chọn block khác.', 'saha-core' ),
+				implode( ', #', $broken )
+			),
+			self::WARN,
+			$mega['active'] ? count( $mega['blocks'] ) . ' block' : __( 'Chưa dùng mega menu', 'saha-core' )
+		);
+
 		$front = 'page' === get_option( 'show_on_front' ) ? (int) get_option( 'page_on_front' ) : 0;
 		$this->expect(
 			$g,

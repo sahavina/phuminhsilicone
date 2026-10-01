@@ -32,8 +32,9 @@ $saha_show_acc  = $saha_has_wc && saha_theme_option( 'header.show_account', fals
 						'theme_location' => 'primary',
 						'container'      => false,
 						'menu_class'     => 'saha-menu',
-						'depth'          => 2,
+						'depth'          => 3,
 						'fallback_cb'    => false,
+						'saha_mega'      => true, // Mega menu của saha-core (nếu mục menu bật).
 					)
 				);
 				?>

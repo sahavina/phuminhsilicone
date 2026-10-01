@@ -120,6 +120,8 @@ final class NavMenu extends Element {
 			'depth'       => max( 1, min( 3, (int) $this->prop( $node, 'depth' ) ) ),
 			'fallback_cb' => false,
 			'echo'        => false,
+			// Mega menu (SCC 2.1) chỉ ở menu ngang; menu dọc/off-canvas giữ menu con thường.
+			'saha_mega'   => 'vertical' !== $this->prop( $node, 'orientation' ),
 		);
 
 		$menu     = (string) $node->prop( 'menu', '' );
@@ -153,9 +155,10 @@ final class NavMenu extends Element {
 	 * @param CssRules $css  Luật.
 	 */
 	public function styles( Node $node, CssRules $css ): void {
-		$css->typography( ' a', $node->prop( 'typography' ) );
-		$css->set( ' a', 'color', $node->prop( 'color' ) );
-		$css->set( ' a:hover', 'color', $node->prop( 'hoverColor' ) );
+		// Chỉ link của mục menu (không đụng nội dung Block trong mega menu).
+		$css->typography( ' .menu-item > a', $node->prop( 'typography' ) );
+		$css->set( ' .menu-item > a', 'color', $node->prop( 'color' ) );
+		$css->set( ' .menu-item > a:hover', 'color', $node->prop( 'hoverColor' ) );
 		$css->set( ' .current-menu-item > a', 'color', $node->prop( 'hoverColor' ) );
 		$css->set( ' .saha-nav__list', 'gap', $node->prop( 'gap' ) );
 	}

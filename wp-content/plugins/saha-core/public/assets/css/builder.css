@@ -595,11 +595,11 @@ a.saha-btn--link:focus-visible {
 	list-style: none;
 }
 
-:where(.saha-nav) li {
+:where(.saha-nav .menu-item) {
 	position: relative;
 }
 
-:where(.saha-nav) a {
+:where(.saha-nav .menu-item) > a {
 	display: block;
 	padding: 8px 0;
 	color: inherit;
@@ -634,6 +634,17 @@ a.saha-btn--link:focus-visible {
 :where(.saha-nav--horizontal) li:hover > :where(.sub-menu),
 :where(.saha-nav--horizontal) li:focus-within > :where(.sub-menu) {
 	visibility: visible;
+	opacity: 1;
+}
+
+/* Cấp 3 trong menu thả xuống: danh sách thụt vào, không bật thêm hộp nổi. */
+:where(.saha-nav--horizontal) :where(.sub-menu) :where(.sub-menu) {
+	position: static;
+	min-width: 0;
+	padding: 0 0 0 12px;
+	border: 0;
+	box-shadow: none;
+	visibility: inherit;
 	opacity: 1;
 }
 
@@ -747,7 +758,7 @@ a.saha-btn--link:focus-visible {
 .saha-contact-el,
 .saha-hb-icon,
 .saha-social a,
-.saha-nav a {
+.saha-nav .menu-item > a {
 	color: inherit;
 }
 
@@ -755,7 +766,7 @@ a.saha-btn--link:focus-visible {
 	color: #fff;
 }
 
-.saha-nav a:hover,
+.saha-nav .menu-item > a:hover,
 .saha-nav .current-menu-item > a,
 .saha-nav .current-menu-ancestor > a {
 	color: var(--saha-primary, #0b5cab);

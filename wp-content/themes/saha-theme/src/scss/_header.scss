@@ -184,7 +184,8 @@ $tablet-max: 1024px;
 	padding: 0;
 	list-style: none;
 
-	a {
+	// Chỉ link của mục menu — không đụng nội dung Block trong mega menu.
+	.menu-item > a {
 		display: block;
 		padding: 8px 0;
 		color: var(--saha-heading);
@@ -203,7 +204,7 @@ $tablet-max: 1024px;
 		color: var(--saha-primary);
 	}
 
-	li {
+	.menu-item {
 		position: relative;
 	}
 
@@ -232,6 +233,17 @@ $tablet-max: 1024px;
 		opacity: 1;
 	}
 
+	// Cấp 3 trong menu thả xuống: danh sách thụt vào, không bật thêm hộp nổi.
+	.sub-menu .sub-menu {
+		position: static;
+		min-width: 0;
+		padding: 0 0 0 12px;
+		border: 0;
+		box-shadow: none;
+		visibility: inherit;
+		opacity: 1;
+	}
+
 	&--vertical {
 		flex-direction: column;
 		gap: 0;
@@ -240,7 +252,7 @@ $tablet-max: 1024px;
 			border-bottom: 1px solid var(--saha-border);
 		}
 
-		a {
+		.menu-item > a {
 			padding: 12px 0;
 		}
 
@@ -257,7 +269,7 @@ $tablet-max: 1024px;
 	&--inline {
 		gap: 4px 16px;
 
-		a {
+		.menu-item > a {
 			padding: 4px 0;
 			font-size: 14px;
 			font-weight: 400;

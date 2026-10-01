@@ -67,6 +67,9 @@ WooCommerce: `includes/WooCommerce/` — `CatalogMode` (chế độ catalogue ph
 form/AJAX/Store API, giá thay bằng "Liên hệ báo giá") và `BuyNow` (nút "Mua ngay" → thanh toán).
 Chạy với mọi theme. Chi tiết: `docs/scc/PHASE-1.6.md`.
 
+Mega menu: `includes/MegaMenu/` — meta mục menu + ô cài đặt ở Giao diện → Menu; bật cho
+`wp_nav_menu()` bằng tham số `saha_mega => true` (element Menu ngang, header PHP của saha-theme).
+
 Trang chủ mẫu: `includes/Builder/Starter.php` — 14 khối dựng bằng element (không shortcode); nút ở
 Trang → Tất cả trang hoặc `wp saha homepage --front`.
 

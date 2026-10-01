@@ -634,5 +634,32 @@ $saha_cta_html = ( new Renderer() )->document( $saha_cta_doc, new RenderContext(
 check( 'CTA "Mở form báo giá": nút data-saha-open-quote, không có href', (bool) preg_match( '/<button type="button" class="saha-btn[^"]*" data-saha-open-quote="1">Báo giá<\/button>/', $saha_cta_html ), true );
 check( 'CTA báo giá không vào render cache, CTA link thì có', array( $saha_reg->get( 'cta' )->isDynamic( $saha_cta_doc->elements[0]->children[0] ), $saha_reg->get( 'cta' )->isDynamic( saha_bs( array( 'elements' => array( array( 'type' => 'section', 'children' => array( array( 'type' => 'cta' ) ) ) ) ) )['document']->elements[0]->children[0] ) ), array( true, false ) );
 
+echo "Mega menu (mốc 2.1)\n";
+function get_post_meta( $id, $key = '', $single = false ) { return $GLOBALS['__meta'][ $id ][ $key ] ?? ''; }
+use Saha\Core\MegaMenu\Settings as MegaSettings;
+use Saha\Core\MegaMenu\Frontend as MegaFrontend;
+$GLOBALS['__posts'][102] = array( 'type' => 'saha_block', 'status' => 'publish', 'title' => 'Mega' );
+$GLOBALS['__posts'][7]   = array( 'type' => 'page', 'status' => 'publish', 'title' => 'Trang' );
+check( 'mega: thiết lập lạ → mặc định; cột/độ rộng bị kẹp', MegaSettings::sanitize( array( 'width' => 'x', 'columns' => 99, 'customWidth' => 5 ) ), array( 'width' => 'container', 'customWidth' => 300, 'columns' => 6, 'blockId' => 0 ) );
+check( 'mega: blockId phải là saha_block', array( MegaSettings::sanitize( array( 'blockId' => '102' ) )['blockId'], MegaSettings::sanitize( array( 'blockId' => 7 ) )['blockId'] ), array( 102, 0 ) );
+$GLOBALS['__meta'] = array(
+	64 => array( '_saha_menu_type' => 'mega', '_saha_mega_settings' => '{"width":"custom","customWidth":900,"columns":3}' ),
+	65 => array(),
+);
+$saha_mf   = new MegaFrontend();
+$saha_item = (object) array( 'ID' => 64 );
+$saha_args = (object) array( 'saha_mega' => true );
+check( 'mega: class cột + độ rộng trên mục cấp 1', array_slice( $saha_mf->classes( array( 'menu-item' ), $saha_item, $saha_args, 0 ), 1 ), array( 'saha-mega-item', 'saha-mega-item--custom', 'saha-mega-item--cols-3' ) );
+check( 'mega: độ rộng tuỳ chỉnh qua biến CSS', $saha_mf->itemAttributes( array(), $saha_item, $saha_args, 0 ), array( 'style' => '--saha-mega-width:900px' ) );
+check( 'mega: link cấp 1 có aria-expanded', $saha_mf->linkAttributes( array( 'href' => '/' ), $saha_item, $saha_args, 0 )['aria-expanded'] ?? null, 'false' );
+check( 'mega: menu không bật cờ (dọc/mobile) → giữ nguyên', $saha_mf->classes( array( 'menu-item' ), $saha_item, (object) array(), 0 ), array( 'menu-item' ) );
+check( 'mega: chỉ mục cấp 1; mục thường không đổi', array( $saha_mf->classes( array( 'a' ), $saha_item, $saha_args, 1 ), $saha_mf->classes( array( 'a' ), (object) array( 'ID' => 65 ), $saha_args, 0 ) ), array( array( 'a' ), array( 'a' ) ) );
+$GLOBALS['__posts'][103] = array( 'type' => 'saha_block', 'status' => 'draft', 'title' => 'Nháp' );
+$GLOBALS['__meta'][66]   = array( '_saha_menu_type' => 'mega', '_saha_mega_settings' => '{"blockId":102}' );
+$GLOBALS['__meta'][67]   = array( '_saha_menu_type' => 'mega', '_saha_mega_settings' => '{"blockId":103}' );
+check( 'mega: block đã xuất bản → kiểu block; block nháp → quay về chia cột', array( in_array( 'saha-mega-item--block', $saha_mf->classes( array(), (object) array( 'ID' => 66 ), $saha_args, 0 ), true ), in_array( 'saha-mega-item--cols-4', $saha_mf->classes( array(), (object) array( 'ID' => 67 ), $saha_args, 0 ), true ) ), array( true, true ) );
+$GLOBALS['__options']['saha_mega_menu'] = array( 'active' => true, 'blocks' => array( 102 ) );
+check( 'mega: menu có cờ lấy ít nhất 3 cấp; menu khác giữ nguyên', array( $saha_mf->depth( array( 'saha_mega' => true, 'depth' => 2 ) )['depth'], $saha_mf->depth( array( 'depth' => 2 ) )['depth'], $saha_mf->depth( array( 'saha_mega' => true, 'depth' => 0 ) )['depth'] ), array( 3, 2, 0 ) );
+
 echo "\n$pass passed, $fail failed\n";
 exit( $fail > 0 ? 1 : 0 );

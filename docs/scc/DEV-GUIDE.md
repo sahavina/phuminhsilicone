@@ -101,6 +101,10 @@ Schema: `saha-core/includes/ThemeOptions/Schema.php` → sanitize → option →
 - `saha_template` (header/footer): meta loại + điều kiện; option `saha_template_map` được biên dịch khi lưu → lúc render chỉ đọc một option. saha-theme gọi filter `saha_render_header` / `saha_render_footer`; không có template → header PHP của theme.
 - `saha_block`: element Block render bản mới nhất; chống vòng lặp; tối đa 3 cấp.
 
+### Mega menu
+
+`saha-core/includes/MegaMenu/`: meta mục menu → filter của walker mặc định (`nav_menu_css_class`, `nav_menu_item_attributes`, `nav_menu_link_attributes`, `walker_nav_menu_start_el`, `wp_nav_menu_args`). Bật cho một lời gọi menu: `wp_nav_menu( [ …, 'saha_mega' => true ] )`; phần tử header bao ngoài cần `position`. Style link menu luôn nhắm `.menu-item > a` để không đè nội dung Block trong bảng mega.
+
 ## 7. WooCommerce
 
 | Ở đâu | Làm gì |
