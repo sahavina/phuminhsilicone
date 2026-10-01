@@ -267,6 +267,7 @@ final class Defaults {
 							),
 							'children' => array(
 								$zone( array( array( 'type' => 'category-menu' ) ) ),
+								// Menu sát nút danh mục (không căn giữa).
 								$zone(
 									array(
 										array(
@@ -280,7 +281,8 @@ final class Defaults {
 												'gap'        => array( 'desktop' => '32px' ),
 											),
 										),
-									)
+									),
+									array( 'justify' => 'start' )
 								),
 								$zone( array() ),
 							),

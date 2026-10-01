@@ -50,6 +50,18 @@ final class HeaderZone extends Element {
 					'section' => 'content',
 					'default' => false,
 				),
+				'justify' => array(
+					'type'    => 'select',
+					'label'   => __( 'Căn nội dung', 'saha-core' ),
+					'section' => 'content',
+					'default' => 'auto',
+					'options' => array(
+						'auto'   => __( 'Theo vị trí (trái / giữa / phải)', 'saha-core' ),
+						'start'  => __( 'Trái — sát vùng bên trái', 'saha-core' ),
+						'center' => __( 'Giữa', 'saha-core' ),
+						'end'    => __( 'Phải', 'saha-core' ),
+					),
+				),
 			),
 		);
 	}
@@ -79,5 +91,15 @@ final class HeaderZone extends Element {
 	 */
 	public function styles( Node $node, CssRules $css ): void {
 		$css->set( '', 'gap', $node->prop( 'gap' ) );
+
+		$justify = array(
+			'start'  => 'flex-start',
+			'center' => 'center',
+			'end'    => 'flex-end',
+		)[ (string) $this->prop( $node, 'justify' ) ] ?? '';
+
+		if ( '' !== $justify ) {
+			$css->set( '', 'justify-content', $justify );
+		}
 	}
 }
