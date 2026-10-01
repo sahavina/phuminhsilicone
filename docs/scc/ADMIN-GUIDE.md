@@ -15,7 +15,7 @@ Website gồm 3 phần:
 
 | Vai trò | Làm được |
 |---|---|
-| Administrator | mọi thứ, gồm **Header & Footer**, Theme Options, Cấu hình |
+| Administrator | mọi thứ, gồm **Header, Footer & Templates**, Theme Options, Cấu hình |
 | Editor | dựng/sửa trang và Blocks bằng builder; **không** sửa header/footer |
 | Quản lý nội dung / SEO / Kho (role SAHA) | sửa sản phẩm WooCommerce theo phạm vi của mình |
 
@@ -105,7 +105,7 @@ Khi người khác đang mở trang trong builder, bấm Lưu sẽ báo **"… �
 
 ## 5. Header & Footer
 
-**SAHA → Header & Footer** (chỉ administrator).
+**SAHA → Header, Footer & Templates** (chỉ administrator).
 
 - Lần đầu: **Tạo header & footer mặc định** → cả hai hiện **✓ Đang dùng**.
 - Sửa: bấm tên → builder. Header gồm các **hàng** (thanh trên, hàng chính, hàng mobile), mỗi hàng 3 **vùng** trái – giữa – phải.
@@ -128,6 +128,21 @@ Khi người khác đang mở trang trong builder, bấm Lưu sẽ báo **"… �
 | Số cột menu con | 1–6 (khi dùng menu con chia cột) |
 
 Bấm **Lưu menu**. Mega chỉ hiện ở menu ngang trên máy tính; trên điện thoại, menu ☰ vẫn hiện menu con như thường (mục dùng Block thì hiện như một link). Nếu Block bị xoá/chuyển nháp, mục đó tự quay về kiểu menu con chia cột và **Kiểm tra hệ thống** sẽ cảnh báo.
+
+### Template trang sản phẩm, danh mục, bài viết…
+
+Cùng màn **SAHA → Header, Footer & Templates** → **Thêm template:** chọn loại (Trang sản phẩm, Shop / danh mục sản phẩm, Bài viết, Blog / chuyên mục, Trang, Kết quả tìm kiếm, Trang 404) → **Tạo từ mẫu**. Mẫu giống giao diện hiện tại; sửa trong builder bằng nhóm element **Template (động)** và **Trang sản phẩm (động)** — chúng tự lấy tiêu đề, giá, ảnh… của trang đang xem. Trong builder, template được xem trước bằng một sản phẩm/bài thật.
+
+Template mới **chưa áp dụng**. Bấm **Điều kiện** (hoặc "Sửa điều kiện" ở cột Áp dụng):
+
+- **Áp dụng cho**: Tất cả, danh mục/thương hiệu/chuyên mục (danh mục cha áp cho cả danh mục con), sản phẩm/bài/trang cụ thể, loại trang danh sách…
+- **Trừ**: những trang không dùng template này.
+- **Ưu tiên**: khi hai template cùng khớp, cái **cụ thể hơn** thắng (sản phẩm cụ thể > danh mục > loại trang > tất cả); cùng mức thì ưu tiên số lớn hơn thắng.
+- **Xem trước trong builder bằng**: chọn sản phẩm/bài dùng khi dựng.
+
+Ví dụ: một template "Trang sản phẩm" cho tất cả, thêm một template riêng cho danh mục "Keo Silicone" — sản phẩm Silicone dùng template riêng, còn lại dùng template chung. Xoá hoặc chuyển template về Nháp → trang quay về giao diện mặc định của theme.
+
+> Template "Shop / danh mục" áp cho cả trang thương hiệu sẽ thay phần đầu thương hiệu (logo, mô tả) của theme. Muốn giữ phần đầu thương hiệu, chọn điều kiện là "Trang Shop" và các danh mục cụ thể thay vì "Tất cả".
 
 ## 6. Trang chủ
 
@@ -171,5 +186,6 @@ Trước khi tắt để bán hàng: bật ít nhất một phương thức ở 
 | Trang hiện chữ dạng `[saha_…]` hoặc `[ux_…]` | Trang còn shortcode cũ — dựng lại bằng builder (Kiểm tra hệ thống liệt kê các trang này) |
 | Không thấy "Dựng bằng SAHA Builder" | Plugin SAHA Builder đang tắt, hoặc tài khoản không có quyền |
 | "… đang chỉnh sửa trang này" | Người khác đang mở builder; chờ hoặc nhờ họ đóng builder |
-| Header về kiểu mặc định | Header đang dùng bị chuyển Nháp/xoá → SAHA → Header & Footer → Dùng cho toàn site |
+| Header về kiểu mặc định | Header đang dùng bị chuyển Nháp/xoá → SAHA → Header, Footer & Templates → Dùng cho toàn site |
+| Trang sản phẩm/danh mục không đổi theo template | Template chưa có điều kiện (cột Áp dụng ghi "Chưa áp dụng") → Sửa điều kiện; hoặc template khác cụ thể hơn đang thắng |
 | Không nhận email báo giá | Cài/kiểm tra plugin SMTP; báo giá vẫn được lưu ở SAHA → Yêu cầu báo giá |

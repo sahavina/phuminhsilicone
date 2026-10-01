@@ -15,6 +15,23 @@ use Saha\Core\Builder\Elements\Cart;
 use Saha\Core\Builder\Elements\Contact;
 use Saha\Core\Builder\Elements\Copyright;
 use Saha\Core\Builder\Elements\HeaderOffcanvas;
+use Saha\Core\Builder\Elements\ArchivePosts;
+use Saha\Core\Builder\Elements\ArchiveTitle;
+use Saha\Core\Builder\Elements\Breadcrumb;
+use Saha\Core\Builder\Elements\FeaturedImage;
+use Saha\Core\Builder\Elements\PostContent;
+use Saha\Core\Builder\Elements\PostExcerpt;
+use Saha\Core\Builder\Elements\PostMeta;
+use Saha\Core\Builder\Elements\PostTitle;
+use Saha\Core\Builder\Elements\ProductAddToCart;
+use Saha\Core\Builder\Elements\ProductAfterSummary;
+use Saha\Core\Builder\Elements\ProductArchive;
+use Saha\Core\Builder\Elements\ProductGallery;
+use Saha\Core\Builder\Elements\ProductMeta;
+use Saha\Core\Builder\Elements\ProductPrice;
+use Saha\Core\Builder\Elements\ProductRelated;
+use Saha\Core\Builder\Elements\ProductSummary;
+use Saha\Core\Builder\Elements\ProductTabs;
 use Saha\Core\Builder\Elements\HeaderRow;
 use Saha\Core\Builder\Elements\HeaderZone;
 use Saha\Core\Builder\Elements\Logo;
@@ -112,6 +129,24 @@ final class ElementRegistry {
 				new Contact(),
 				new Social(),
 				new Copyright(),
+				// Template Builder — element động (mốc 2.2).
+				new PostTitle(),
+				new PostContent(),
+				new PostExcerpt(),
+				new FeaturedImage(),
+				new PostMeta(),
+				new Breadcrumb(),
+				new ArchiveTitle(),
+				new ArchivePosts(),
+				new ProductGallery(),
+				new ProductPrice(),
+				new ProductAddToCart(),
+				new ProductMeta(),
+				new ProductTabs(),
+				new ProductRelated(),
+				new ProductSummary(),
+				new ProductAfterSummary(),
+				new ProductArchive(),
 			);
 
 			foreach ( $core as $element ) {

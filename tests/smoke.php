@@ -529,7 +529,7 @@ echo "Builder — element mốc 1.4\n";
 $saha_reg   = Saha\Core\Builder\ElementRegistry::instance();
 $saha_ctrls = Saha\Core\Builder\Controls\ControlRegistry::instance();
 $saha_types = array_keys( $saha_reg->all() );
-check( 'đủ 33 element (20 nội dung + 13 header/footer)', count( $saha_types ), 33 );
+check( 'đủ 50 element (20 nội dung + 13 header/footer + 17 động của Template Builder)', count( $saha_types ), 50 );
 $saha_bad_ctrl = array();
 foreach ( $saha_reg->all() as $saha_t => $saha_el ) {
 	foreach ( (array) $saha_el->def()['controls'] as $saha_k => $saha_c ) {
@@ -569,7 +569,7 @@ $saha_banner = saha_bs( array( 'elements' => array( array( 'type' => 'banner', '
 $saha_banner_html = ( new Renderer() )->document( $saha_banner, new RenderContext( 0, false, false ) );
 check( 'banner ưu tiên: ảnh fetchpriority=high, loading=eager', false !== strpos( $saha_banner_html, 'fetchpriority="high"' ) && false !== strpos( $saha_banner_html, 'loading="eager"' ), true );
 check( 'banner: ảnh nền alt rỗng, tiêu đề H1', false !== strpos( $saha_banner_html, 'alt=""' ) && false !== strpos( $saha_banner_html, '<h1 class="saha-banner__title">Hero</h1>' ), true );
-check( 'element động (shortcode, block, sản phẩm, bài viết, menu, tìm kiếm, giỏ) không vào render cache', array_values( array_filter( $saha_types, static fn( $t ) => ! empty( $saha_reg->get( $t )->def()['dynamic'] ) ) ), array( 'shortcode', 'block', 'products', 'posts', 'nav-menu', 'search', 'cart' ) );
+check( 'element động (shortcode, block, sản phẩm, bài viết, menu, tìm kiếm, giỏ + mọi element Template Builder) không vào render cache', array_values( array_filter( $saha_types, static fn( $t ) => ! empty( $saha_reg->get( $t )->def()['dynamic'] ) ) ), array( 'shortcode', 'block', 'products', 'posts', 'nav-menu', 'search', 'cart', 'post-title', 'post-content', 'post-excerpt', 'featured-image', 'post-meta', 'breadcrumb', 'archive-title', 'archive-posts', 'product-gallery', 'product-price', 'product-add-to-cart', 'product-meta', 'product-tabs', 'product-related', 'product-summary', 'product-after-summary', 'product-archive' ) );
 
 echo "Header & footer (mốc 1.5)\n";
 require_once SAHA_CORE_PATH . 'includes/functions.php'; // saha_hotline(), saha_tel_href()…
@@ -660,6 +660,28 @@ $GLOBALS['__meta'][67]   = array( '_saha_menu_type' => 'mega', '_saha_mega_setti
 check( 'mega: block đã xuất bản → kiểu block; block nháp → quay về chia cột', array( in_array( 'saha-mega-item--block', $saha_mf->classes( array(), (object) array( 'ID' => 66 ), $saha_args, 0 ), true ), in_array( 'saha-mega-item--cols-4', $saha_mf->classes( array(), (object) array( 'ID' => 67 ), $saha_args, 0 ), true ) ), array( true, true ) );
 $GLOBALS['__options']['saha_mega_menu'] = array( 'active' => true, 'blocks' => array( 102 ) );
 check( 'mega: menu có cờ lấy ít nhất 3 cấp; menu khác giữ nguyên', array( $saha_mf->depth( array( 'saha_mega' => true, 'depth' => 2 ) )['depth'], $saha_mf->depth( array( 'depth' => 2 ) )['depth'], $saha_mf->depth( array( 'saha_mega' => true, 'depth' => 0 ) )['depth'] ), array( 3, 2, 0 ) );
+
+echo "Template Builder — điều kiện (mốc 2.2)\n";
+use Saha\Core\Templates\Conditions as TplCond;
+check( 'điều kiện: bỏ rule lạ/không hợp loại, giá trị sai kiểu, "all" trong Trừ', TplCond::sanitize( array( 'include' => array( array( 'rule' => 'product_cat', 'value' => array( '21', 'x', 0, 21 ) ), array( 'rule' => 'page', 'value' => array( 5 ) ), array( 'rule' => 'evil' ) ), 'exclude' => array( array( 'rule' => 'all' ), array( 'rule' => 'product', 'value' => array() ) ) ), 'single_product' ), array( 'include' => array( array( 'rule' => 'product_cat', 'value' => array( 21 ) ) ), 'exclude' => array() ) );
+check( 'điều kiện: archive_type chỉ nhận giá trị đã biết', TplCond::sanitize( array( 'include' => array( array( 'rule' => 'archive_type', 'value' => array( 'shop', 'hack' ) ) ) ), 'product_archive' )['include'], array( array( 'rule' => 'archive_type', 'value' => array( 'shop' ) ) ) );
+$saha_map = TplCond::compile(
+	array(
+		array( 'id' => 10, 'type' => 'single_product', 'priority' => 0, 'conditions' => array( 'include' => array( array( 'rule' => 'all' ) ) ) ),
+		array( 'id' => 11, 'type' => 'single_product', 'priority' => 0, 'conditions' => array( 'include' => array( array( 'rule' => 'product_cat', 'value' => array( 21 ) ) ), 'exclude' => array( array( 'rule' => 'product', 'value' => array( 99 ) ) ) ) ),
+		array( 'id' => 12, 'type' => 'single_product', 'priority' => 5, 'conditions' => array( 'include' => array( array( 'rule' => 'product_brand', 'value' => array( 7 ) ) ) ) ),
+		array( 'id' => 13, 'type' => 'single_product', 'priority' => 0, 'conditions' => array( 'include' => array( array( 'rule' => 'product', 'value' => array( 50 ) ) ) ) ),
+		array( 'id' => 14, 'type' => 'single_product', 'priority' => 0, 'conditions' => array( 'include' => array( array( 'rule' => 'product_cat', 'value' => array( 30 ) ) ) ) ),
+	)
+);
+$saha_ctx = static fn( array $extra ): array => array_merge( array( array( 'all', '*', 0 ) ), $extra );
+check( 'chọn template: chỉ khớp "tất cả" → template chung', TplCond::resolve( $saha_map, 'single_product', $saha_ctx( array( array( 'product', '1', 30 ) ) ) ), 10 );
+check( 'chọn template: danh mục (20) thắng "tất cả" (0)', TplCond::resolve( $saha_map, 'single_product', $saha_ctx( array( array( 'product', '2', 30 ), array( 'product_cat', '21', 20 ) ) ) ), 11 );
+check( 'chọn template: sản phẩm cụ thể (30) thắng danh mục', TplCond::resolve( $saha_map, 'single_product', $saha_ctx( array( array( 'product', '50', 30 ), array( 'product_cat', '21', 20 ) ) ) ), 13 );
+check( 'chọn template: cùng mức → ưu tiên cao hơn (thương hiệu p5 > danh mục p0)', TplCond::resolve( $saha_map, 'single_product', $saha_ctx( array( array( 'product', '3', 30 ), array( 'product_cat', '21', 20 ), array( 'product_brand', '7', 20 ) ) ) ), 12 );
+check( 'chọn template: bị "Trừ" → xuống mức sau', TplCond::resolve( $saha_map, 'single_product', $saha_ctx( array( array( 'product', '99', 30 ), array( 'product_cat', '21', 20 ) ) ) ), 10 );
+check( 'chọn template: danh mục con khớp qua cha (15) nhưng danh mục trực tiếp (20) thắng', array( TplCond::resolve( $saha_map, 'single_product', $saha_ctx( array( array( 'product_cat', '22', 20 ), array( 'product_cat', '21', 15 ) ) ) ), TplCond::resolve( $saha_map, 'single_product', $saha_ctx( array( array( 'product_cat', '30', 20 ), array( 'product_cat', '21', 15 ) ) ) ) ), array( 11, 14 ) );
+check( 'chọn template: loại khác / không có → null', array( TplCond::resolve( $saha_map, 'single_post', $saha_ctx( array() ) ), TplCond::resolve( array(), 'header', $saha_ctx( array() ) ) ), array( null, null ) );
 
 echo "\n$pass passed, $fail failed\n";
 exit( $fail > 0 ? 1 : 0 );

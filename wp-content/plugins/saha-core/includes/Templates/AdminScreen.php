@@ -1,6 +1,6 @@
 <?php
 /**
- * Quản trị SAHA → Header & Footer.
+ * Quản trị SAHA → Templates (header, footer, trang sản phẩm, danh mục…).
  *
  * @package Saha\Core
  */
@@ -58,7 +58,7 @@ final class AdminScreen {
 		}
 
 		echo '<p class="saha-template-actions">';
-		foreach ( Repository::types() as $type => $label ) {
+		foreach ( Repository::layoutTypes() as $type => $label ) {
 			printf(
 				'<a class="button button-primary" href="%1$s">%2$s</a> ',
 				esc_url( self::actionUrl( 'saha_template_new', array( 'type' => $type ) ) ),
@@ -71,6 +71,15 @@ final class AdminScreen {
 			esc_url( self::actionUrl( 'saha_template_defaults' ) ),
 			esc_html__( 'Tạo header & footer mặc định', 'saha-core' )
 		);
+
+		// Template nội dung (mốc 2.2): chọn loại → tạo từ mẫu → mở builder.
+		echo '<form class="saha-template-actions" method="get" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '"><input type="hidden" name="action" value="saha_template_new">';
+		wp_nonce_field( 'saha_template_new', '_wpnonce', false );
+		echo '<label for="saha-template-type">' . esc_html__( 'Thêm template:', 'saha-core' ) . '</label> <select id="saha-template-type" name="type">';
+		foreach ( Repository::contentTypes() as $type => $label ) {
+			printf( '<option value="%1$s">%2$s</option>', esc_attr( $type ), esc_html( $label ) );
+		}
+		echo '</select> <button type="submit" class="button">' . esc_html__( 'Tạo từ mẫu', 'saha-core' ) . '</button></form>';
 
 		return $views;
 	}
@@ -87,8 +96,9 @@ final class AdminScreen {
 
 		unset( $columns['date'] );
 
-		$columns['saha_type']   = __( 'Loại', 'saha-core' );
-		$columns['saha_active'] = __( 'Dùng cho toàn site', 'saha-core' );
+		$columns['saha_type']     = __( 'Loại', 'saha-core' );
+		$columns['saha_active']   = __( 'Áp dụng', 'saha-core' );
+		$columns['saha_priority'] = __( 'Ưu tiên', 'saha-core' );
 
 		if ( null !== $date ) {
 			$columns['date'] = $date;
@@ -111,8 +121,19 @@ final class AdminScreen {
 		}
 
 		if ( 'saha_active' === $column ) {
-			$active = Repository::isSiteWide( $post_id ) && 'publish' === get_post_status( $post_id );
-			echo $active ? '<strong>✓ ' . esc_html__( 'Đang dùng', 'saha-core' ) . '</strong>' : '—';
+			if ( 'publish' !== get_post_status( $post_id ) ) {
+				echo '—';
+			} elseif ( Repository::isSiteWide( $post_id ) ) {
+				echo '<strong>✓ ' . esc_html__( 'Đang dùng', 'saha-core' ) . '</strong> ' . esc_html( ConditionsScreen::summary( $post_id ) );
+			} else {
+				echo esc_html( ConditionsScreen::summary( $post_id ) );
+			}
+
+			printf( ' <a href="%1$s">%2$s</a>', esc_url( ConditionsScreen::url( $post_id ) ), esc_html__( 'Sửa điều kiện', 'saha-core' ) );
+		}
+
+		if ( 'saha_priority' === $column ) {
+			echo (int) get_post_meta( $post_id, Repository::PRIORITY_META, true );
 		}
 	}
 
@@ -127,6 +148,8 @@ final class AdminScreen {
 		if ( ! $post instanceof \WP_Post || Repository::POST_TYPE !== $post->post_type || ! current_user_can( 'edit_post', $post->ID ) ) {
 			return $actions;
 		}
+
+		$actions['saha_conditions'] = sprintf( '<a href="%1$s">%2$s</a>', esc_url( ConditionsScreen::url( $post->ID ) ), esc_html__( 'Điều kiện', 'saha-core' ) );
 
 		if ( ! ( Repository::isSiteWide( $post->ID ) && 'publish' === $post->post_status ) ) {
 			$actions['saha_activate'] = sprintf(
@@ -164,7 +187,7 @@ final class AdminScreen {
 			wp_die( esc_html__( 'Loại template không hợp lệ.', 'saha-core' ), 400 );
 		}
 
-		/* translators: %s: Header | Footer */
+		/* translators: %s: loại template */
 		$id = Defaults::create( $type, sprintf( __( '%s mới', 'saha-core' ), Repository::types()[ $type ] ), Defaults::starter( $type ) );
 
 		if ( is_wp_error( $id ) ) {

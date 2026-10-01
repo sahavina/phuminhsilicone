@@ -15,6 +15,8 @@ const CATEGORIES = [
 	[ 'woocommerce', __( 'Sản phẩm', 'saha-builder' ) ],
 	[ 'blog', __( 'Blog', 'saha-builder' ) ],
 	[ 'header', __( 'Header & Footer', 'saha-builder' ) ],
+	[ 'dynamic', __( 'Template (động)', 'saha-builder' ) ],
+	[ 'product-template', __( 'Trang sản phẩm (động)', 'saha-builder' ) ],
 ];
 
 export default function Inserter() {

@@ -400,7 +400,7 @@ final class Qa {
 		);
 		$this->add( $g, 'Trang dùng builder', self::PASS, count( $pages ) . ' trang' );
 
-		foreach ( Templates\Repository::types() as $type => $label ) {
+		foreach ( Templates\Repository::layoutTypes() as $type => $label ) {
 			$id = Templates\Repository::resolve( $type );
 			$this->add(
 				$g,
@@ -415,6 +415,34 @@ final class Qa {
 			'Plugin SAHA Builder (trình soạn thảo) đang bật',
 			defined( 'SAHA_BUILDER_VERSION' ) ? self::PASS : self::WARN,
 			defined( 'SAHA_BUILDER_VERSION' ) ? SAHA_BUILDER_VERSION : __( 'Đang tắt — trang đã dựng vẫn hiển thị nhưng không sửa được.', 'saha-core' )
+		);
+
+		// Template nội dung (mốc 2.2): hai template cùng loại, cùng điều kiện, cùng ưu tiên → chọn theo ID, khó đoán.
+		$map       = get_option( Templates\Repository::MAP_OPTION, array() );
+		$ambiguous = array();
+		$count     = 0;
+
+		foreach ( (array) ( $map['types'] ?? array() ) as $type => $rules ) {
+			if ( isset( Templates\Repository::contentTypes()[ $type ] ) ) {
+				foreach ( $rules as $rule => $values ) {
+					foreach ( $values as $value => $ids ) {
+						$count += count( $ids );
+
+						if ( count( $ids ) > 1 && (int) ( $map['priority'][ $ids[0] ] ?? 0 ) === (int) ( $map['priority'][ $ids[1] ] ?? 0 ) ) {
+							$ambiguous[] = $type . ' ' . $rule . ( '*' === (string) $value ? '' : ':' . $value ) . ' (#' . implode( ', #', $ids ) . ')';
+						}
+					}
+				}
+			}
+		}
+
+		$this->expect(
+			$g,
+			'Template nội dung: không trùng điều kiện cùng ưu tiên',
+			! $ambiguous,
+			__( 'Trùng điều kiện và ưu tiên — template ID nhỏ đang thắng; đặt ưu tiên khác nhau: ', 'saha-core' ) . implode( '; ', $ambiguous ),
+			self::WARN,
+			$count > 0 ? sprintf( '%d điều kiện', $count ) : __( 'Chưa dùng template nội dung', 'saha-core' )
 		);
 
 		$mega   = MegaMenu\Settings::compiled();

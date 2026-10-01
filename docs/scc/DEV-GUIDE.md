@@ -48,6 +48,8 @@ Site local mẫu: XAMPP, WordPress ở `C:\xampp\htdocs\saha`, các plugin/theme
 | `php tests/http-smoke.php <url> [--write]` | site chạy | HTTP từ ngoài: REST, quyền route builder, H1, shortcode thô, form báo giá/liên hệ (`--write` chỉ local/staging) |
 | `python tests/build-qa-checklist.py` | Không | sinh lại `docs/QA.md` (checklist thủ công) |
 
+Trên Windows/Git Bash, chạy WP-CLI với tham số bắt đầu bằng `/` (ví dụ `wp rewrite structure '/%postname%/'`) cần `MSYS_NO_PATHCONV=1`, nếu không Git Bash đổi thành đường dẫn `C:/Program Files/Git/…`.
+
 CI (`.github/workflows/ci.yml`): `php -l` toàn bộ, smoke, lint, test JS, build và `git diff --exit-code` trên thư mục build — quên build lại là CI đỏ.
 
 Trước khi commit: `php -l` file sửa · smoke · `npm run lint:js lint:css test:js build` · `wp saha qa` · http-smoke trên local · `debug.log` không có lỗi mới.
@@ -96,7 +98,10 @@ PHP: class kế thừa `Builder\Controls\Control` (`type()`, `sanitize()` ném `
 
 Schema: `saha-core/includes/ThemeOptions/Schema.php` → sanitize → option → biến CSS `--saha-*` in ở `<head>`. Thêm tuỳ chọn = thêm vào schema (UI React tự dựng). Filter: `saha_theme_options_schema`, `saha_css_variables`.
 
-## 6. Header/Footer & Blocks
+## 6. Template Builder, Header/Footer & Blocks
+
+- Template nội dung: `Templates\Loader` thay file template qua `template_include` khi `Repository::resolve( RequestContext::type() )` có kết quả; khung ở `saha-core/templates/builder-template.php`. Điều kiện + độ cụ thể: `Templates\Conditions` (thuần PHP, có test). Chỉ mục `saha_template_map` v2 biên dịch khi lưu/xoá template.
+- Element động: kế thừa `Builder\Elements\DynamicElement` (`subject()`, `withSubject()`, `withArchive()`, `placeholder()`) hoặc `ProductElement` (chỉ cần `output()` gọi hàm template WooCommerce). Luôn `dynamic`. Trong editor, đối tượng xem trước do `Templates\Preview` chọn.
 
 - `saha_template` (header/footer): meta loại + điều kiện; option `saha_template_map` được biên dịch khi lưu → lúc render chỉ đọc một option. saha-theme gọi filter `saha_render_header` / `saha_render_footer`; không có template → header PHP của theme.
 - `saha_block`: element Block render bản mới nhất; chống vòng lặp; tối đa 3 cấp.

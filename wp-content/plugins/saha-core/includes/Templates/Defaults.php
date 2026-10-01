@@ -309,6 +309,12 @@ final class Defaults {
 	 * @return array<string, mixed>
 	 */
 	public static function starter( string $type ): array {
+		$content = self::contentStarter( $type );
+
+		if ( null !== $content ) {
+			return $content;
+		}
+
 		if ( 'header' !== $type ) {
 			return array(
 				'version'  => 1,
@@ -333,6 +339,136 @@ final class Defaults {
 					),
 				),
 			),
+		);
+	}
+
+	/**
+	 * Mẫu cho template nội dung (mốc 2.2) — tái tạo bố cục PHP hiện tại của saha-theme.
+	 *
+	 * Trang sản phẩm dùng hai element "hook" (thông tin + phần dưới) để giữ mọi phần
+	 * theme/plugin gắn vào trang sản phẩm (CTA báo giá, thông số, cùng thương hiệu…);
+	 * muốn bố cục khác thì thay bằng element lẻ (Giá, Thêm vào giỏ, Tab…).
+	 *
+	 * @param string $type Loại.
+	 * @return array<string, mixed>|null
+	 */
+	private static function contentStarter( string $type ): ?array {
+		$section = static fn( array $children, array $props = array() ): array => array(
+			'type'     => 'section',
+			'props'    => $props,
+			'advanced' => array(
+				'padding' => array(
+					'desktop' => array(
+						'top'    => '32px',
+						'bottom' => '48px',
+					),
+					'mobile'  => array(
+						'top'    => '20px',
+						'bottom' => '32px',
+					),
+				),
+			),
+			'children' => $children,
+		);
+		$el      = static fn( string $element, array $props = array() ): array => array(
+			'type'  => $element,
+			'props' => $props,
+		);
+		$narrow  = array( 'contentWidth' => '800px' );
+
+		$elements = match ( $type ) {
+			'single_product'  => array(
+				$section(
+					array(
+						$el( 'breadcrumb' ),
+						array(
+							'type'     => 'row',
+							'props'    => array( 'gap' => array( 'desktop' => '40px' ) ),
+							'children' => array(
+								array(
+									'type'     => 'column',
+									'props'    => array( 'width' => array( 'desktop' => '50%' ) ),
+									'children' => array( $el( 'product-gallery' ) ),
+								),
+								array(
+									'type'     => 'column',
+									'children' => array( $el( 'product-summary' ) ),
+								),
+							),
+						),
+						$el( 'product-after-summary' ),
+					)
+				),
+			),
+			'product_archive' => array(
+				$section(
+					array(
+						$el( 'breadcrumb' ),
+						$el( 'archive-title' ),
+						$el( 'product-archive' ),
+					)
+				),
+			),
+			'single_post'     => array(
+				$section(
+					array(
+						$el( 'breadcrumb' ),
+						$el( 'post-title' ),
+						$el( 'post-meta' ),
+						$el( 'featured-image' ),
+						$el( 'post-content' ),
+					),
+					$narrow
+				),
+			),
+			'page'            => array(
+				$section(
+					array(
+						$el( 'breadcrumb' ),
+						$el( 'post-title' ),
+						$el( 'post-content' ),
+					)
+				),
+			),
+			'archive', 'search' => array(
+				$section(
+					array(
+						$el( 'breadcrumb' ),
+						$el( 'archive-title' ),
+						$el( 'archive-posts' ),
+					)
+				),
+			),
+			'404'             => array(
+				$section(
+					array(
+						$el(
+							'heading',
+							array(
+								'text' => __( 'Không tìm thấy trang bạn cần', 'saha-core' ),
+								'tag'  => 'h1',
+							)
+						),
+						$el( 'text', array( 'content' => '<p>' . esc_html__( 'Thử tìm theo tên hoặc mã sản phẩm.', 'saha-core' ) . '</p>' ) ),
+						$el( 'search', array( 'products' => true ) ),
+						$el( 'spacer', array( 'height' => array( 'desktop' => '24px' ) ) ),
+						$el(
+							'button',
+							array(
+								'text' => __( 'Về trang chủ', 'saha-core' ),
+								'link' => array( 'url' => home_url( '/' ) ),
+							)
+						),
+					),
+					$narrow
+				),
+			),
+			default           => null,
+		};
+
+		return null === $elements ? null : array(
+			'version'  => 1,
+			'elements' => $elements,
 		);
 	}
 

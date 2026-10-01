@@ -22,9 +22,12 @@ final class Module {
 	public function register(): void {
 		( new PostType() )->register();
 		( new Frontend() )->register();
+		( new Loader() )->register();
+		( new Preview() )->register();
 
 		if ( is_admin() ) {
 			( new AdminScreen() )->register();
+			( new ConditionsScreen() )->register();
 		}
 	}
 }

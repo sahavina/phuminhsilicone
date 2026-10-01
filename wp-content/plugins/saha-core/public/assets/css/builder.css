@@ -876,3 +876,60 @@ html.saha-hb-lock {
 		display: none !important;
 	}
 }
+
+/* ===== Template Builder (mốc 2.2) ===== */
+
+/* Trang sản phẩm dựng bằng template: bố cục do Hàng/Cột của builder quyết định,
+ * bỏ float/width 48% của woocommerce-layout.css (selector đủ cụ thể để thắng). */
+.woocommerce div.product.saha-template-product div.images,
+.woocommerce div.product.saha-template-product div.summary,
+.woocommerce-page div.product.saha-template-product div.images,
+.woocommerce-page div.product.saha-template-product div.summary {
+	width: auto;
+	margin-bottom: 0;
+	float: none;
+}
+
+.saha-template-product .saha-product-after .woocommerce-tabs,
+.saha-template-product .saha-product-after .related,
+.saha-template-product .saha-product-after .upsells {
+	clear: both;
+}
+
+:where(.saha-dynamic.saha-image--empty) {
+	padding: 16px;
+	border: 1px dashed var(--saha-border, #e3e6ea);
+	border-radius: var(--saha-radius, 6px);
+	color: var(--saha-muted, #5f6b7a);
+	font-size: 14px;
+	text-align: center;
+}
+
+:where(.saha-post-meta) {
+	margin-bottom: 16px;
+	color: var(--saha-muted, #5f6b7a);
+	font-size: 14px;
+}
+
+:where(.saha-featured-image) {
+	margin: 0 0 24px;
+}
+
+:where(.saha-featured-image) img {
+	display: block;
+	width: 100%;
+	height: auto;
+}
+
+:where(.saha-archive-title) {
+	margin-bottom: 24px;
+}
+
+:where(.saha-archive-title__desc) {
+	color: var(--saha-muted, #5f6b7a);
+}
+
+/* Canvas: gallery WooCommerce chờ JS mới hiện (opacity 0 inline) — canvas không chạy JS đó. */
+.saha-builder-canvas .woocommerce-product-gallery {
+	opacity: 1 !important;
+}

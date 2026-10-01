@@ -49,11 +49,11 @@ final class PostType {
 			Repository::POST_TYPE,
 			array(
 				'labels'              => array(
-					'name'          => __( 'Header & Footer', 'saha-core' ),
+					'name'          => __( 'Templates', 'saha-core' ),
 					'singular_name' => __( 'Template', 'saha-core' ),
 					'edit_item'     => __( 'Đổi tên template', 'saha-core' ),
 					'search_items'  => __( 'Tìm template', 'saha-core' ),
-					'not_found'     => __( 'Chưa có header/footer nào.', 'saha-core' ),
+					'not_found'     => __( 'Chưa có template nào.', 'saha-core' ),
 				),
 				'public'              => false,
 				'publicly_queryable'  => false,
@@ -113,7 +113,7 @@ final class PostType {
 	 * @param string $parent Slug menu SAHA.
 	 */
 	public function addMenu( string $parent ): void {
-		add_submenu_page( $parent, __( 'Header & Footer', 'saha-core' ), __( 'Header & Footer', 'saha-core' ), Roles::CAP_TEMPLATES, 'edit.php?post_type=' . Repository::POST_TYPE, '', 2 );
+		add_submenu_page( $parent, __( 'Templates', 'saha-core' ), __( 'Header, Footer & Templates', 'saha-core' ), Roles::CAP_TEMPLATES, 'edit.php?post_type=' . Repository::POST_TYPE, '', 2 );
 	}
 
 	/**

@@ -56,7 +56,10 @@ Builder/
   Frontend, Rest/BuilderController        the_content + CSS; REST /builder/*
 ```
 
-Header & footer: `includes/Templates/` — post type `saha_template` (SAHA → Header & Footer,
+Template Builder: `includes/Templates/` — header, footer và 7 loại nội dung (trang sản phẩm, shop/danh mục,
+bài viết, blog, trang, tìm kiếm, 404); điều kiện + độ cụ thể ở `Conditions`, request ở `RequestContext`,
+thay file template qua `template_include` (`Loader` → `templates/builder-template.php`).
+Post type `saha_template` (SAHA → Header, Footer & Templates,
 quyền `manage_saha_templates`), chỉ mục `saha_template_map`, render qua filter `saha_render_header` /
 `saha_render_footer` của saha-theme; JS `public/assets/js/header.js` (off-canvas, dính khi cuộn).
 

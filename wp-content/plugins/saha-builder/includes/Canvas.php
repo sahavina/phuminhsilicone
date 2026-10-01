@@ -77,12 +77,27 @@ final class Canvas {
 
 		add_filter(
 			'body_class',
-			static function ( array $classes ): array {
+			static function ( array $classes ) use ( $post_id ): array {
 				$classes[] = 'saha-builder-canvas';
 				$classes[] = 'saha-builder-page';
-				return $classes;
+
+				/**
+				 * Class thêm cho <body> của canvas (ví dụ template trang sản phẩm cần `woocommerce`).
+				 *
+				 * @param string[] $classes Class.
+				 * @param int      $post_id Bài đang dựng.
+				 */
+				return (array) apply_filters( 'saha_builder_canvas_body_class', $classes, $post_id );
 			}
 		);
+
+		/**
+		 * Class thêm cho vùng #saha-canvas (ví dụ `product` để CSS `div.product …` của WooCommerce áp vào).
+		 *
+		 * @param string[] $classes Class.
+		 * @param int      $post_id Bài đang dựng.
+		 */
+		$canvas_classes = (array) apply_filters( 'saha_builder_canvas_classes', array( 'saha-builder-content', 'saha-builder-' . $post_id ), $post_id );
 
 		?><!doctype html>
 <html <?php language_attributes(); ?>>
@@ -94,7 +109,7 @@ final class Canvas {
 </head>
 <body <?php body_class(); ?>>
 <main class="saha-main">
-	<div id="saha-canvas" class="saha-builder-content saha-builder-<?php echo (int) $post_id; ?>"></div>
+	<div id="saha-canvas" class="<?php echo esc_attr( implode( ' ', array_map( 'sanitize_html_class', $canvas_classes ) ) ); ?>"></div>
 </main>
 <?php wp_footer(); ?>
 </body>

@@ -579,3 +579,10 @@
 	border-color: var(--saha-border);
 	border-radius: var(--saha-radius);
 }
+
+// Trang sản phẩm dựng bằng Template Builder: bố cục do Hàng/Cột
+// của builder quyết định, không áp lưới 2 cột ở trên (style của
+// gallery, giá, form, tab vẫn dùng chung).
+.woocommerce div.product.saha-template-product {
+	display: block;
+}
