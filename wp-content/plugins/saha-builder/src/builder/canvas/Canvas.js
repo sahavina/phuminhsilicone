@@ -12,10 +12,20 @@ import { api } from '../api';
 import { DEVICES, config, drag, useBuilder } from '../context';
 import { useActions } from '../actions';
 import { findNode, nodeLabel, walk } from '../store/tree';
+import { inheritedAt, setAt, valueAt } from '../controls/responsive';
 import { CANVAS_UI_CSS } from './canvas-ui';
 import { computeDrop } from './drop';
+import { resizeUnit as resizeUnitFor, resizeValue } from './resize';
 
 const RENDER_DELAY = 250;
+
+/**
+ * Element có tay kéo đổi kích thước: trục → prop (control `size`, responsive).
+ * x = cạnh phải (độ rộng), y = cạnh dưới (chiều cao tối thiểu).
+ */
+const RESIZABLE = {
+	container: { x: 'width', y: 'minHeight' },
+};
 
 /**
  * Escape chuỗi đưa vào HTML của canvas.
@@ -50,7 +60,7 @@ export default function Canvas( { onShortcut } ) {
 
 	// Bản mới nhất cho các listener gắn một lần trong iframe.
 	const latest = useRef( {} );
-	latest.current = { state, defs, dispatch, actions, onShortcut };
+	latest.current = { state, defs, dispatch, actions, onShortcut, device };
 
 	/*
 	 * ---------------------------------------------------------------
@@ -206,14 +216,33 @@ export default function Canvas( { onShortcut } ) {
 			? idoc.querySelector( `[data-saha-id="${ selected }"]` )
 			: null;
 
+		const handles = [ 'x', 'y' ].map( ( axis ) =>
+			idoc.getElementById( 'saha-canvas-resize-' + axis )
+		);
+
 		if ( ! target || latest.current.state.readOnly ) {
 			toolbar.hidden = true;
+			handles.forEach( ( h ) => ( h.hidden = true ) );
 			return;
 		}
 
 		const rect = target.getBoundingClientRect();
 		const win = idoc.defaultView;
 		const node = findNode( latest.current.state.doc, selected );
+		const resizable = node ? RESIZABLE[ node.type ] : null;
+
+		// Tay kéo: giữa cạnh phải (độ rộng) và giữa cạnh dưới (chiều cao tối thiểu).
+		handles[ 0 ].hidden = ! resizable;
+		handles[ 1 ].hidden = ! resizable;
+
+		if ( resizable ) {
+			handles[ 0 ].style.left = rect.right + win.scrollX + 'px';
+			handles[ 0 ].style.top =
+				rect.top + win.scrollY + rect.height / 2 + 'px';
+			handles[ 1 ].style.left =
+				rect.left + win.scrollX + rect.width / 2 + 'px';
+			handles[ 1 ].style.top = rect.bottom + win.scrollY + 'px';
+		}
 
 		toolbar.querySelector( 'span' ).textContent = node
 			? nodeLabel( latest.current.defs, node ).slice( 0, 40 )
@@ -311,6 +340,118 @@ export default function Canvas( { onShortcut } ) {
 		indicator.style.height = result.line.height + 'px';
 	};
 
+	/*
+	 * ---------------------------------------------------------------
+	 * Kéo đổi kích thước (Hộp): xem trước bằng style inline, thả chuột
+	 * → UPDATE prop cho thiết bị đang xem (một bước undo).
+	 * ---------------------------------------------------------------
+	 */
+	const commitResize = ( axis, value ) => {
+		const { state: s, dispatch: d, device: dev } = latest.current;
+		const node = s.selectedId ? findNode( s.doc, s.selectedId ) : null;
+		const key = node && RESIZABLE[ node.type ]?.[ axis ];
+
+		if ( ! key || s.readOnly ) {
+			return;
+		}
+
+		d( {
+			type: 'UPDATE',
+			id: node.id,
+			scope: 'props',
+			key,
+			value: setAt( node.props?.[ key ], dev, value ),
+		} );
+	};
+
+	const startResize = ( idoc, axis, event ) => {
+		const { state: s, device: dev } = latest.current;
+		const node = s.selectedId ? findNode( s.doc, s.selectedId ) : null;
+		const key = node && RESIZABLE[ node.type ]?.[ axis ];
+		const target =
+			key && idoc.querySelector( `[data-saha-id="${ s.selectedId }"]` );
+
+		if ( ! target || s.readOnly || 0 !== event.button ) {
+			return;
+		}
+
+		event.preventDefault();
+		event.stopPropagation();
+
+		const handle = event.currentTarget;
+		const win = idoc.defaultView;
+		const rect = target.getBoundingClientRect();
+		const parentStyle = win.getComputedStyle( target.parentElement );
+		const parent =
+			target.parentElement.clientWidth -
+			parseFloat( parentStyle.paddingLeft || 0 ) -
+			parseFloat( parentStyle.paddingRight || 0 );
+		const current =
+			valueAt( node.props?.[ key ], dev ) ??
+			inheritedAt( node.props?.[ key ], dev );
+		const unit = resizeUnitFor( current, axis );
+		const property = 'x' === axis ? 'width' : 'minHeight';
+		const label = idoc.getElementById( 'saha-canvas-size' );
+		let value = null;
+
+		try {
+			handle.setPointerCapture( event.pointerId );
+		} catch {
+			// Con trỏ không bắt được (thiết bị lạ / sự kiện giả lập): vẫn kéo được khi chuột còn trên tay kéo.
+		}
+		target.setAttribute( 'data-saha-resized', '1' );
+
+		const move = ( e ) => {
+			const delta =
+				'x' === axis
+					? e.clientX - event.clientX
+					: e.clientY - event.clientY;
+
+			value = resizeValue( {
+				axis,
+				px: ( 'x' === axis ? rect.width : rect.height ) + delta,
+				unit,
+				parent,
+				viewport: 'x' === axis ? win.innerWidth : win.innerHeight,
+			} );
+
+			target.style[ property ] = value;
+			label.hidden = false;
+			label.textContent = value;
+			label.style.left = e.clientX + win.scrollX + 12 + 'px';
+			label.style.top = e.clientY + win.scrollY + 12 + 'px';
+			positionToolbar();
+		};
+
+		const up = () => {
+			handle.removeEventListener( 'pointermove', move );
+			handle.removeEventListener( 'pointerup', up );
+			handle.removeEventListener( 'pointercancel', up );
+			label.hidden = true;
+
+			if ( null !== value ) {
+				commitResize( axis, value );
+			} else {
+				target.removeAttribute( 'data-saha-resized' );
+			}
+		};
+
+		handle.addEventListener( 'pointermove', move );
+		handle.addEventListener( 'pointerup', up );
+		handle.addEventListener( 'pointercancel', up );
+	};
+
+	// CSS mới từ server đã về → bỏ style inline lúc kéo (giá trị thật nằm trong CSS sinh ra).
+	useEffect( () => {
+		idocRef.current
+			?.querySelectorAll( '[data-saha-resized]' )
+			.forEach( ( el ) => {
+				el.style.width = '';
+				el.style.minHeight = '';
+				el.removeAttribute( 'data-saha-resized' );
+			} );
+	}, [ version ] );
+
 	const onLoad = () => {
 		const idoc = frameRef.current?.contentDocument;
 
@@ -349,10 +490,48 @@ export default function Canvas( { onShortcut } ) {
 		indicator.hidden = true;
 		idoc.body.appendChild( indicator );
 
+		const sizeLabel = idoc.createElement( 'div' );
+		sizeLabel.id = 'saha-canvas-size';
+		sizeLabel.className = 'saha-canvas-size';
+		sizeLabel.hidden = true;
+		idoc.body.appendChild( sizeLabel );
+
+		[ 'x', 'y' ].forEach( ( axis ) => {
+			const handle = idoc.createElement( 'div' );
+
+			handle.id = 'saha-canvas-resize-' + axis;
+			handle.className = 'saha-canvas-resize saha-canvas-resize--' + axis;
+			handle.hidden = true;
+			handle.title =
+				'x' === axis
+					? __(
+							'Kéo để đổi độ rộng (theo thiết bị đang xem). Bấm đúp: bỏ độ rộng đã đặt.',
+							'saha-builder'
+						)
+					: __(
+							'Kéo để đổi chiều cao tối thiểu (theo thiết bị đang xem). Bấm đúp: bỏ.',
+							'saha-builder'
+						);
+			handle.addEventListener( 'pointerdown', ( event ) =>
+				startResize( idoc, axis, event )
+			);
+			handle.addEventListener( 'dblclick', ( event ) => {
+				event.preventDefault();
+				event.stopPropagation();
+				commitResize( axis, null );
+			} );
+			idoc.body.appendChild( handle );
+		} );
+
 		idoc.addEventListener(
 			'click',
 			( event ) => {
 				event.preventDefault();
+
+				// Bấm / thả tay kéo kích thước không đổi lựa chọn.
+				if ( event.target.closest( '.saha-canvas-resize' ) ) {
+					return;
+				}
 
 				const { state: s, dispatch: d } = latest.current;
 				const button = event.target.closest( '[data-saha-action]' );

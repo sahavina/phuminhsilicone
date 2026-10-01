@@ -97,6 +97,10 @@ Tab **Cấu trúc** (cột trái) hiện trang dạng khối: mỗi Section mộ
 | Lưới (Grid) | xếp các ô thành N cột đều (khác Hàng/Cột: không cần tạo từng cột) |
 | Sản phẩm / Bài viết → Hiển thị | **Băng chuyền**: cuộn ngang có nút ‹ › (Product / Post slider) |
 
+### Đổi kích thước Hộp
+
+Chọn một **Hộp (Container)** trên trang → kéo **tay xanh ở cạnh phải** để đổi độ rộng, **tay ở cạnh dưới** để đổi chiều cao tối thiểu. Kích thước lưu cho **thiết bị đang xem** (chuyển sang Mobile để chỉnh riêng cho điện thoại). Bấm đúp tay kéo để bỏ. Nhập số chính xác ở tab **Kiểu** (Độ rộng, Chiều cao tối thiểu, Chiều cao cố định, Phần tràn).
+
 ### Responsive
 
 Ô có biểu tượng màn hình (cỡ chữ, khoảng cách, số cột…) đặt riêng được cho Tablet / Mobile: chuyển thiết bị trên thanh trên rồi sửa. Không đặt riêng thì Tablet lấy theo Desktop, Mobile lấy theo Tablet.

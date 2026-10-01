@@ -485,5 +485,6 @@ Chuyển từ Flatsome sang theme + builder riêng. Thiết kế: [docs/scc/TECH
 | D7 | Bảng Cấu trúc dạng khối: section thu gọn có tên, ⚙, nền sọc khi ẩn, "+ Thêm vào …" ([PHASE-D7](docs/scc/PHASE-D7.md)) | ✅ |
 | 2.7 | Element Phase 2: Tabs, Thư viện ảnh, Video, Logo (băng chuyền), Đếm ngược, Nhận tin, Lưới; Sản phẩm / Bài viết dạng băng chuyền ([PHASE-2.7](docs/scc/PHASE-2.7.md)) | ✅ |
 | 2.8 | QA Phase 2: audit 14 trang × 2 thiết bị, sửa ưu tiên tải ảnh logo + ID trùng, checklist Phase 2 trong `docs/QA.md` ([PHASE-2.8](docs/scc/PHASE-2.8.md)) | ✅ local, chờ staging |
+| D8 | Đổi kích thước Hộp: thiết lập rộng / cao / phần tràn + tay kéo trên canvas theo thiết bị ([PHASE-D8](docs/scc/PHASE-D8.md)) | ✅ chờ review |
 
-Plugin: **SAHA Core 1.29.0** · **SAHA Builder 0.7.0** · Theme **SAHA Theme 0.2.6** · Database schema **1.3.0**.
+Plugin: **SAHA Core 1.30.0** · **SAHA Builder 0.8.0** · Theme **SAHA Theme 0.2.6** · Database schema **1.3.0**.

@@ -87,6 +87,46 @@ final class Container extends Element {
 					'section' => 'content',
 					'default' => true,
 				),
+				// Kích thước (cũng chỉnh được bằng tay kéo trên canvas — saha-builder Canvas).
+				'width'      => array(
+					'type'       => 'size',
+					'label'      => __( 'Độ rộng', 'saha-core' ),
+					'section'    => 'style',
+					'responsive' => true,
+					'units'      => array( '%', 'px', 'vw' ),
+					'min'        => 1,
+					'max'        => 3000,
+				),
+				'minHeight'  => array(
+					'type'       => 'size',
+					'label'      => __( 'Chiều cao tối thiểu', 'saha-core' ),
+					'section'    => 'style',
+					'responsive' => true,
+					'units'      => array( 'px', 'vh' ),
+					'min'        => 0,
+					'max'        => 3000,
+				),
+				'height'     => array(
+					'type'       => 'size',
+					'label'      => __( 'Chiều cao cố định', 'saha-core' ),
+					'section'    => 'style',
+					'responsive' => true,
+					'units'      => array( 'px', 'vh' ),
+					'min'        => 0,
+					'max'        => 3000,
+					'help'       => __( 'Thường để trống, dùng "Chiều cao tối thiểu". Nội dung dài hơn → xem "Phần tràn".', 'saha-core' ),
+				),
+				'overflow'   => array(
+					'type'       => 'select',
+					'label'      => __( 'Phần tràn (khi đặt chiều cao)', 'saha-core' ),
+					'section'    => 'style',
+					'responsive' => true,
+					'options'    => array(
+						'visible' => __( 'Hiện ra ngoài', 'saha-core' ),
+						'hidden'  => __( 'Cắt bỏ', 'saha-core' ),
+						'auto'    => __( 'Cuộn', 'saha-core' ),
+					),
+				),
 				'maxWidth'   => array(
 					'type'       => 'size',
 					'label'      => __( 'Độ rộng tối đa', 'saha-core' ),
@@ -152,6 +192,10 @@ final class Container extends Element {
 		$css->set( '', 'justify-content', $node->prop( 'justify' ) );
 		$css->set( '', 'align-items', $node->prop( 'align' ) );
 		$css->set( '', 'max-width', $node->prop( 'maxWidth' ) );
+		$css->set( '', 'width', $node->prop( 'width' ) );
+		$css->set( '', 'min-height', $node->prop( 'minHeight' ) );
+		$css->set( '', 'height', $node->prop( 'height' ) );
+		$css->set( '', 'overflow', $node->prop( 'overflow' ) );
 		$css->set( '', 'border-radius', $node->prop( 'radius' ) );
 		$css->set( '', 'color', $node->prop( 'textColor' ) );
 		$css->set( ' :where(h1, h2, h3, h4, h5, h6)', 'color', $node->prop( 'textColor' ) );

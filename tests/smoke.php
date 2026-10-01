@@ -872,6 +872,29 @@ check( 'tabs trong editor: không ẩn tab nào (sửa được trên canvas)', 
 check( 'tab chỉ đặt được trong tabs; ảnh đặt được trong thư viện ảnh / logo; element nội dung đặt được trong lưới và tab', array( count( saha_bs( array( 'elements' => array( array( 'type' => 'section', 'children' => array( array( 'type' => 'tab' ) ) ) ) ) )['errors'] ) > 0, saha_bs( array( 'elements' => array( array( 'type' => 'section', 'children' => array( array( 'type' => 'gallery', 'children' => array( array( 'type' => 'image' ) ) ), array( 'type' => 'grid', 'children' => array( array( 'type' => 'heading' ), array( 'type' => 'button' ) ) ) ) ) ) ) )['errors'] ), array( true, array() ) );
 check( 'thư viện ảnh / logo: element khác ảnh bị từ chối', count( saha_bs( array( 'elements' => array( array( 'type' => 'section', 'children' => array( array( 'type' => 'gallery', 'children' => array( array( 'type' => 'heading' ) ) ) ) ) ) ) )['errors'] ) > 0, true );
 
+echo "Hộp: kích thước (D8)\n";
+$saha_box = saha_bs( array( 'elements' => array( array( 'type' => 'section', 'children' => array( array( 'type' => 'container', 'props' => array(
+	'width'     => array( 'desktop' => '68.7%', 'mobile' => '100%' ),
+	'minHeight' => array( 'desktop' => '320px' ),
+	'height'    => '50vh',
+	'overflow'  => 'hidden',
+) ) ) ) ) ) );
+$saha_box_css = $saha_box['document'] ? ( new CssGenerator() )->document( $saha_box['document'] ) : '';
+check(
+	'hộp: độ rộng / chiều cao tối thiểu / cao / phần tràn hợp lệ, ra CSS theo thiết bị',
+	array( $saha_box['errors'], false !== strpos( $saha_box_css, 'width:68.7%' ), false !== strpos( $saha_box_css, 'min-height:320px' ), false !== strpos( $saha_box_css, 'height:50vh' ), false !== strpos( $saha_box_css, 'overflow:hidden' ), 1 === preg_match( '/@media[^{]*\{[^}]*width:100%/', $saha_box_css ) ),
+	array( array(), true, true, true, true, true )
+);
+check(
+	'hộp: đơn vị sai / phần tràn lạ bị từ chối',
+	array(
+		count( saha_bs( array( 'elements' => array( array( 'type' => 'section', 'children' => array( array( 'type' => 'container', 'props' => array( 'width' => '20em' ) ) ) ) ) ) )['errors'] ) > 0,
+		count( saha_bs( array( 'elements' => array( array( 'type' => 'section', 'children' => array( array( 'type' => 'container', 'props' => array( 'minHeight' => '50%' ) ) ) ) ) ) )['errors'] ) > 0,
+		count( saha_bs( array( 'elements' => array( array( 'type' => 'section', 'children' => array( array( 'type' => 'container', 'props' => array( 'overflow' => 'scroll; x' ) ) ) ) ) ) )['errors'] ) > 0,
+	),
+	array( true, true, true )
+);
+
 echo "QA Phase 2 (mốc 2.8)\n";
 if ( ! function_exists( 'rest_url' ) ) {
 	function rest_url( $path = '' ) { return 'https://tongkhokeodan.com/wp-json/' . ltrim( (string) $path, '/' ); }

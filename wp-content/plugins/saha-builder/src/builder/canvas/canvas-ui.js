@@ -33,4 +33,17 @@ export const CANVAS_UI_CSS = `
 .saha-canvas-drop { position: absolute; z-index: 2147483001; border-radius: 2px; background: #3858e9; pointer-events: none; }
 .saha-canvas-drop.is-box { background: rgba(56, 88, 233, .12); outline: 2px dashed #3858e9; outline-offset: -2px; }
 .saha-canvas-drop[hidden] { display: none; }
+.saha-canvas-resize {
+	position: absolute; z-index: 2147483000; box-sizing: border-box;
+	border: 2px solid #fff; border-radius: 4px; background: #3858e9;
+	box-shadow: 0 0 0 1px #3858e9, 0 1px 4px rgba(0, 0, 0, .25); touch-action: none;
+}
+.saha-canvas-resize--x { width: 10px; height: 32px; margin: -16px 0 0 -5px; cursor: ew-resize; }
+.saha-canvas-resize--y { width: 32px; height: 10px; margin: -5px 0 0 -16px; cursor: ns-resize; }
+.saha-canvas-resize[hidden] { display: none; }
+.saha-canvas-size {
+	position: absolute; z-index: 2147483001; padding: 2px 6px; border-radius: 3px;
+	background: #1e1e1e; color: #fff; font: 11px/1.4 system-ui, sans-serif; pointer-events: none;
+}
+.saha-canvas-size[hidden] { display: none; }
 `;
