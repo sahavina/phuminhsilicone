@@ -38,7 +38,7 @@ final class Row extends Element {
 			'name'            => __( 'Hàng', 'saha-core' ),
 			'icon'            => 'columns',
 			'category'        => 'layout',
-			'allowedParents'  => array( 'section', 'column', 'container' ),
+			'allowedParents'  => array( 'section', 'column', 'container', 'tab' ),
 			'allowedChildren' => array( 'column' ),
 			'initialChildren' => array( 'column', 'column' ),
 			'controls'        => array(

@@ -33,6 +33,14 @@ use Saha\Core\Builder\Elements\PostContent;
 use Saha\Core\Builder\Elements\PostExcerpt;
 use Saha\Core\Builder\Elements\PostMeta;
 use Saha\Core\Builder\Elements\PostTitle;
+use Saha\Core\Builder\Elements\Countdown;
+use Saha\Core\Builder\Elements\Gallery;
+use Saha\Core\Builder\Elements\Grid;
+use Saha\Core\Builder\Elements\LogoCloud;
+use Saha\Core\Builder\Elements\Newsletter;
+use Saha\Core\Builder\Elements\Tab;
+use Saha\Core\Builder\Elements\Tabs;
+use Saha\Core\Builder\Elements\Video;
 use Saha\Core\Builder\Elements\QuoteList;
 use Saha\Core\Builder\Elements\QuoteListLink;
 use Saha\Core\Builder\Elements\ProductAddToCart;
@@ -152,6 +160,15 @@ final class ElementRegistry {
 				new Contact(),
 				new Social(),
 				new Copyright(),
+				// Element Phase 2 (mốc 2.7).
+				new Grid(),
+				new Tabs(),
+				new Tab(),
+				new Gallery(),
+				new Video(),
+				new LogoCloud(),
+				new Countdown(),
+				new Newsletter(),
 				// Template Builder — element động (mốc 2.2).
 				new QuoteList(),
 				new PostTitle(),

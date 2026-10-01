@@ -482,7 +482,8 @@ Chuyển từ Flatsome sang theme + builder riêng. Thiết kế: [docs/scc/TECH
 | 2.5 | Danh sách báo giá nhiều sản phẩm: bảng `quote_items`, trang danh sách, admin theo dòng, báo cáo ([PHASE-2.5](docs/scc/PHASE-2.5.md)) | ✅ |
 | D6 | Bảng Thêm của builder: Khối mẫu (12 section dựng sẵn) + Block đã lưu ([PHASE-D6](docs/scc/PHASE-D6.md)) | ✅ |
 | 2.6 | Import / Export giao diện: trang, block, header/footer/template + điều kiện, Theme Options, ảnh ([PHASE-2.6](docs/scc/PHASE-2.6.md)) | ✅ |
-| D7 | Bảng Cấu trúc dạng khối: section thu gọn có tên, ⚙, nền sọc khi ẩn, "+ Thêm vào …" ([PHASE-D7](docs/scc/PHASE-D7.md)) | ✅ chờ review |
-| 2.7–2.8 | element Phase 2, QA | ⏳ |
+| D7 | Bảng Cấu trúc dạng khối: section thu gọn có tên, ⚙, nền sọc khi ẩn, "+ Thêm vào …" ([PHASE-D7](docs/scc/PHASE-D7.md)) | ✅ |
+| 2.7 | Element Phase 2: Tabs, Thư viện ảnh, Video, Logo (băng chuyền), Đếm ngược, Nhận tin, Lưới; Sản phẩm / Bài viết dạng băng chuyền ([PHASE-2.7](docs/scc/PHASE-2.7.md)) | ✅ chờ review |
+| 2.8 | QA Phase 2 | ⏳ |
 
-Plugin: **SAHA Core 1.27.0** · **SAHA Builder 0.7.0** · Theme **SAHA Theme 0.2.5** · Database schema **1.3.0**.
+Plugin: **SAHA Core 1.28.0** · **SAHA Builder 0.7.0** · Theme **SAHA Theme 0.2.5** · Database schema **1.3.0**.

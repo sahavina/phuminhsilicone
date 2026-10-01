@@ -626,6 +626,7 @@ final class Qa {
 			'/saha/v1/brands/(?P<slug>[a-z0-9\-_]+)',
 			'/saha/v1/quote',
 			'/saha/v1/quote/list',
+			'/saha/v1/newsletter',
 			'/saha/v1/contact',
 			'/saha/v1/settings',
 			'/saha/v1/blocks',

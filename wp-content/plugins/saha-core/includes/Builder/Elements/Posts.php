@@ -83,6 +83,7 @@ final class Posts extends Element {
 						'h4' => 'H4',
 					),
 				),
+				'display'     => self::displayControl(),
 				'columns'     => array(
 					'type'       => 'number',
 					'label'      => __( 'Số cột', 'saha-core' ),
@@ -168,6 +169,12 @@ final class Posts extends Element {
 				. '</div></li>';
 		}
 
+		if ( 'carousel' === $this->prop( $node, 'display' ) ) {
+			return '<div' . $this->rootAttributes( $node, $ctx, array( 'saha-posts-el', 'saha-slider', 'saha-posts-el--carousel' ), array( 'data-saha-slider' => '1' ) ) . '>'
+				. '<ul class="saha-posts-el__grid saha-slider__track" tabindex="0" aria-label="' . esc_attr__( 'Danh sách bài viết (cuộn ngang)', 'saha-core' ) . '">' . $items . '</ul>'
+				. self::carouselArrows( __( 'bài viết', 'saha-core' ) ) . '</div>';
+		}
+
 		return '<div' . $this->rootAttributes( $node, $ctx, array( 'saha-posts-el' ) ) . '><ul class="saha-posts-el__grid">' . $items . '</ul></div>';
 	}
 
@@ -180,5 +187,7 @@ final class Posts extends Element {
 	public function styles( Node $node, CssRules $css ): void {
 		$css->set( ' .saha-posts-el__grid', '--saha-cols', $this->prop( $node, 'columns' ) );
 		$css->set( ' .saha-posts-el__grid', 'gap', $node->prop( 'gap' ) );
+		$css->set( '', '--saha-slider-per-view', $this->prop( $node, 'columns' ) );
+		$css->set( '', '--saha-slider-gap', $node->prop( 'gap' ) );
 	}
 }

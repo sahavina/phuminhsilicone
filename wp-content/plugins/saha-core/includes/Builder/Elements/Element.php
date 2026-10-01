@@ -33,7 +33,7 @@ abstract class Element {
 	/**
 	 * Cha hợp lệ của element nội dung (tiêu đề, văn bản, nút…).
 	 */
-	public const CONTENT_PARENTS = array( 'section', 'column', 'container', 'header-zone', 'header-offcanvas' );
+	public const CONTENT_PARENTS = array( 'section', 'column', 'container', 'header-zone', 'header-offcanvas', 'tab', 'grid' );
 
 	/**
 	 * Định nghĩa đã chuẩn hoá (cache trong request).
@@ -125,6 +125,40 @@ abstract class Element {
 	 */
 	public function prop( Node $node, string $key ) {
 		return $node->prop( $key, $this->def()['controls'][ $key ]['default'] ?? null );
+	}
+
+	/**
+	 * Control "Hiển thị: Lưới / Băng chuyền" dùng chung (Sản phẩm, Bài viết).
+	 *
+	 * @return array<string, mixed>
+	 */
+	protected static function displayControl(): array {
+		return array(
+			'type'    => 'select',
+			'label'   => __( 'Hiển thị', 'saha-core' ),
+			'section' => 'content',
+			'default' => 'grid',
+			'options' => array(
+				'grid'     => __( 'Lưới', 'saha-core' ),
+				'carousel' => __( 'Băng chuyền (cuộn ngang, nút ‹ ›)', 'saha-core' ),
+			),
+		);
+	}
+
+	/**
+	 * Nút ‹ › của băng chuyền — dùng JS / CSS của Slider (`[data-saha-slider]`).
+	 *
+	 * @param string $what Tên mục (cho nhãn nút), ví dụ "sản phẩm".
+	 */
+	protected static function carouselArrows( string $what ): string {
+		return '<button type="button" class="saha-slider__arrow saha-slider__arrow--prev" data-saha-slider-prev aria-label="' . esc_attr(
+			/* translators: %s: loại mục */
+			sprintf( __( 'Xem %s trước', 'saha-core' ), $what )
+		) . '">' . \Saha\Core\Builder\Icons::svg( 'chevron-right' ) . '</button>'
+			. '<button type="button" class="saha-slider__arrow saha-slider__arrow--next" data-saha-slider-next aria-label="' . esc_attr(
+				/* translators: %s: loại mục */
+				sprintf( __( 'Xem %s tiếp', 'saha-core' ), $what )
+			) . '">' . \Saha\Core\Builder\Icons::svg( 'chevron-right' ) . '</button>';
 	}
 
 	/**

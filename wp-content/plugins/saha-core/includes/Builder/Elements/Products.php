@@ -116,6 +116,7 @@ final class Products extends Element {
 					'default'   => __( 'Tất cả', 'saha-core' ),
 					'maxLength' => 40,
 				),
+				'display'     => self::displayControl(),
 				'hideOutOfStock' => array(
 					'type'    => 'toggle',
 					'label'   => __( 'Ẩn sản phẩm hết hàng', 'saha-core' ),
@@ -176,6 +177,11 @@ final class Products extends Element {
 		}
 
 		// Bọc .woocommerce như shortcode [products] để CSS WooCommerce/theme áp dụng.
+		if ( 'carousel' === $this->prop( $node, 'display' ) ) {
+			return '<div' . $this->rootAttributes( $node, $ctx, array( 'saha-products', 'woocommerce', 'saha-slider', 'saha-pcarousel' ), array( 'data-saha-slider' => '1' ) ) . '>'
+				. self::grid( $ids, true ) . self::carouselArrows( __( 'sản phẩm', 'saha-core' ) ) . '</div>';
+		}
+
 		return '<div' . $this->rootAttributes( $node, $ctx, array( 'saha-products', 'woocommerce' ) ) . '>' . self::grid( $ids ) . '</div>';
 	}
 
@@ -200,9 +206,10 @@ final class Products extends Element {
 	/**
 	 * Lưới thẻ sản phẩm (template content-product của WooCommerce).
 	 *
-	 * @param int[] $ids Sản phẩm.
+	 * @param int[] $ids      Sản phẩm.
+	 * @param bool  $carousel Làm track của băng chuyền.
 	 */
-	private static function grid( array $ids ): string {
+	private static function grid( array $ids, bool $carousel = false ): string {
 		// Nạp trước post + meta một lần (tránh N+1 khi template đọc giá, ảnh…).
 		_prime_post_caches( $ids, true, true );
 
@@ -211,7 +218,9 @@ final class Products extends Element {
 
 		ob_start();
 
-		echo '<ul class="products saha-products-grid">';
+		echo $carousel
+			? '<ul class="products saha-products-grid saha-slider__track" tabindex="0" aria-label="' . esc_attr__( 'Danh sách sản phẩm (cuộn ngang)', 'saha-core' ) . '">'
+			: '<ul class="products saha-products-grid">';
 
 		foreach ( $ids as $id ) {
 			$post = get_post( $id ); // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited -- vòng lặp WooCommerce chuẩn, khôi phục ngay sau.
@@ -307,6 +316,8 @@ final class Products extends Element {
 	public function styles( Node $node, CssRules $css ): void {
 		$css->set( ' .saha-products-grid', '--saha-cols', $this->prop( $node, 'columns' ) );
 		$css->set( ' .saha-products-grid', 'gap', $node->prop( 'gap' ) );
+		$css->set( '', '--saha-slider-per-view', $this->prop( $node, 'columns' ) );
+		$css->set( '', '--saha-slider-gap', $node->prop( 'gap' ) );
 	}
 
 	/**

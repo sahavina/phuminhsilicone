@@ -57,6 +57,7 @@ final class Icons {
 				'search'        => array( __( 'Tìm kiếm', 'saha-core' ), '<circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/>' ),
 				'arrow-right'   => array( __( 'Mũi tên phải', 'saha-core' ), '<path d="M5 12h14M13 6l6 6-6 6"/>' ),
 				'chevron-right' => array( __( 'Dấu >', 'saha-core' ), '<path d="m9 6 6 6-6 6"/>' ),
+				'play'          => array( __( 'Phát', 'saha-core' ), '<path d="M8 5.5v13l11-6.5z" fill="currentColor"/>' ),
 				'info'          => array( __( 'Thông tin', 'saha-core' ), '<circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/>' ),
 				'wrench'        => array( __( 'Kỹ thuật', 'saha-core' ), '<path d="M14.5 5.5a4 4 0 0 0 5 5L11 19a2.1 2.1 0 0 1-3-3z"/>' ),
 				'zap'           => array( __( 'Nhanh', 'saha-core' ), '<path d="M13 2 4 14h7l-1 8 9-12h-7z"/>' ),

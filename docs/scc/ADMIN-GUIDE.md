@@ -88,6 +88,14 @@ Tab **Cấu trúc** (cột trái) hiện trang dạng khối: mỗi Section mộ
 | Slider | ảnh trượt; thêm ảnh bằng cách nhân đôi Slide (Ctrl+D). Slide đầu của banner đầu trang bật "Ưu tiên tải" |
 | Đánh giá khách hàng | thẻ đánh giá; nhân đôi "Một đánh giá" để thêm |
 | Accordion / Hỏi đáp | câu hỏi thường gặp, bật "Dữ liệu cấu trúc FAQ" cho Google (mỗi trang một khối FAQ) |
+| Tabs | nội dung theo tab (Mô tả · Thông số · Hướng dẫn…); mỗi Tab chứa element bất kỳ; trong builder các tab hiện xếp chồng để sửa |
+| Thư viện ảnh | nhiều ảnh dạng lưới / so le; khách bấm ảnh để xem lớn (ảnh gắn link thì mở link) |
+| Video | dán link YouTube / Vimeo / file .mp4; video chỉ tải khi khách bấm (trang nhẹ). Điền **Tên video** |
+| Logo thương hiệu / đối tác | tự lấy logo các thương hiệu, hoặc tự chọn ảnh (đối tác, chứng nhận); lưới hoặc **băng chuyền** |
+| Đếm ngược | khuyến mãi / sự kiện: nhập **YYYY-MM-DD HH:MM** (giờ website); hết giờ hiện chữ hoặc ẩn |
+| Đăng ký nhận tin | ô email + nút; email vào **SAHA → Khách hàng tiềm năng**, nguồn "Đăng ký nhận tin" |
+| Lưới (Grid) | xếp các ô thành N cột đều (khác Hàng/Cột: không cần tạo từng cột) |
+| Sản phẩm / Bài viết → Hiển thị | **Băng chuyền**: cuộn ngang có nút ‹ › (Product / Post slider) |
 
 ### Responsive
 

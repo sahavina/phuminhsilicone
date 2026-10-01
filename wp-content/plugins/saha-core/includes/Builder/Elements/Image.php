@@ -32,7 +32,7 @@ final class Image extends Element {
 			'name'           => __( 'Ảnh', 'saha-core' ),
 			'icon'           => 'format-image',
 			'category'       => 'content',
-			'allowedParents' => self::CONTENT_PARENTS,
+			'allowedParents' => array_merge( self::CONTENT_PARENTS, array( 'gallery', 'logo-cloud' ) ),
 			'controls'       => array(
 				'image'        => array(
 					'type'        => 'media',

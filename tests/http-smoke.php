@@ -260,6 +260,22 @@ ok( 'GET /builder/elements khi chưa đăng nhập → 401', 401 === $r['status'
 // Import / Export (mốc 2.6): admin-post chỉ cho người đăng nhập có manage_options — khách không tải được file xuất.
 $r = http( 'GET', $base . '/wp-admin/admin-post.php?action=saha_export' );
 ok( 'xuất giao diện khi chưa đăng nhập → không trả JSON (400)', 400 === $r['status'] && false === strpos( $r['body'], 'saha-export' ), 'status ' . $r['status'] );
+// Đăng ký nhận tin (mốc 2.7): thiếu nonce → 403; nonce form + email sai → 422 (không ghi gì).
+$r = http( 'POST', $api . '/newsletter', array(), array( 'email' => 'x@example.com' ) );
+
+if ( 429 === $r['status'] ) {
+	skip( 'POST /newsletter', 'IP đang bị rate limit — chờ 10 phút' );
+} else {
+	ok( 'POST /newsletter thiếu nonce → 403', 403 === $r['status'], 'status ' . $r['status'] );
+	$form = json_decode( http( 'GET', $api . '/nonce' )['body'], true )['data']['form'] ?? '';
+	$r    = http( 'POST', $api . '/newsletter', array(), array( 'email' => 'khong-phai-email', 'saha_nonce' => $form ) );
+	if ( 429 === $r['status'] ) {
+		skip( 'POST /newsletter email sai', 'IP đang bị rate limit — chờ 10 phút' );
+	} else {
+		ok( 'POST /newsletter email sai → 422 + errors.email', 422 === $r['status'] && isset( $r['json']['errors']['email'] ), 'status ' . $r['status'] );
+	}
+}
+
 $r = http( 'GET', $api . '/builder/patterns' );
 ok( 'GET /builder/patterns (khối mẫu) khi chưa đăng nhập → 401', 401 === $r['status'], 'status ' . $r['status'] );
 $r = http( 'GET', $api . '/builder/1' );

@@ -530,7 +530,7 @@ echo "Builder — element mốc 1.4\n";
 $saha_reg   = Saha\Core\Builder\ElementRegistry::instance();
 $saha_ctrls = Saha\Core\Builder\Controls\ControlRegistry::instance();
 $saha_types = array_keys( $saha_reg->all() );
-check( 'đủ 62 element (20 nội dung + 15 header/footer + 17 động + 9 giao diện D1 + danh sách báo giá)', count( $saha_types ), 62 );
+check( 'đủ 70 element (20 nội dung + 15 header/footer + 17 động + 9 giao diện D1 + danh sách báo giá + 8 element Phase 2)', count( $saha_types ), 70 );
 $saha_bad_ctrl = array();
 foreach ( $saha_reg->all() as $saha_t => $saha_el ) {
 	foreach ( (array) $saha_el->def()['controls'] as $saha_k => $saha_c ) {
@@ -570,7 +570,7 @@ $saha_banner = saha_bs( array( 'elements' => array( array( 'type' => 'banner', '
 $saha_banner_html = ( new Renderer() )->document( $saha_banner, new RenderContext( 0, false, false ) );
 check( 'banner ưu tiên: ảnh fetchpriority=high, loading=eager', false !== strpos( $saha_banner_html, 'fetchpriority="high"' ) && false !== strpos( $saha_banner_html, 'loading="eager"' ), true );
 check( 'banner: ảnh nền alt rỗng, tiêu đề H1', false !== strpos( $saha_banner_html, 'alt=""' ) && false !== strpos( $saha_banner_html, '<h1 class="saha-banner__title">Hero</h1>' ), true );
-check( 'element động (shortcode, block, sản phẩm, bài viết, menu, tìm kiếm, giỏ + mọi element Template Builder) không vào render cache', array_values( array_filter( $saha_types, static fn( $t ) => ! empty( $saha_reg->get( $t )->def()['dynamic'] ) ) ), array( 'shortcode', 'block', 'products', 'posts', 'nav-menu', 'search', 'cart', 'quote-list-link', 'post-title', 'post-content', 'post-excerpt', 'featured-image', 'post-meta', 'breadcrumb', 'archive-title', 'archive-posts', 'product-gallery', 'product-price', 'product-add-to-cart', 'product-meta', 'product-tabs', 'product-related', 'product-summary', 'product-after-summary', 'product-archive' ) );
+check( 'element động (shortcode, block, sản phẩm, bài viết, menu, tìm kiếm, giỏ + mọi element Template Builder) không vào render cache', array_values( array_filter( $saha_types, static fn( $t ) => ! empty( $saha_reg->get( $t )->def()['dynamic'] ) ) ), array( 'shortcode', 'block', 'products', 'posts', 'nav-menu', 'search', 'cart', 'quote-list-link', 'countdown', 'post-title', 'post-content', 'post-excerpt', 'featured-image', 'post-meta', 'breadcrumb', 'archive-title', 'archive-posts', 'product-gallery', 'product-price', 'product-add-to-cart', 'product-meta', 'product-tabs', 'product-related', 'product-summary', 'product-after-summary', 'product-archive' ) );
 
 echo "Header & footer (mốc 1.5)\n";
 require_once SAHA_CORE_PATH . 'includes/functions.php'; // saha_hotline(), saha_tel_href()…
@@ -835,6 +835,42 @@ check(
 	array( array( 'color' => '#fff', 'image' => array( 'id' => 110, 'size' => 'large' ) ), array( 'alt' => 'x' ), 112, 152, array(), 2 )
 );
 check( 'chạy thử: strip bỏ mọi ảnh / block, giữ cấu trúc', array( SahaWalker::strip( $saha_ie_doc )['elements'][0]['props'], count( SahaWalker::strip( $saha_ie_doc )['elements'][0]['children'] ) ), array( array( 'background' => array( 'color' => '#fff' ) ), 4 ) );
+
+echo "Element Phase 2 (mốc 2.7)\n";
+if ( ! function_exists( 'wp_timezone' ) ) {
+	function wp_timezone() { return new DateTimeZone( 'Asia/Ho_Chi_Minh' ); }
+}
+use Saha\Core\Builder\Elements\Video as SahaVideo;
+use Saha\Core\Builder\Elements\Countdown as SahaCountdown;
+check(
+	'video: nhận YouTube (watch, youtu.be, shorts) → nocookie; Vimeo; mp4; link lạ → null',
+	array(
+		SahaVideo::parse( 'https://www.youtube.com/watch?v=dQw4w9WgXcQ&t=10' )['embed'] ?? null,
+		SahaVideo::parse( 'https://youtu.be/dQw4w9WgXcQ' )['id'] ?? null,
+		SahaVideo::parse( 'https://www.youtube.com/shorts/dQw4w9WgXcQ' )['provider'] ?? null,
+		SahaVideo::parse( 'https://vimeo.com/123456789' )['embed'] ?? null,
+		SahaVideo::parse( 'https://cdn.example.com/a.mp4' )['provider'] ?? null,
+		SahaVideo::parse( 'javascript:alert(1)//youtube.com/watch?v=dQw4w9WgXcQ' ),
+		SahaVideo::parse( 'https://evil.example/youtube.com/watch?v=dQw4w9WgXcQ' ),
+	),
+	array( 'https://www.youtube-nocookie.com/embed/dQw4w9WgXcQ?autoplay=1&rel=0', 'dQw4w9WgXcQ', 'youtube', 'https://player.vimeo.com/video/123456789?autoplay=1&dnt=1', 'file', null, null )
+);
+check( 'đếm ngược: chia ngày/giờ/phút/giây; không hiện ngày → dồn vào giờ', array( SahaCountdown::split( 2 * 86400 + 3 * 3600 + 4 * 60 + 5, true ), SahaCountdown::split( 86400 + 60, false ), SahaCountdown::split( -5, true ) ), array( array( 'd' => 2, 'h' => 3, 'm' => 4, 's' => 5 ), array( 'd' => 0, 'h' => 24, 'm' => 1, 's' => 0 ), array( 'd' => 0, 'h' => 0, 'm' => 0, 's' => 0 ) ) );
+check( 'đếm ngược: thời điểm sai định dạng → null', array( SahaCountdown::target( '31/12/2026' ), SahaCountdown::target( '2026-13-40 25:61' ), SahaCountdown::target( '' ) ), array( null, null, null ) );
+$saha_tabs = saha_bs( array( 'elements' => array( array( 'type' => 'section', 'children' => array( array( 'type' => 'tabs', 'children' => array(
+	array( 'type' => 'tab', 'props' => array( 'title' => 'Mô tả' ), 'children' => array( array( 'type' => 'heading', 'props' => array( 'text' => 'A' ) ) ) ),
+	array( 'type' => 'tab', 'props' => array( 'title' => '<b>Thông số</b>' ) ),
+) ) ) ) ) ) );
+$saha_tabs_html = ( new Renderer() )->document( $saha_tabs['document'], new RenderContext( 0, false, false ) );
+check(
+	'tabs: hợp lệ; ARIA tablist / tab / tabpanel; tab 2 ẩn sẵn; thẻ HTML trong tiêu đề bị bỏ',
+	array( $saha_tabs['errors'], substr_count( $saha_tabs_html, 'role="tab"' ), 1 === preg_match( '/id="saha-tp-[a-z0-9]+" hidden role="tabpanel"/', $saha_tabs_html ), false !== strpos( $saha_tabs_html, '>Thông số</button>' ), false === strpos( $saha_tabs_html, '<b>' ) ),
+	array( array(), 2, true, true, true )
+);
+$saha_tabs_ed = ( new Renderer() )->document( $saha_tabs['document'], new RenderContext( 0, true, false ) );
+check( 'tabs trong editor: không ẩn tab nào (sửa được trên canvas)', false === strpos( $saha_tabs_ed, ' hidden role="tabpanel"' ), true );
+check( 'tab chỉ đặt được trong tabs; ảnh đặt được trong thư viện ảnh / logo; element nội dung đặt được trong lưới và tab', array( count( saha_bs( array( 'elements' => array( array( 'type' => 'section', 'children' => array( array( 'type' => 'tab' ) ) ) ) ) )['errors'] ) > 0, saha_bs( array( 'elements' => array( array( 'type' => 'section', 'children' => array( array( 'type' => 'gallery', 'children' => array( array( 'type' => 'image' ) ) ), array( 'type' => 'grid', 'children' => array( array( 'type' => 'heading' ), array( 'type' => 'button' ) ) ) ) ) ) ) )['errors'] ), array( true, array() ) );
+check( 'thư viện ảnh / logo: element khác ảnh bị từ chối', count( saha_bs( array( 'elements' => array( array( 'type' => 'section', 'children' => array( array( 'type' => 'gallery', 'children' => array( array( 'type' => 'heading' ) ) ) ) ) ) ) )['errors'] ) > 0, true );
 
 echo "\n$pass passed, $fail failed\n";
 exit( $fail > 0 ? 1 : 0 );

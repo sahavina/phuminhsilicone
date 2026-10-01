@@ -37,6 +37,7 @@ final class Lead {
 			'landing_page' => __( 'Landing page', 'saha-core' ),
 			'contact'      => __( 'Form liên hệ', 'saha-core' ),
 			'quote'        => __( 'Yêu cầu báo giá', 'saha-core' ),
+			'newsletter'   => __( 'Đăng ký nhận tin', 'saha-core' ),
 		);
 	}
 
@@ -254,8 +255,9 @@ final class Lead {
 	private static function find_recent_duplicate( string $phone, string $source ): int {
 		global $wpdb;
 
-		// Lead từ báo giá được chống trùng ở tầng Quote rồi.
-		if ( 'quote' === $source ) {
+		// Lead từ báo giá được chống trùng ở tầng Quote rồi; không có số điện thoại (đăng ký nhận tin)
+		// thì không so theo số — chống trùng theo email ở subscribe().
+		if ( 'quote' === $source || '' === $phone ) {
 			return 0;
 		}
 
@@ -272,6 +274,54 @@ final class Lead {
 		);
 
 		return (int) $id;
+	}
+
+	/**
+	 * Đăng ký nhận tin (element Newsletter): một lead nguồn `newsletter` cho mỗi email —
+	 * email đã đăng ký → trả lại bản ghi cũ (duplicate).
+	 *
+	 * @param string $email      Email (chưa kiểm tra).
+	 * @param string $source_url Trang gửi.
+	 * @return array{id: int, duplicate: bool, error: string}
+	 */
+	public static function subscribe( string $email, string $source_url = '' ): array {
+		global $wpdb;
+
+		$email = sanitize_email( $email );
+
+		if ( '' === $email || ! is_email( $email ) || mb_strlen( $email ) > 191 ) {
+			return array(
+				'id'        => 0,
+				'duplicate' => false,
+				'error'     => __( 'Email không hợp lệ.', 'saha-core' ),
+			);
+		}
+
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- tên bảng nội bộ.
+		$existing = (int) $wpdb->get_var(
+			$wpdb->prepare( 'SELECT id FROM ' . self::table() . ' WHERE email = %s AND source = %s ORDER BY id DESC LIMIT 1', $email, 'newsletter' )
+		);
+
+		if ( $existing > 0 ) {
+			return array(
+				'id'        => $existing,
+				'duplicate' => true,
+				'error'     => '',
+			);
+		}
+
+		$created = self::create(
+			array(
+				'name'       => '',
+				'phone'      => '',
+				'email'      => $email,
+				'source'     => 'newsletter',
+				'source_url' => Quote::sanitize_source_url( $source_url ),
+				'message'    => __( 'Đăng ký nhận tin qua website.', 'saha-core' ),
+			)
+		);
+
+		return $created + array( 'error' => $created['id'] > 0 ? '' : __( 'Không lưu được, vui lòng thử lại.', 'saha-core' ) );
 	}
 
 	/**

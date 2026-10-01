@@ -25,7 +25,15 @@ return static function ( string $namespace ): void {
 			'methods'             => 'GET',
 			'permission_callback' => Api::public_permission( 'nonce', 20, MINUTE_IN_SECONDS ),
 			'callback'            => static function (): WP_REST_Response {
-				$response = Api::success( array( 'nonce' => wp_create_nonce( 'wp_rest' ) ) );
+				// `form`: nonce field `saha_nonce` cho form công khai (Security::PUBLIC_NONCE_ACTION). Gửi kèm
+				// body, KHÔNG kèm header X-WP-Nonce → request chạy như khách, khớp nonce này kể cả khi
+				// trình duyệt đang đăng nhập (nonce wp_rest của khách sẽ bị kiểm tra cookie từ chối).
+				$response = Api::success(
+					array(
+						'nonce' => wp_create_nonce( 'wp_rest' ),
+						'form'  => wp_create_nonce( \Saha\Core\Security::PUBLIC_NONCE_ACTION ),
+					)
+				);
 
 				foreach ( wp_get_nocache_headers() as $name => $value ) {
 					$response->header( $name, (string) $value );
