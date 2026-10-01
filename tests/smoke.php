@@ -760,5 +760,30 @@ $GLOBALS['__options'][ Swatches::OPTION ] = array( 'swatches' => array( 'pa_mau'
 check( 'swatch: đọc kiểu đã lưu; kiểu lạ → thả xuống', array( Swatches::type( 'pa_mau' ), Swatches::type( 'pa_x' ) ), array( 'color', 'select' ) );
 check( 'Theme Options: swatches bật; thanh dính, xem nhanh tắt mặc định', array( Saha\Core\ThemeOptions\Schema::groups()['shop']['fields']['swatches']['default'], Saha\Core\ThemeOptions\Schema::groups()['shop']['fields']['sticky_cart']['default'], Saha\Core\ThemeOptions\Schema::groups()['shop']['fields']['quick_view']['default'] ), array( true, false, false ) );
 
+echo "Trang danh mục kiểu cửa hàng (D5)\n";
+use Saha\Core\Filter as SahaFilter;
+$saha_bk = SahaFilter::buckets( array( 1200000, 2500000, 3100000, 5000000, 6150000, 6200000, 8000000, 12000000, 25890000 ) );
+check( 'khoảng giá: mốc tròn tăng dần, khoảng đầu "Dưới", khoảng cuối "Trên"', array( array_column( $saha_bk, 'value' ), $saha_bk[0]['min'], end( $saha_bk )['max'] ), array( array( '-3000000', '3000000-6000000', '6000000-8000000', '8000000-' ), 0, 0 ) );
+check( 'khoảng giá: ít hơn 2 mức giá → không có khoảng', array( SahaFilter::buckets( array() ), SahaFilter::buckets( array( 50000, 50000 ) ) ), array( array(), array() ) );
+check( 'khoảng giá: nhãn', array( SahaFilter::price_label( 0, 3000000 ), SahaFilter::price_label( 3000000, 6000000 ), SahaFilter::price_label( 10000000, 0 ) ), array( 'Dưới 3.000.000 đ', '3.000.000 đ – 6.000.000 đ', 'Trên 10.000.000 đ' ) );
+$saha_get = $_GET;
+$_GET     = array( 'saha_price' => '6000000-3000000' );
+$saha_p1  = SahaFilter::current();
+$_GET     = array( 'saha_price' => '-3000000' );
+$saha_p2  = SahaFilter::current();
+$_GET     = array( 'saha_price' => '1 OR 1=1' );
+$saha_p3  = SahaFilter::current();
+$_GET     = array( 'saha_price' => array( 'x' ) );
+$saha_p4  = SahaFilter::current();
+$_GET     = $saha_get;
+check( 'khoảng giá trên URL: đảo min/max, chỉ số, giá trị lạ bị bỏ', array( $saha_p1, $saha_p2, $saha_p3, $saha_p4 ), array( array( 'saha_price' => '3000000-6000000' ), array( 'saha_price' => '-3000000' ), array(), array() ) );
+$saha_padef = $saha_reg->get( 'product-archive' )->def()['controls'];
+$saha_atdef = $saha_reg->get( 'archive-title' )->def()['controls'];
+check( 'danh sách sản phẩm: bố cục mặc định giữ như cũ; tiêu đề danh sách mặc định chữ thường', array( $saha_padef['layout']['default'], $saha_atdef['style']['default'], $saha_atdef['badge']['default'] ), array( 'stack', 'plain', '' ) );
+check( 'danh sách sản phẩm: bố cục lạ bị từ chối', count( saha_bs( array( 'elements' => array( array( 'type' => 'section', 'children' => array( array( 'type' => 'product-archive', 'props' => array( 'layout' => 'evil' ) ) ) ) ) ) )['errors'] ) > 0, true );
+$saha_arch      = saha_bs( Saha\Core\Builder\StoreKit::archive() );
+$saha_arch_json = (string) json_encode( $saha_arch['document'] ? $saha_arch['document']->toArray() : array(), JSON_UNESCAPED_UNICODE );
+check( 'shop & danh mục kiểu cửa hàng hợp lệ: tiêu đề khung + cột lọc', array( $saha_arch['errors'], false !== strpos( $saha_arch_json, '"layout":"sidebar"' ), false !== strpos( $saha_arch_json, '"style":"card"' ) ), array( array(), true, true ) );
+
 echo "\n$pass passed, $fail failed\n";
 exit( $fail > 0 ? 1 : 0 );

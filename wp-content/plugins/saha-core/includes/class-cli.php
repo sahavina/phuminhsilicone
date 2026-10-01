@@ -165,7 +165,7 @@ final class Cli {
 			return;
 		}
 
-		\WP_CLI::success( sprintf( 'Header #%d, footer #%d, trang chủ #%d%s.', $result['header'], $result['footer'], $result['homepage'], $result['palette'] ? ', đã đổi bộ màu/font' : '' ) );
+		\WP_CLI::success( sprintf( 'Header #%d, footer #%d, shop & danh mục #%d, trang chủ #%d%s.', $result['header'], $result['footer'], $result['archive'], $result['homepage'], $result['palette'] ? ', đã đổi bộ màu/font' : '' ) );
 	}
 
 	/**

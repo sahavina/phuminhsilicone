@@ -159,6 +159,12 @@ Ví dụ: một template "Trang sản phẩm" cho tất cả, thêm một templa
 
 **Giao diện kiểu cửa hàng (một nút):** Trang → Tất cả trang → **Áp dụng giao diện kiểu cửa hàng** → xác nhận. Website có header 3 tầng, trang chủ 9 khối (hero, danh mục, sản phẩm có tab, ô quảng bá, vì sao chọn, giải pháp, thương hiệu, tin tức + đánh giá, hỏi đáp), footer 4 cột, màu navy + vàng đồng. Việc cần làm ngay sau đó: thay **đánh giá khách hàng mẫu** và **câu trả lời mẫu** trong hỏi đáp bằng nội dung thật, chọn ảnh hero (Slide), ảnh danh mục/thương hiệu. Muốn quay lại màu/font cũ: nhờ kỹ thuật chạy `wp saha starter-store --restore-options`.
 
+**Trang danh mục kiểu cửa hàng:** nút trên cũng tạo template **Shop & danh mục kiểu cửa hàng**. Muốn đổi template đang có mà không chạy lại cả bộ: SAHA → Templates → mở template Shop/danh mục trong builder →
+- element **Tiêu đề danh sách (động)** → Kiểu: **Khung + thẻ số sản phẩm**; ô **Nhãn thêm** (ví dụ “Giao hàng toàn quốc”, để trống = không hiện);
+- element **Danh sách sản phẩm (động)** → Bố cục: **Cột lọc bên trái**; bật/tắt **danh sách danh mục** và **khoảng giá**.
+
+Khoảng giá tự chia theo giá thật của sản phẩm trong danh mục (ví dụ “Dưới 3.000.000 đ · 3–6 triệu · …”) và **ẩn ở chế độ catalogue** (không lộ giá). Trên điện thoại cột lọc gập vào nút **Danh mục & bộ lọc**.
+
 
 Tạo nhanh trang chủ mẫu 14 khối: **Trang → Tất cả trang → Tạo trang chủ mẫu (SAHA Builder)**. Trang được đặt làm trang chủ và mở ngay trong builder để sửa chữ, chọn ảnh.
 

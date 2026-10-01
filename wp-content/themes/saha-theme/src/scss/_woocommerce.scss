@@ -709,6 +709,20 @@
 		text-shadow: 0 1px 1px rgb(0 0 0 / 25%);
 	}
 
+	// Thương hiệu dạng nhãn trên tên sản phẩm.
+	.saha-product-card__brand {
+		display: inline-block;
+		margin: 2px 0 6px;
+		padding: 3px 10px;
+		border-radius: 6px;
+		background: var(--saha-surface);
+		color: var(--saha-heading);
+		font-size: 12px;
+		font-weight: 600;
+		letter-spacing: 0;
+		text-transform: none;
+	}
+
 	.saha-card__specs {
 		margin: 8px 0 0;
 		padding: 0 0 0 16px;

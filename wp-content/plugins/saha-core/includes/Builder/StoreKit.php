@@ -57,7 +57,7 @@ final class StoreKit {
 			printf(
 				'<p><a class="button" href="%1$s" onclick="return confirm(%2$s);">%3$s</a></p>',
 				esc_url( wp_nonce_url( admin_url( 'admin-post.php?action=' . self::ACTION ), self::ACTION ) ),
-				esc_attr( (string) wp_json_encode( __( 'Tạo trang chủ, header, footer kiểu cửa hàng và đổi bộ màu/font trong Theme Options? Theme Options hiện tại được lưu lại để khôi phục.', 'saha-core' ) ) ),
+				esc_attr( (string) wp_json_encode( __( 'Tạo trang chủ, header, footer, trang danh mục kiểu cửa hàng và đổi bộ màu/font trong Theme Options? Theme Options hiện tại được lưu lại để khôi phục.', 'saha-core' ) ) ),
 				esc_html__( 'Áp dụng giao diện kiểu cửa hàng', 'saha-core' )
 			);
 		}
@@ -90,7 +90,7 @@ final class StoreKit {
 	 *
 	 * @param bool $front   Đặt trang mới làm trang chủ.
 	 * @param bool $palette Đổi Theme Options sang bộ màu/font/thẻ kiểu cửa hàng.
-	 * @return array{header: int, footer: int, homepage: int, palette: bool}|\WP_Error
+	 * @return array{header: int, footer: int, archive: int, homepage: int, palette: bool}|\WP_Error
 	 */
 	public static function install( bool $front, bool $palette ) {
 		$header = TemplateDefaults::create( 'header', __( 'Header kiểu cửa hàng', 'saha-core' ), TemplateDefaults::headerStore() );
@@ -105,8 +105,15 @@ final class StoreKit {
 			return $footer;
 		}
 
+		$archive = TemplateDefaults::create( 'product_archive', __( 'Shop & danh mục kiểu cửa hàng', 'saha-core' ), self::archive() );
+
+		if ( is_wp_error( $archive ) ) {
+			return $archive;
+		}
+
 		Templates::activate( (int) $header );
 		Templates::activate( (int) $footer );
+		Templates::activate( (int) $archive );
 
 		$page = wp_insert_post(
 			array(
@@ -141,6 +148,7 @@ final class StoreKit {
 		return array(
 			'header'   => (int) $header,
 			'footer'   => (int) $footer,
+			'archive'  => (int) $archive,
 			'homepage' => (int) $page,
 			'palette'  => $palette,
 		);
@@ -356,6 +364,53 @@ final class StoreKit {
 		$page = get_page_by_path( $slug );
 
 		return $page instanceof \WP_Post ? (string) get_permalink( $page ) : '';
+	}
+
+	/**
+	 * Shop / danh mục kiểu cửa hàng (D5): tiêu đề trong khung kèm số sản phẩm + nhãn giao hàng,
+	 * cột trái danh mục + khoảng giá + thương hiệu/ứng dụng/tình trạng, thanh "Đang hiện · Sắp xếp".
+	 *
+	 * @return array<string, mixed>
+	 */
+	public static function archive(): array {
+		return array(
+			'version'  => 1,
+			'elements' => array(
+				array(
+					'type'     => 'section',
+					'props'    => array(),
+					'advanced' => array(
+						'padding' => array(
+							'desktop' => array(
+								'top'    => '24px',
+								'bottom' => '56px',
+							),
+							'mobile'  => array(
+								'top'    => '16px',
+								'bottom' => '36px',
+							),
+						),
+					),
+					'children' => array(
+						array(
+							'type'  => 'breadcrumb',
+							'props' => array(),
+						),
+						array(
+							'type'  => 'archive-title',
+							'props' => array(
+								'style' => 'card',
+								'badge' => __( 'Giao hàng toàn quốc', 'saha-core' ),
+							),
+						),
+						array(
+							'type'  => 'product-archive',
+							'props' => array( 'layout' => 'sidebar' ),
+						),
+					),
+				),
+			),
+		);
 	}
 
 	/**

@@ -1685,3 +1685,472 @@ html.saha-hb-lock {
 	outline: 2px dashed var(--saha-border, #e3e6ea);
 	outline-offset: 4px;
 }
+
+/* ===== Trang danh mục kiểu cửa hàng (D5) ===== */
+
+/* Tiêu đề danh sách kiểu Khung */
+.saha-archive-title--card {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 16px 24px;
+	align-items: center;
+	justify-content: space-between;
+	padding: clamp(20px, 3vw, 32px);
+	border: 1px solid var(--saha-border, #e3e6ea);
+	border-radius: 16px;
+	background: var(--saha-background, #fff);
+	box-shadow: 0 1px 2px rgb(16 24 40 / 4%);
+}
+
+.saha-archive-title--card .saha-archive-title__main {
+	flex: 1 1 360px;
+	min-width: 0;
+}
+
+.saha-archive-title--card .saha-archive-title__text {
+	margin: 0;
+	color: var(--saha-heading, #111827);
+	font-size: clamp(24px, 3.2vw, 40px);
+	font-weight: 500;
+	letter-spacing: 0.06em;
+	line-height: 1.2;
+	text-transform: uppercase;
+}
+
+.saha-archive-title--card .saha-archive-title__desc {
+	margin-top: 8px;
+	font-size: 15px;
+}
+
+.saha-archive-title--card .saha-archive-title__desc > :last-child {
+	margin-bottom: 0;
+}
+
+.saha-archive-title__chips {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 12px;
+}
+
+.saha-archive-title__chip {
+	display: inline-flex;
+	gap: 8px;
+	align-items: center;
+	padding: 10px 18px;
+	border-radius: 999px;
+	background: var(--saha-surface, #f6f7f9);
+	color: var(--saha-heading, #111827);
+	font-size: 15px;
+	font-weight: 600;
+	white-space: nowrap;
+}
+
+.saha-archive-title__chip .saha-icon {
+	width: 18px;
+	height: 18px;
+}
+
+.saha-archive-title__chip--accent {
+	background: color-mix(in srgb, var(--saha-accent, #f5a623) 16%, #fff);
+	color: color-mix(in srgb, var(--saha-accent, #f5a623) 45%, #1f2937);
+}
+
+/* Bố cục: cột lọc trái + danh sách */
+.saha-shop__layout {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr);
+	gap: 24px;
+	align-items: start;
+}
+
+@media (min-width: 1024px) {
+	.saha-shop__layout {
+		grid-template-columns: 280px minmax(0, 1fr);
+	}
+}
+
+.saha-shop__panel-body {
+	display: grid;
+	gap: 16px;
+}
+
+.saha-shop__box,
+.saha-shop .saha-filter--sidebar .saha-shop__box {
+	min-width: 0;
+	margin: 0;
+	padding: 18px 16px;
+	border: 1px solid var(--saha-border, #e3e6ea);
+	border-radius: 16px;
+	background: var(--saha-background, #fff);
+	box-shadow: 0 1px 2px rgb(16 24 40 / 4%);
+}
+
+.saha-shop__box-title,
+.saha-shop .saha-filter--sidebar .saha-shop__box-title {
+	float: left;
+	width: 100%;
+	margin: 0 0 12px;
+	padding: 0 4px;
+	color: var(--saha-heading, #111827);
+	font-size: 16px;
+	font-weight: 600;
+	letter-spacing: 0;
+	text-transform: none;
+}
+
+.saha-shop__box-title + * {
+	clear: both;
+}
+
+/* Có cột lọc thì vùng danh sách hẹp hơn: lưới 4–6 cột tự xuống 3 cột khi vùng < 1000px
+ * (chỉ desktop; tablet/mobile theo Theme Options như cũ). */
+.saha-shop__main {
+	container-type: inline-size;
+}
+
+@media (min-width: 1024px) {
+	@container (max-width: 999px) {
+		.saha-shop .saha-shop__main ul.products:is(.columns-4, .columns-5, .columns-6) {
+			--saha-shop-cols: 3;
+		}
+	}
+}
+
+/* Danh mục */
+.saha-shop-cats__list,
+.saha-shop-cats__sub {
+	display: grid;
+	gap: 4px;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.saha-shop-cats__sub {
+	margin: 4px 0 4px 18px;
+}
+
+.saha-shop-cats__item > a {
+	display: flex;
+	gap: 8px;
+	align-items: center;
+	min-height: 44px;
+	padding: 8px 12px;
+	border-radius: 10px;
+	color: var(--saha-text, #1f2328);
+	font-size: 15px;
+	text-decoration: none;
+	transition: background-color 0.15s ease;
+}
+
+.saha-shop-cats__item > a::before {
+	flex: 0 0 auto;
+	width: 6px;
+	height: 6px;
+	border-radius: 50%;
+	background: var(--saha-border, #e3e6ea);
+	content: "";
+}
+
+.saha-shop-cats__item > a:hover {
+	background: var(--saha-surface, #f6f7f9);
+}
+
+.saha-shop-cats__item.is-current > a {
+	background: var(--saha-surface, #f6f7f9);
+	color: var(--saha-heading, #111827);
+	font-weight: 600;
+}
+
+.saha-shop-cats__item.is-current > a::before {
+	background: var(--saha-heading, #111827);
+}
+
+.saha-shop-cats__item.is-open > a {
+	color: var(--saha-heading, #111827);
+	font-weight: 600;
+}
+
+.saha-shop-cats__name {
+	flex: 1 1 auto;
+	min-width: 0;
+}
+
+.saha-shop-cats__count {
+	color: var(--saha-muted, #5f6b7a);
+	font-size: 13px;
+	font-weight: 400;
+}
+
+/* Thanh trên danh sách */
+.saha-shop__toolbar {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 12px 24px;
+	align-items: center;
+	justify-content: space-between;
+	margin-bottom: 20px;
+	padding: 14px 20px;
+	border: 1px solid var(--saha-border, #e3e6ea);
+	border-radius: 16px;
+	background: var(--saha-background, #fff);
+	box-shadow: 0 1px 2px rgb(16 24 40 / 4%);
+}
+
+.saha-shop__count {
+	margin: 0;
+	color: var(--saha-muted, #5f6b7a);
+	font-size: 15px;
+}
+
+.saha-shop__count strong {
+	color: var(--saha-heading, #111827);
+}
+
+.saha-shop__sort {
+	display: flex;
+	gap: 12px;
+	align-items: center;
+}
+
+.saha-shop__sort-label {
+	color: var(--saha-muted, #5f6b7a);
+	font-size: 15px;
+	white-space: nowrap;
+}
+
+.saha-shop .woocommerce-ordering {
+	float: none;
+	margin: 0;
+}
+
+.saha-shop .woocommerce-ordering select {
+	min-width: 200px;
+	min-height: 44px;
+	padding: 8px 40px 8px 14px;
+	border: 1px solid var(--saha-border, #e3e6ea);
+	border-radius: 10px;
+	background-color: var(--saha-background, #fff);
+	color: var(--saha-heading, #111827);
+	font: inherit;
+	font-size: 15px;
+}
+
+/* Điều kiện đang lọc */
+.saha-shop__active {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px 12px;
+	align-items: center;
+	margin: -4px 0 20px;
+	font-size: 14px;
+}
+
+.saha-shop__active ul {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.saha-shop__active-label {
+	color: var(--saha-muted, #5f6b7a);
+}
+
+.saha-shop__chip {
+	display: inline-flex;
+	gap: 6px;
+	align-items: center;
+	min-height: 32px;
+	padding: 4px 10px 4px 14px;
+	border: 1px solid var(--saha-border, #e3e6ea);
+	border-radius: 999px;
+	background: var(--saha-surface, #f6f7f9);
+	color: var(--saha-heading, #111827);
+	text-decoration: none;
+}
+
+.saha-shop__chip:hover {
+	border-color: var(--saha-heading, #111827);
+}
+
+.saha-shop__chip .saha-icon {
+	width: 14px;
+	height: 14px;
+}
+
+.saha-shop__clear {
+	color: var(--saha-muted, #5f6b7a);
+	text-decoration: underline;
+}
+
+/* Nút mở bộ lọc (mobile/tablet) + ngăn trượt */
+.saha-shop__toggle,
+.saha-shop__panel-head,
+.saha-shop__panel-foot {
+	display: none;
+}
+
+@media (max-width: 1023px) {
+	.saha-shop__toggle {
+		display: inline-flex;
+		gap: 8px;
+		align-items: center;
+		min-height: 44px;
+		margin-bottom: 16px;
+		padding: 8px 16px;
+		border: 1px solid var(--saha-border, #e3e6ea);
+		border-radius: 999px;
+		background: var(--saha-background, #fff);
+		color: var(--saha-heading, #111827);
+		font: inherit;
+		font-size: 15px;
+		font-weight: 600;
+		cursor: pointer;
+	}
+
+	.saha-shop__toggle-count {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		min-width: 22px;
+		height: 22px;
+		padding: 0 6px;
+		border-radius: 999px;
+		background: var(--saha-primary, #0b5cab);
+		color: #fff;
+		font-size: 12px;
+	}
+
+	.saha-shop__toggle-count[hidden] {
+		display: none;
+	}
+
+	.saha-shop__sidebar {
+		position: fixed;
+		inset: 0 auto 0 0;
+		z-index: 100000;
+		display: flex;
+		flex-direction: column;
+		width: min(360px, 88vw);
+		background: var(--saha-surface, #f6f7f9);
+		box-shadow: 0 0 40px rgb(15 23 42 / 25%);
+		visibility: hidden;
+		transform: translateX(-100%);
+		transition: transform 0.25s ease, visibility 0s linear 0.25s;
+	}
+
+	.saha-shop.is-open .saha-shop__sidebar {
+		visibility: visible;
+		transform: none;
+		transition: transform 0.25s ease;
+	}
+
+	/* Khung section (z-index: 1) tạo stacking context → ngăn trượt nằm dưới header dính và thanh
+	 * liên hệ của theme. Khi ngăn mở thì bỏ z-index đó để ngăn nổi lên trên cùng. */
+	.saha-section__inner:has(.saha-shop.is-open),
+	.saha-section:has(.saha-shop.is-open) {
+		z-index: auto;
+	}
+
+	.saha-shop.is-open::before {
+		position: fixed;
+		inset: 0;
+		z-index: 99999;
+		background: rgb(15 23 42 / 45%);
+		content: "";
+	}
+
+	.saha-shop__panel-head {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		padding: 12px 12px 12px 20px;
+		border-bottom: 1px solid var(--saha-border, #e3e6ea);
+		background: var(--saha-background, #fff);
+	}
+
+	.saha-shop__panel-title {
+		color: var(--saha-heading, #111827);
+		font-weight: 700;
+	}
+
+	.saha-shop__close {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		width: 44px;
+		height: 44px;
+		padding: 0;
+		border: 0;
+		border-radius: 50%;
+		background: transparent;
+		color: var(--saha-heading, #111827);
+		cursor: pointer;
+	}
+
+	.saha-shop__panel-body {
+		flex: 1 1 auto;
+		padding: 16px;
+		overflow-y: auto;
+		overscroll-behavior: contain;
+	}
+
+	.saha-shop__panel-foot {
+		display: block;
+		padding: 12px 16px;
+		border-top: 1px solid var(--saha-border, #e3e6ea);
+		background: var(--saha-background, #fff);
+	}
+
+	.saha-shop__done {
+		width: 100%;
+		min-height: 48px;
+		border: 0;
+		border-radius: 10px;
+		background: var(--saha-primary, #0b5cab);
+		color: #fff;
+		font: inherit;
+		font-weight: 600;
+		cursor: pointer;
+	}
+}
+
+@media (max-width: 767px) {
+	.saha-shop__toolbar {
+		padding: 12px 14px;
+	}
+
+	.saha-archive-title__chips {
+		gap: 8px;
+	}
+
+	.saha-archive-title__chip {
+		padding: 8px 12px;
+		font-size: 14px;
+	}
+
+	.saha-shop__sort {
+		flex: 1 1 100%;
+	}
+
+	.saha-shop .woocommerce-ordering,
+	.saha-shop .woocommerce-ordering select {
+		flex: 1 1 auto;
+		width: 100%;
+		min-width: 0;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.saha-shop__sidebar,
+	.saha-shop.is-open .saha-shop__sidebar {
+		transition: none;
+	}
+}
+
+html.saha-shop-locked {
+	overflow: hidden;
+}

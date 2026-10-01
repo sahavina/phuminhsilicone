@@ -1,5 +1,5 @@
 /**
- * Element builder cần JS (SCC D1): Slider.
+ * Element builder cần JS (SCC D1): Slider. D5: ngăn lọc của trang danh mục trên mobile.
  *
  * Slider là dải cuộn ngang CSS scroll-snap (không JS vẫn vuốt được). Script thêm:
  * nút trước/sau, chấm điều hướng, nhãn "n / N" cho từng slide, tự chạy — dừng khi
@@ -250,10 +250,134 @@
 		} );
 	}
 
+	/**
+	 * Trang danh mục kiểu cửa hàng: dưới 1024px cột lọc là ngăn trượt mở bằng nút "Danh mục & bộ lọc"
+	 * (aria-expanded, focus vào ngăn và giữ trong ngăn, Esc / bấm nền / "Xem kết quả" để đóng).
+	 * Số trên nút = số điều kiện đang chọn, cập nhật sau khi lọc bằng AJAX.
+	 */
+	function initShop( root ) {
+		var toggle = root.querySelector( '[data-saha-shop-toggle]' );
+		var panel = root.querySelector( '[data-saha-shop-panel]' );
+		var badge = root.querySelector( '[data-saha-shop-count]' );
+		var desktop = window.matchMedia ? window.matchMedia( '(min-width: 1024px)' ) : null;
+
+		if ( ! toggle || ! panel || root.getAttribute( 'data-saha-ready' ) ) {
+			return;
+		}
+
+		root.setAttribute( 'data-saha-ready', '1' );
+
+		function isOpen() {
+			return root.classList.contains( 'is-open' );
+		}
+
+		function setOpen( open ) {
+			root.classList.toggle( 'is-open', open );
+			toggle.setAttribute( 'aria-expanded', open ? 'true' : 'false' );
+			document.documentElement.classList.toggle( 'saha-shop-locked', open );
+
+			if ( open ) {
+				panel.setAttribute( 'role', 'dialog' );
+				panel.setAttribute( 'aria-modal', 'true' );
+				var close = panel.querySelector( '[data-saha-shop-close]' );
+
+				if ( close ) {
+					close.focus();
+				}
+			} else {
+				panel.removeAttribute( 'role' );
+				panel.removeAttribute( 'aria-modal' );
+			}
+		}
+
+		function focusables() {
+			return Array.prototype.filter.call(
+				panel.querySelectorAll( 'a[href], button:not([disabled]), input:not([disabled]), select, [tabindex]:not([tabindex="-1"])' ),
+				function ( el ) {
+					return el.offsetParent !== null;
+				}
+			);
+		}
+
+		toggle.addEventListener( 'click', function () {
+			setOpen( ! isOpen() );
+		} );
+
+		Array.prototype.forEach.call( panel.querySelectorAll( '[data-saha-shop-close]' ), function ( btn ) {
+			btn.addEventListener( 'click', function () {
+				setOpen( false );
+				toggle.focus();
+			} );
+		} );
+
+		// Nền tối là ::before của root → bấm vào nền thì target là chính root.
+		root.addEventListener( 'click', function ( event ) {
+			if ( isOpen() && event.target === root ) {
+				setOpen( false );
+				toggle.focus();
+			}
+		} );
+
+		root.addEventListener( 'keydown', function ( event ) {
+			if ( ! isOpen() ) {
+				return;
+			}
+
+			if ( 'Escape' === event.key ) {
+				setOpen( false );
+				toggle.focus();
+				return;
+			}
+
+			if ( 'Tab' === event.key ) {
+				var items = focusables();
+
+				if ( ! items.length ) {
+					return;
+				}
+
+				var first = items[ 0 ];
+				var last = items[ items.length - 1 ];
+
+				if ( event.shiftKey && document.activeElement === first ) {
+					event.preventDefault();
+					last.focus();
+				} else if ( ! event.shiftKey && document.activeElement === last ) {
+					event.preventDefault();
+					first.focus();
+				}
+			}
+		} );
+
+		if ( desktop && desktop.addEventListener ) {
+			desktop.addEventListener( 'change', function ( event ) {
+				if ( event.matches && isOpen() ) {
+					setOpen( false );
+				}
+			} );
+		}
+
+		document.addEventListener( 'saha:filter:updated', function () {
+			var form = panel.querySelector( 'form' );
+
+			if ( ! badge || ! form ) {
+				return;
+			}
+
+			var count = Array.prototype.filter.call( form.querySelectorAll( 'input:checked' ), function ( input ) {
+				return '' !== input.value;
+			} ).length;
+
+			badge.textContent = String( count );
+			badge.hidden = 0 === count;
+		} );
+	}
+
 	function initAll() {
 		Array.prototype.forEach.call( document.querySelectorAll( '[data-saha-slider]' ), init );
 		Array.prototype.forEach.call( document.querySelectorAll( '[data-saha-catmenu]' ), initCatMenu );
 		Array.prototype.forEach.call( document.querySelectorAll( '[data-saha-tabs]' ), initTabs );
+		Array.prototype.forEach.call( document.querySelectorAll( '[data-saha-shop]' ), initShop );
 	}
 
 	if ( 'loading' === document.readyState ) {

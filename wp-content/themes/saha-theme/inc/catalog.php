@@ -333,6 +333,30 @@ add_action(
 	15
 );
 
+// Cột lọc bên trái (element "Danh sách sản phẩm" bố cục Cột lọc của saha-core).
+add_action(
+	'saha_product_archive_sidebar',
+	static function ( $args ): void {
+		$args = (array) $args;
+		$term = $args['term'] ?? null;
+
+		if ( ! apply_filters( 'saha_theme_show_archive_filter', true ) ) {
+			return;
+		}
+
+		wp_enqueue_script( 'saha-catalog-product-filter' );
+		saha_theme_part(
+			'common/filter',
+			array(
+				'layout'       => 'sidebar',
+				'price_ranges' => ! empty( $args['price'] ) && class_exists( 'Saha\Core\Filter' ) && ! saha_theme_catalogue_mode()
+					? Saha\Core\Filter::price_ranges( $term instanceof WP_Term ? $term : null )
+					: array(),
+			)
+		);
+	}
+);
+
 add_action(
 	'woocommerce_no_products_found',
 	static function (): void {

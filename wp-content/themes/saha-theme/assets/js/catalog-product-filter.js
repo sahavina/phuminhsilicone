@@ -127,6 +127,7 @@
 			}
 
 			target.innerHTML = fresh.innerHTML;
+			syncForm(form, doc);
 
 			if (push && window.history && window.history.pushState) {
 				window.history.pushState({ sahaFilter: true }, '', url);
@@ -149,6 +150,49 @@
 		} finally {
 			setLoading(form, false);
 		}
+	}
+
+	/**
+	 * Đồng bộ ô đã chọn của form theo trang vừa tải (khi bỏ lọc bằng chip, sắp xếp, quay lại…).
+	 *
+	 * @param {HTMLFormElement} form Form.
+	 * @param {Document} doc Trang vừa tải.
+	 */
+	function syncForm(form, doc) {
+		var fresh = doc.querySelector('[data-saha-filter]');
+
+		if (!fresh) {
+			return;
+		}
+
+		form.querySelectorAll('input[type="checkbox"], input[type="radio"]').forEach(function (input) {
+			var match = Array.prototype.find.call(fresh.querySelectorAll('input'), function (other) {
+				return other.name === input.name && other.value === input.value;
+			});
+
+			input.checked = !!(match && match.checked);
+		});
+	}
+
+	/**
+	 * URL sắp xếp: giữ điều kiện lọc (field ẩn của WooCommerce), bỏ phân trang.
+	 *
+	 * @param {HTMLFormElement} ordering Form sắp xếp của WooCommerce.
+	 * @returns {string}
+	 */
+	function orderingUrl(ordering) {
+		var base = window.location.pathname.replace(/\/page\/\d+\/?$/, '/');
+		var params = new URLSearchParams();
+
+		new FormData(ordering).forEach(function (value, key) {
+			if (key !== 'paged' && String(value).trim() !== '') {
+				params.append(key, value);
+			}
+		});
+
+		var query = params.toString();
+
+		return window.location.origin + base + (query ? '?' + query : '');
 	}
 
 	/**
@@ -187,9 +231,28 @@
 			});
 		}
 
-		// Phân trang trong vùng kết quả cũng đi qua AJAX.
+		// Sắp xếp trong vùng kết quả: AJAX thay cho submit của WooCommerce (bắt ở pha capture,
+		// trước handler jQuery gắn trên form).
+		document.addEventListener(
+			'change',
+			function (event) {
+				var select = event.target;
+				var ordering = select && select.closest ? select.closest('.woocommerce-ordering') : null;
+				var results = findResults(document);
+
+				if (!ordering || !results || !results.contains(ordering)) {
+					return;
+				}
+
+				event.stopPropagation();
+				load(form, orderingUrl(ordering), true);
+			},
+			true
+		);
+
+		// Phân trang, bỏ một điều kiện lọc, "Xoá tất cả" trong vùng kết quả cũng đi qua AJAX.
 		document.addEventListener('click', function (event) {
-			var link = event.target.closest('.woocommerce-pagination a, .page-numbers a');
+			var link = event.target.closest('.woocommerce-pagination a, .page-numbers a, .saha-shop__chip, .saha-shop__clear');
 
 			if (!link || !findResults(document) || !findResults(document).contains(link)) {
 				return;

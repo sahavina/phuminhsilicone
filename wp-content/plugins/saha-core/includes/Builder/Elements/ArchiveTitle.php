@@ -10,6 +10,7 @@ declare( strict_types=1 );
 namespace Saha\Core\Builder\Elements;
 
 use Saha\Core\Builder\CssRules;
+use Saha\Core\Builder\Icons;
 use Saha\Core\Builder\RenderContext;
 use Saha\Core\Builder\Schema\Node;
 
@@ -17,6 +18,9 @@ defined( 'ABSPATH' ) || exit;
 
 /**
  * ArchiveTitle — H1 của trang danh sách; tuỳ chọn in mô tả term bên dưới.
+ *
+ * Kiểu "Khung" (trang sản phẩm kiểu cửa hàng): tiêu đề + mô tả bên trái, bên phải thẻ
+ * "N sản phẩm" (số thật của danh mục) và một nhãn tuỳ chọn (ví dụ "Giao hàng toàn quốc").
  */
 final class ArchiveTitle extends DynamicElement {
 
@@ -47,6 +51,35 @@ final class ArchiveTitle extends DynamicElement {
 						'label'   => __( 'Hiện mô tả danh mục', 'saha-core' ),
 						'section' => 'content',
 						'default' => true,
+					),
+					'style'           => array(
+						'type'    => 'select',
+						'label'   => __( 'Kiểu', 'saha-core' ),
+						'section' => 'content',
+						'default' => 'plain',
+						'options' => array(
+							'plain' => __( 'Chữ thường', 'saha-core' ),
+							'card'  => __( 'Khung + thẻ số sản phẩm (kiểu cửa hàng)', 'saha-core' ),
+						),
+					),
+					'showCount'       => array(
+						'type'    => 'toggle',
+						'label'   => __( 'Kiểu Khung: thẻ "N sản phẩm"', 'saha-core' ),
+						'section' => 'content',
+						'default' => true,
+					),
+					'badge'           => array(
+						'type'      => 'text',
+						'label'     => __( 'Kiểu Khung: nhãn thêm (để trống = không hiện)', 'saha-core' ),
+						'section'   => 'content',
+						'default'   => '',
+						'maxLength' => 60,
+					),
+					'badgeIcon'       => array(
+						'type'    => 'icon',
+						'label'   => __( 'Icon của nhãn', 'saha-core' ),
+						'section' => 'content',
+						'default' => 'truck',
 					),
 					'align'           => array(
 						'type'       => 'align',
@@ -116,10 +149,76 @@ final class ArchiveTitle extends DynamicElement {
 			return '';
 		}
 
+		if ( 'card' === $this->prop( $node, 'style' ) ) {
+			return $this->renderCard( $node, $ctx, $tag, $title, $description );
+		}
+
 		return '<div' . $this->rootAttributes( $node, $ctx, array( 'saha-dynamic', 'saha-archive-title' ) ) . '>'
 			. '<' . $tag . ' class="saha-heading saha-archive-title__text">' . esc_html( $title ) . '</' . $tag . '>'
 			. ( '' !== trim( $description ) ? '<div class="saha-archive-title__desc saha-prose">' . $description . '</div>' : '' )
 			. '</div>';
+	}
+
+	/**
+	 * Kiểu Khung.
+	 *
+	 * @param Node          $node        Node.
+	 * @param RenderContext $ctx         Ngữ cảnh.
+	 * @param string        $tag         h1 | h2.
+	 * @param string        $title       Tiêu đề.
+	 * @param string        $description Mô tả (HTML đã lọc).
+	 */
+	private function renderCard( Node $node, RenderContext $ctx, string $tag, string $title, string $description ): string {
+		$chips = '';
+		$count = $this->prop( $node, 'showCount' ) ? self::productCount( $ctx ) : null;
+
+		if ( null !== $count ) {
+			$chips .= '<span class="saha-archive-title__chip">' . Icons::svg( 'layers' )
+				/* translators: %s: số sản phẩm */
+				. esc_html( sprintf( _n( '%s sản phẩm', '%s sản phẩm', $count, 'saha-core' ), number_format_i18n( $count ) ) ) . '</span>';
+		}
+
+		$badge = trim( (string) $this->prop( $node, 'badge' ) );
+
+		if ( '' !== $badge ) {
+			$chips .= '<span class="saha-archive-title__chip saha-archive-title__chip--accent">' . Icons::svg( (string) $this->prop( $node, 'badgeIcon' ) ) . esc_html( $badge ) . '</span>';
+		}
+
+		return '<div' . $this->rootAttributes( $node, $ctx, array( 'saha-dynamic', 'saha-archive-title', 'saha-archive-title--card' ) ) . '>'
+			. '<div class="saha-archive-title__main">'
+			. '<' . $tag . ' class="saha-heading saha-archive-title__text">' . esc_html( $title ) . '</' . $tag . '>'
+			. ( '' !== trim( $description ) ? '<div class="saha-archive-title__desc saha-prose">' . $description . '</div>' : '' )
+			. '</div>'
+			. ( '' !== $chips ? '<div class="saha-archive-title__chips">' . $chips . '</div>' : '' )
+			. '</div>';
+	}
+
+	/**
+	 * Số sản phẩm của trang đang xem: danh mục/thương hiệu (gồm danh mục con), shop, kết quả tìm kiếm.
+	 * Không phải danh sách sản phẩm → null (không hiện thẻ).
+	 *
+	 * @param RenderContext $ctx Ngữ cảnh.
+	 */
+	private static function productCount( RenderContext $ctx ): ?int {
+		if ( $ctx->editor ) {
+			return 12;
+		}
+
+		$object = get_queried_object();
+
+		if ( $object instanceof \WP_Term && function_exists( 'is_product_taxonomy' ) && is_product_taxonomy() ) {
+			return ProductArchive::termCount( $object );
+		}
+
+		if ( function_exists( 'is_shop' ) && is_shop() && ! is_search() ) {
+			return (int) ( wp_count_posts( 'product' )->publish ?? 0 );
+		}
+
+		if ( is_search() && 'product' === get_query_var( 'post_type' ) ) {
+			return (int) $GLOBALS['wp_query']->found_posts;
+		}
+
+		return null;
 	}
 
 	/**
