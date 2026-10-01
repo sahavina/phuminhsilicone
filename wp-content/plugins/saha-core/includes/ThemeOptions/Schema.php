@@ -24,11 +24,11 @@ defined( 'ABSPATH' ) || exit;
 final class Schema {
 
 	/**
-	 * Font stack hệ thống — không tải font ngoài (hiệu năng, riêng tư).
-	 * Mọi stack đều có font hỗ trợ đủ dấu tiếng Việt (Segoe UI, Roboto, Arial, Times New Roman).
+	 * Font: stack hệ thống (không tải gì) + font web Google Fonts có đủ dấu tiếng Việt
+	 * (khoá `google` = tên họ font; chỉ tải khi được chọn ở Theme Options — WebFonts).
 	 * Không dùng Georgia: thiếu glyph dựng sẵn (ế, ộ…) nên dấu bị tách rời.
 	 *
-	 * @return array<string, array{label: string, stack: string}>
+	 * @return array<string, array{label: string, stack: string, google?: string}>
 	 */
 	public static function fontStacks(): array {
 		$stacks = array(
@@ -49,6 +49,25 @@ final class Schema {
 				'stack' => 'ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace',
 			),
 		);
+
+		$fallback = ', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif';
+
+		foreach ( array(
+			'be-vietnam-pro' => 'Be Vietnam Pro',
+			'montserrat'     => 'Montserrat',
+			'inter'          => 'Inter',
+			'roboto'         => 'Roboto',
+			'nunito'         => 'Nunito',
+			'open-sans'      => 'Open Sans',
+			'lexend'         => 'Lexend',
+		) as $key => $family ) {
+			$stacks[ $key ] = array(
+				/* translators: %s: tên font */
+				'label'  => sprintf( __( '%s (Google Fonts)', 'saha-core' ), $family ),
+				'stack'  => '"' . $family . '"' . $fallback,
+				'google' => $family,
+			);
+		}
 
 		/**
 		 * Thêm font stack (ví dụ font tự host đã khai báo @font-face ở theme con).
@@ -167,6 +186,8 @@ final class Schema {
 					'heading'    => array( 'type' => 'color', 'label' => __( 'Tiêu đề', 'saha-core' ), 'default' => '#111827', 'cssVar' => '--saha-heading' ),
 					'border'     => array( 'type' => 'color', 'label' => __( 'Viền', 'saha-core' ), 'default' => '#e3e6ea', 'cssVar' => '--saha-border' ),
 					'background' => array( 'type' => 'color', 'label' => __( 'Nền', 'saha-core' ), 'default' => '#ffffff', 'cssVar' => '--saha-background' ),
+					'surface'    => array( 'type' => 'color', 'label' => __( 'Nền phụ (khối xen kẽ, thẻ)', 'saha-core' ), 'default' => '#f6f7f9', 'cssVar' => '--saha-surface' ),
+					'muted'      => array( 'type' => 'color', 'label' => __( 'Chữ phụ (mô tả, ngày tháng)', 'saha-core' ), 'default' => '#5f6b7a', 'cssVar' => '--saha-muted' ),
 				),
 			),
 			'typography' => array(

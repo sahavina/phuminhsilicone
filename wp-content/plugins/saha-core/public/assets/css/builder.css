@@ -933,3 +933,450 @@ html.saha-hb-lock {
 .saha-builder-canvas .woocommerce-product-gallery {
 	opacity: 1 !important;
 }
+
+/* ===== Element giao diện (D1) ===== */
+
+/* Tiêu đề khối: gạch ngắn màu nhấn + link Xem tất cả */
+:where(.saha-stitle) {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px 24px;
+	align-items: flex-end;
+	justify-content: space-between;
+	margin-bottom: 24px;
+}
+
+:where(.saha-stitle--center) {
+	flex-direction: column;
+	align-items: center;
+	text-align: center;
+}
+
+:where(.saha-stitle__title) {
+	margin: 0;
+	color: var(--saha-heading, #111827);
+	font-size: var(--saha-h2-size, 28px);
+}
+
+:where(.saha-stitle--bar) :where(.saha-stitle__title)::after {
+	content: "";
+	display: block;
+	width: 48px;
+	height: 3px;
+	margin-top: 10px;
+	border-radius: 2px;
+	background-color: var(--saha-accent, #f5a623);
+}
+
+:where(.saha-stitle--center.saha-stitle--bar) :where(.saha-stitle__title)::after {
+	margin-inline: auto;
+}
+
+:where(.saha-stitle__sub) {
+	margin: 8px 0 0;
+	color: var(--saha-muted, #5f6b7a);
+}
+
+.saha-stitle .saha-stitle__more {
+	display: inline-flex;
+	gap: 6px;
+	align-items: center;
+	color: var(--saha-heading, #111827);
+	font-weight: 600;
+	text-decoration: none;
+	white-space: nowrap;
+}
+
+.saha-stitle .saha-stitle__more:hover {
+	color: var(--saha-accent, #f5a623);
+}
+
+:where(.saha-stitle__arrow) {
+	width: 1em;
+	height: 1em;
+}
+
+/* Chữ chạy */
+:where(.saha-marquee) {
+	overflow: hidden;
+	font-size: 14px;
+	white-space: nowrap;
+}
+
+:where(.saha-marquee--upper) {
+	letter-spacing: 0.04em;
+	text-transform: uppercase;
+}
+
+:where(.saha-marquee__track) {
+	display: flex;
+	width: max-content;
+	animation: saha-marquee var(--saha-marquee-duration, 30s) linear infinite;
+}
+
+:where(.saha-marquee:hover, .saha-marquee:focus-within) :where(.saha-marquee__track) {
+	animation-play-state: paused;
+}
+
+:where(.saha-marquee__list) {
+	display: flex;
+	flex-shrink: 0;
+	gap: 24px;
+	margin: 0;
+	padding: 0 24px 0 0;
+	list-style: none;
+}
+
+:where(.saha-marquee__sep) {
+	color: var(--saha-accent, #f5a623);
+}
+
+@keyframes saha-marquee {
+
+	to {
+		transform: translateX(-50%);
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+	:where(.saha-marquee) {
+		overflow-x: auto;
+	}
+
+	:where(.saha-marquee__track) {
+		animation: none;
+	}
+
+	:where(.saha-marquee__list[aria-hidden="true"]) {
+		display: none;
+	}
+}
+
+/* Danh sách icon */
+:where(.saha-icon-list) {
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+:where(.saha-icon-list--horizontal) {
+	flex-flow: row wrap;
+	gap: 10px 24px;
+}
+
+:where(.saha-icon-list__item) {
+	display: flex;
+	gap: 10px;
+	align-items: flex-start;
+}
+
+:where(.saha-icon-list__mark) {
+	display: inline-flex;
+	flex: 0 0 auto;
+	align-items: center;
+	justify-content: center;
+	margin-top: 0.15em;
+	color: var(--saha-icon-list-color, var(--saha-accent, #f5a623));
+}
+
+:where(.saha-icon-list__icon) {
+	width: 1.1em;
+	height: 1.1em;
+}
+
+:where(.saha-icon-list--circle) :where(.saha-icon-list__mark) {
+	width: 1.4em;
+	height: 1.4em;
+	border-radius: 50%;
+	background: var(--saha-icon-list-color, var(--saha-accent, #f5a623));
+	color: #fff;
+}
+
+:where(.saha-icon-list--circle) :where(.saha-icon-list__icon) {
+	width: 0.85em;
+	height: 0.85em;
+}
+
+/* Hộp icon dạng thẻ */
+:where(.saha-iconbox--card, .saha-iconbox--shadow) {
+	height: 100%;
+	padding: 24px 16px;
+	border: 1px solid var(--saha-border, #e3e6ea);
+	border-radius: 8px;
+	background: var(--saha-background, #fff);
+	transition: border-color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
+}
+
+:where(.saha-iconbox--shadow) {
+	border-color: transparent;
+	box-shadow: 0 4px 16px rgb(15 23 42 / 8%);
+}
+
+:where(.saha-iconbox--card, .saha-iconbox--shadow):hover {
+	border-color: var(--saha-accent, #f5a623);
+	transform: translateY(-2px);
+}
+
+/* Slider */
+:where(.saha-slider) {
+	position: relative;
+	--saha-slider-per-view: 1;
+	--saha-slider-gap: 16px;
+}
+
+:where(.saha-slider__track) {
+	display: grid;
+	grid-auto-columns: calc((100% - (var(--saha-slider-per-view) - 1) * var(--saha-slider-gap)) / var(--saha-slider-per-view));
+	grid-auto-flow: column;
+	gap: var(--saha-slider-gap);
+	overflow-x: auto;
+	overscroll-behavior-x: contain;
+	scroll-behavior: smooth;
+	scroll-snap-type: x mandatory;
+	scrollbar-width: none;
+}
+
+:where(.saha-slider__track)::-webkit-scrollbar {
+	display: none;
+}
+
+:where(.saha-slide) {
+	position: relative;
+	overflow: hidden;
+	border-radius: var(--saha-slider-radius, 0);
+	scroll-snap-align: start;
+}
+
+:where(.saha-slider--ratio) :where(.saha-slide) {
+	aspect-ratio: var(--saha-slider-ratio, 4/3);
+}
+
+:where(.saha-slide__img) {
+	display: block;
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+}
+
+:where(.saha-slide__link) {
+	display: block;
+	height: 100%;
+	color: inherit;
+}
+
+:where(.saha-slide__caption) {
+	position: absolute;
+	right: 0;
+	bottom: 0;
+	left: 0;
+	padding: 24px 16px 12px;
+	background: linear-gradient(transparent, rgb(0 0 0 / 65%));
+	color: #fff;
+	font-weight: 600;
+}
+
+:where(.saha-slide__empty) {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	height: 100%;
+	min-height: 160px;
+	background: var(--saha-surface, #f6f7f9);
+	color: var(--saha-muted, #5f6b7a);
+}
+
+.saha-slider .saha-slider__arrow {
+	position: absolute;
+	top: 50%;
+	z-index: 2;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 40px;
+	height: 40px;
+	padding: 0;
+	border: 0;
+	border-radius: 50%;
+	background: rgb(255 255 255 / 90%);
+	box-shadow: 0 2px 8px rgb(15 23 42 / 15%);
+	color: var(--saha-heading, #111827);
+	cursor: pointer;
+	transform: translateY(-50%);
+}
+
+.saha-slider .saha-slider__arrow--prev {
+	left: 12px;
+}
+
+.saha-slider .saha-slider__arrow--prev svg {
+	transform: rotate(180deg);
+}
+
+.saha-slider .saha-slider__arrow--next {
+	right: 12px;
+}
+
+.saha-slider .saha-slider__arrow svg {
+	width: 18px;
+	height: 18px;
+}
+
+:where(.saha-slider__dots) {
+	position: absolute;
+	right: 0;
+	bottom: 12px;
+	left: 0;
+	display: flex;
+	gap: 6px;
+	justify-content: center;
+}
+
+.saha-slider .saha-slider__dot {
+	width: 8px;
+	height: 8px;
+	padding: 0;
+	border: 0;
+	border-radius: 4px;
+	background: rgb(255 255 255 / 60%);
+	cursor: pointer;
+	transition: width 0.2s ease;
+}
+
+.saha-slider .saha-slider__dot[aria-current="true"] {
+	width: 22px;
+	background: #fff;
+}
+
+/* Đánh giá khách hàng */
+:where(.saha-testimonials) {
+	display: grid;
+	grid-template-columns: repeat(var(--saha-cols, 3), minmax(0, 1fr));
+	gap: 16px;
+}
+
+:where(.saha-testimonial) {
+	margin: 0;
+	padding: 16px 18px;
+	border: 1px solid var(--saha-border, #e3e6ea);
+	border-left: 3px solid var(--saha-testimonial-accent, var(--saha-accent, #f5a623));
+	border-radius: 8px;
+	background: var(--saha-testimonial-bg, var(--saha-background, #fff));
+}
+
+:where(.saha-testimonial__stars) {
+	display: flex;
+	gap: 2px;
+	margin-bottom: 6px;
+	color: var(--saha-testimonial-accent, var(--saha-accent, #f5a623));
+}
+
+:where(.saha-testimonial__stars) svg {
+	width: 14px;
+	height: 14px;
+	fill: currentcolor;
+}
+
+:where(.saha-testimonial__quote) {
+	margin: 0 0 10px;
+	padding: 0;
+	border: 0;
+}
+
+:where(.saha-testimonial__quote) p {
+	margin: 0;
+}
+
+:where(.saha-testimonial__by) {
+	display: flex;
+	gap: 10px;
+	align-items: center;
+	font-size: 14px;
+}
+
+:where(.saha-testimonial__by) strong {
+	color: var(--saha-accent, #f5a623);
+}
+
+:where(.saha-testimonial__meta) {
+	color: var(--saha-muted, #5f6b7a);
+}
+
+:where(.saha-testimonial__avatar) {
+	width: 40px;
+	height: 40px;
+	border-radius: 50%;
+	object-fit: cover;
+}
+
+/* Accordion / hỏi đáp */
+:where(.saha-acc) {
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
+}
+
+:where(.saha-acc-item) {
+	border: 1px solid var(--saha-border, #e3e6ea);
+	border-radius: 8px;
+	background: var(--saha-acc-bg, var(--saha-background, #fff));
+}
+
+:where(.saha-acc-item__title) {
+	display: flex;
+	gap: 12px;
+	align-items: center;
+	justify-content: space-between;
+	padding: 14px 18px;
+	color: var(--saha-heading, #111827);
+	font-weight: 600;
+	cursor: pointer;
+	list-style: none;
+}
+
+:where(.saha-acc-item__title)::-webkit-details-marker {
+	display: none;
+}
+
+:where(.saha-acc-item__icon) {
+	flex: 0 0 auto;
+	width: 18px;
+	height: 18px;
+	color: var(--saha-acc-accent, var(--saha-accent, #f5a623));
+	transform: rotate(90deg);
+	transition: transform 0.2s ease;
+}
+
+:where(.saha-acc-item[open]) :where(.saha-acc-item__icon) {
+	transform: rotate(-90deg);
+}
+
+:where(.saha-acc-item[open]) {
+	border-color: var(--saha-acc-accent, var(--saha-accent, #f5a623));
+}
+
+:where(.saha-acc-item__body) {
+	padding: 0 18px 16px;
+	color: var(--saha-text, #1f2328);
+}
+
+@media (max-width: 1024px) {
+
+	:where(.saha-testimonials) {
+		grid-template-columns: repeat(var(--saha-cols, 2), minmax(0, 1fr));
+	}
+}
+
+@media (max-width: 767px) {
+
+	:where(.saha-testimonials) {
+		grid-template-columns: repeat(var(--saha-cols, 1), minmax(0, 1fr));
+	}
+
+	:where(.saha-stitle__title) {
+		font-size: var(--saha-h3-size, 22px);
+	}
+}

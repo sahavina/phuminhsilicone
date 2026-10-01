@@ -26,7 +26,7 @@ Element **HTML** chỉ người có quyền `unfiltered_html` (administrator) m�
 **Giao diện → SAHA Theme Options.**
 
 - **Màu**: màu chính (nút, giá, link), màu phụ (header, footer), màu nhấn ("Mua ngay"), chữ, viền, nền.
-- **Chữ**: font, cỡ chữ thân bài và H1–H3.
+- **Chữ**: font, cỡ chữ thân bài và H1–H3. Font có chữ "(Google Fonts)" (Be Vietnam Pro, Montserrat…) được tải từ Google khi chọn; font hệ thống thì không tải gì.
 - **Bố cục**: độ rộng khung, khoảng cách, số cột sản phẩm desktop / tablet / mobile.
 - **Logo**, chiều cao header, header dính.
 
@@ -70,6 +70,12 @@ Bấm **Lưu** → toàn website đổi theo, không cần sửa CSS. Mỗi ô c
 | Danh mục sản phẩm | lưới danh mục, **ứng dụng** hoặc **thương hiệu** |
 | Bài viết | bài blog mới nhất / theo chuyên mục |
 | Block | chèn một Block dùng chung (mục 4) |
+| Tiêu đề khối | tiêu đề có gạch màu nhấn + link "Xem tất cả →" bên phải |
+| Danh sách icon | các dòng có dấu ✓ (mỗi dòng một mục) |
+| Chữ chạy | thanh thông báo chạy ngang (mỗi dòng một mục) |
+| Slider | ảnh trượt; thêm ảnh bằng cách nhân đôi Slide (Ctrl+D). Slide đầu của banner đầu trang bật "Ưu tiên tải" |
+| Đánh giá khách hàng | thẻ đánh giá; nhân đôi "Một đánh giá" để thêm |
+| Accordion / Hỏi đáp | câu hỏi thường gặp, bật "Dữ liệu cấu trúc FAQ" cho Google (mỗi trang một khối FAQ) |
 
 ### Responsive
 

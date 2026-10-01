@@ -15,6 +15,15 @@ use Saha\Core\Builder\Elements\Cart;
 use Saha\Core\Builder\Elements\Contact;
 use Saha\Core\Builder\Elements\Copyright;
 use Saha\Core\Builder\Elements\HeaderOffcanvas;
+use Saha\Core\Builder\Elements\Accordion;
+use Saha\Core\Builder\Elements\AccordionItem;
+use Saha\Core\Builder\Elements\IconList;
+use Saha\Core\Builder\Elements\Marquee;
+use Saha\Core\Builder\Elements\SectionTitle;
+use Saha\Core\Builder\Elements\Slide;
+use Saha\Core\Builder\Elements\Slider;
+use Saha\Core\Builder\Elements\Testimonial;
+use Saha\Core\Builder\Elements\Testimonials;
 use Saha\Core\Builder\Elements\ArchivePosts;
 use Saha\Core\Builder\Elements\ArchiveTitle;
 use Saha\Core\Builder\Elements\Breadcrumb;
@@ -107,10 +116,19 @@ final class ElementRegistry {
 				new IconBox(),
 				new Html(),
 				new Shortcode(),
+				new SectionTitle(),
+				new IconList(),
+				new Accordion(),
+				new AccordionItem(),
 				// Marketing.
 				new Banner(),
 				new Cta(),
 				new Block(),
+				new Marquee(),
+				new Slider(),
+				new Slide(),
+				new Testimonials(),
+				new Testimonial(),
 				// WooCommerce, blog.
 				new Products(),
 				new ProductCategories(),

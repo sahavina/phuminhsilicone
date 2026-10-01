@@ -55,6 +55,7 @@ function wp_kses_post( $s ) {
 function esc_html( $s ) { return htmlspecialchars( (string) $s, ENT_QUOTES, 'UTF-8' ); }
 function esc_attr( $s ) { return htmlspecialchars( (string) $s, ENT_QUOTES, 'UTF-8' ); }
 function esc_html__( $s, $d = null ) { return esc_html( $s ); }
+function esc_attr__( $s, $d = null ) { return esc_attr( $s ); }
 function esc_url( $u, $p = null ) { return esc_attr( esc_url_raw( $u, $p ) ); }
 function sanitize_html_class( $c ) { return preg_replace( '/[^A-Za-z0-9_-]/', '', (string) $c ); }
 function get_intermediate_image_sizes() { return array( 'thumbnail', 'medium', 'medium_large', 'large' ); }
@@ -529,7 +530,7 @@ echo "Builder — element mốc 1.4\n";
 $saha_reg   = Saha\Core\Builder\ElementRegistry::instance();
 $saha_ctrls = Saha\Core\Builder\Controls\ControlRegistry::instance();
 $saha_types = array_keys( $saha_reg->all() );
-check( 'đủ 50 element (20 nội dung + 13 header/footer + 17 động của Template Builder)', count( $saha_types ), 50 );
+check( 'đủ 59 element (20 nội dung + 13 header/footer + 17 động + 9 giao diện D1)', count( $saha_types ), 59 );
 $saha_bad_ctrl = array();
 foreach ( $saha_reg->all() as $saha_t => $saha_el ) {
 	foreach ( (array) $saha_el->def()['controls'] as $saha_k => $saha_c ) {
@@ -682,6 +683,38 @@ check( 'chọn template: cùng mức → ưu tiên cao hơn (thương hiệu p5 
 check( 'chọn template: bị "Trừ" → xuống mức sau', TplCond::resolve( $saha_map, 'single_product', $saha_ctx( array( array( 'product', '99', 30 ), array( 'product_cat', '21', 20 ) ) ) ), 10 );
 check( 'chọn template: danh mục con khớp qua cha (15) nhưng danh mục trực tiếp (20) thắng', array( TplCond::resolve( $saha_map, 'single_product', $saha_ctx( array( array( 'product_cat', '22', 20 ), array( 'product_cat', '21', 15 ) ) ) ), TplCond::resolve( $saha_map, 'single_product', $saha_ctx( array( array( 'product_cat', '30', 20 ), array( 'product_cat', '21', 15 ) ) ) ) ), array( 11, 14 ) );
 check( 'chọn template: loại khác / không có → null', array( TplCond::resolve( $saha_map, 'single_post', $saha_ctx( array() ) ), TplCond::resolve( array(), 'header', $saha_ctx( array() ) ) ), array( null, null ) );
+
+echo "Element giao diện (D1)\n";
+$saha_r1 = static function ( array $element, bool $editor = false ): string {
+	$doc = saha_bs( array( 'elements' => array( array( 'type' => 'section', 'children' => array( $element ) ) ) ) );
+	return null === $doc['document'] ? 'INVALID ' . json_encode( $doc['errors'] ) : ( new Renderer() )->document( $doc['document'], new RenderContext( 0, $editor, false ) );
+};
+$saha_mq = $saha_r1( array( 'type' => 'marquee', 'props' => array( 'items' => "Miễn phí vận chuyển\nTư vấn miễn phí" ) ) );
+check( 'chữ chạy: tách dòng đúng với chữ có dấu (ễ chứa byte 0x85)', array( substr_count( $saha_mq, '<li class="saha-marquee__item">' ), false !== strpos( $saha_mq, '>Miễn phí vận chuyển<' ) ), array( 4, true ) );
+check( 'chữ chạy: bản lặp aria-hidden (đọc một lần)', 1, substr_count( $saha_mq, '<ul class="saha-marquee__list" aria-hidden="true">' ) );
+$saha_il = $saha_r1( array( 'type' => 'icon-list', 'props' => array( 'items' => "Một\n\nHai" ) ) );
+check( 'danh sách icon: <ul> thật, bỏ dòng trống, icon aria-hidden', array( substr_count( $saha_il, '<li class="saha-icon-list__item">' ), false !== strpos( $saha_il, '<ul class="saha-e ' ), false !== strpos( $saha_il, 'saha-icon-list__mark" aria-hidden="true"' ) ), array( 2, true, true ) );
+$saha_st = $saha_r1( array( 'type' => 'section-title', 'props' => array( 'title' => 'Sản phẩm', 'link' => array( 'url' => 'https://tongkhokeodan.com/shop/' ) ) ) );
+check( 'tiêu đề khối: H2 + gạch + link Xem tất cả', array( false !== strpos( $saha_st, '<h2 class="saha-stitle__title">Sản phẩm</h2>' ), false !== strpos( $saha_st, 'saha-stitle--bar' ), false !== strpos( $saha_st, 'href="https://tongkhokeodan.com/shop/"' ) ), array( true, true, true ) );
+$saha_sl = $saha_r1( array( 'type' => 'slider', 'children' => array( array( 'type' => 'slide' ), array( 'type' => 'slide' ) ) ) );
+check( 'slider: chỉ nhận Slide, tự chạy ngoài editor, nút có aria-label', array( substr_count( $saha_sl, 'class="saha-e saha-e-' ) >= 3, false !== strpos( $saha_sl, 'data-autoplay="5000"' ), false !== strpos( $saha_sl, 'aria-label="Slide trước"' ) ), array( true, true, true ) );
+check( 'slider: editor không tự chạy; Slide đặt ngoài Slider bị từ chối', array( false === strpos( $saha_r1( array( 'type' => 'slider' ), true ), 'data-autoplay' ), 0 === strpos( $saha_r1( array( 'type' => 'slide' ) ), 'INVALID' ) ), array( true, true ) );
+$saha_tm = $saha_r1( array( 'type' => 'testimonials', 'children' => array( array( 'type' => 'testimonial', 'props' => array( 'rating' => 's5', 'name' => 'Anh A' ) ) ) ) );
+check( 'đánh giá: figure/blockquote, 5 sao có nhãn, không có schema Review', array( false !== strpos( $saha_tm, '<blockquote class="saha-testimonial__quote">' ), false !== strpos( $saha_tm, 'aria-label="5 trên 5 sao"' ), false === strpos( $saha_tm, 'ld+json' ) ), array( true, true, true ) );
+$saha_ac = $saha_r1(
+	array(
+		'type'     => 'accordion',
+		'children' => array(
+			array( 'type' => 'accordion-item', 'props' => array( 'title' => 'Có giao hàng?', 'content' => '<p>Có, <script>x</script>toàn quốc.</p>' ) ),
+			array( 'type' => 'accordion-item', 'props' => array( 'title' => 'Có VAT?', 'content' => '<p>Có.</p>' ) ),
+		),
+	)
+);
+check( 'accordion: <details> cùng name (mở một mục), FAQPage có 2 câu hỏi', array( substr_count( $saha_ac, '<details name="saha-acc-' ), substr_count( $saha_ac, '"@type":"Question"' ), false !== strpos( $saha_ac, '"@type":"FAQPage"' ) ), array( 2, 2, true ) );
+$saha_ac_ed = $saha_r1( array( 'type' => 'accordion', 'children' => array( array( 'type' => 'accordion-item' ), array( 'type' => 'accordion-item' ) ) ), true );
+check( 'accordion: editor mở mọi mục, không in schema, không đặt name', array( substr_count( $saha_ac_ed, ' open="open"' ), false === strpos( $saha_ac_ed, 'ld+json' ), false === strpos( $saha_ac_ed, 'details name=' ) ), array( 2, true, true ) );
+check( 'font web: URL Google Fonts một request, display=swap; không dùng → rỗng', array( Saha\Core\ThemeOptions\WebFonts::url( array( 'Be Vietnam Pro', 'Inter' ) ), Saha\Core\ThemeOptions\WebFonts::url( array() ) ), array( 'https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800&display=swap', '' ) );
+check( 'font web: chỉ lấy font Google đang chọn, bỏ trùng', Saha\Core\ThemeOptions\WebFonts::families( array( 'typography' => array( 'body' => array( 'fontFamily' => 'be-vietnam-pro' ), 'heading' => array( 'fontFamily' => 'be-vietnam-pro' ), 'menu' => array( 'fontFamily' => 'system' ) ) ) ), array( 'Be Vietnam Pro' ) );
 
 echo "\n$pass passed, $fail failed\n";
 exit( $fail > 0 ? 1 : 0 );

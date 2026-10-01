@@ -148,6 +148,18 @@ final class Frontend {
 	 */
 	public static function enqueueBase(): void {
 		wp_enqueue_style( self::BASE_STYLE, SAHA_CORE_URL . 'public/assets/css/builder.css', array(), SAHA_CORE_VERSION );
+
+		// JS element (slider) — nhỏ, defer; nạp cùng CSS nền để HTML lấy từ render cache vẫn chạy.
+		wp_enqueue_script(
+			'saha-builder-elements',
+			SAHA_CORE_URL . 'public/assets/js/elements.js',
+			array(),
+			SAHA_CORE_VERSION,
+			array(
+				'in_footer' => true,
+				'strategy'  => 'defer',
+			)
+		);
 	}
 
 	/**

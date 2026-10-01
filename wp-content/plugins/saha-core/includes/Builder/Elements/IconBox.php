@@ -121,6 +121,17 @@ final class IconBox extends Element {
 					'label'   => __( 'Màu mô tả', 'saha-core' ),
 					'section' => 'style',
 				),
+				'boxStyle'    => array(
+					'type'    => 'select',
+					'label'   => __( 'Kiểu khối', 'saha-core' ),
+					'section' => 'style',
+					'default' => 'plain',
+					'options' => array(
+						'plain' => __( 'Không khung', 'saha-core' ),
+						'card'  => __( 'Thẻ có viền', 'saha-core' ),
+						'shadow' => __( 'Thẻ có bóng', 'saha-core' ),
+					),
+				),
 				'background'  => array(
 					'type'    => 'color',
 					'label'   => __( 'Màu nền khối', 'saha-core' ),
@@ -162,7 +173,10 @@ final class IconBox extends Element {
 
 		$html .= '<div class="saha-iconbox__body">' . $body . '</div>';
 
-		return '<div' . $this->rootAttributes( $node, $ctx, array( 'saha-iconbox' ) ) . '>' . $html . '</div>';
+		$box     = (string) $this->prop( $node, 'boxStyle' );
+		$classes = in_array( $box, array( 'card', 'shadow' ), true ) ? array( 'saha-iconbox', 'saha-iconbox--' . $box ) : array( 'saha-iconbox' );
+
+		return '<div' . $this->rootAttributes( $node, $ctx, $classes ) . '>' . $html . '</div>';
 	}
 
 	/**

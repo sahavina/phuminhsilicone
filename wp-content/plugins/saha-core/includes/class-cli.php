@@ -125,6 +125,28 @@ final class Cli {
 	}
 
 	/**
+	 * Xoá cache SAHA (dữ liệu catalogue + HTML render cache của builder) bằng cách tăng thế hệ cache.
+	 *
+	 * Dùng khi sửa code element/template trong lúc phát triển mà không đổi version plugin.
+	 *
+	 * ## EXAMPLES
+	 *
+	 *     wp saha flush-cache
+	 *
+	 * @subcommand flush-cache
+	 *
+	 * @param string[]             $args       Positional.
+	 * @param array<string, mixed> $assoc_args Tuỳ chọn.
+	 */
+	public function flush_cache( array $args, array $assoc_args ): void {
+		unset( $args, $assoc_args );
+
+		Cache::bump();
+
+		\WP_CLI::success( sprintf( 'Đã xoá cache SAHA (thế hệ %d).', Cache::generation() ) );
+	}
+
+	/**
 	 * Tạo trang chủ mẫu 14 khối dựng bằng SAHA Builder (không shortcode).
 	 *
 	 * ## OPTIONS

@@ -424,7 +424,7 @@ Sửa checklist test của một phase → sửa trong `docs/PHASE-*.md`, rồi 
 | [docs/PHASE-1.md](docs/PHASE-1.md) … [docs/PHASE-8.md](docs/PHASE-8.md) | từng phase: mục tiêu, file, database, hook, bảo mật, test, cài đặt, nghiệm thu |
 | [docs/QA.md](docs/QA.md) | checklist QA tổng hợp: 188 test, ma trận thiết bị, bảng nghiệm thu |
 | [docs/scc/TECHNICAL-DESIGN.md](docs/scc/TECHNICAL-DESIGN.md) | SAHA Commerce Core: kiến trúc theme + builder riêng, quyết định, lộ trình |
-| [docs/scc/PHASE-1.0.md](docs/scc/PHASE-1.0.md), [PHASE-1.1.md](docs/scc/PHASE-1.1.md), [PHASE-1.2.md](docs/scc/PHASE-1.2.md), [PHASE-1.3.md](docs/scc/PHASE-1.3.md), [PHASE-1.4.md](docs/scc/PHASE-1.4.md), [PHASE-1.5.md](docs/scc/PHASE-1.5.md), [PHASE-1.6.md](docs/scc/PHASE-1.6.md), [PHASE-1.7.md](docs/scc/PHASE-1.7.md), [PHASE-2-PLAN.md](docs/scc/PHASE-2-PLAN.md), [PHASE-2.1.md](docs/scc/PHASE-2.1.md), [PHASE-2.2.md](docs/scc/PHASE-2.2.md) | từng mốc SCC: mục tiêu, file, hook, bảo mật, test, nghiệm thu |
+| [docs/scc/PHASE-1.0.md](docs/scc/PHASE-1.0.md), [PHASE-1.1.md](docs/scc/PHASE-1.1.md), [PHASE-1.2.md](docs/scc/PHASE-1.2.md), [PHASE-1.3.md](docs/scc/PHASE-1.3.md), [PHASE-1.4.md](docs/scc/PHASE-1.4.md), [PHASE-1.5.md](docs/scc/PHASE-1.5.md), [PHASE-1.6.md](docs/scc/PHASE-1.6.md), [PHASE-1.7.md](docs/scc/PHASE-1.7.md), [PHASE-2-PLAN.md](docs/scc/PHASE-2-PLAN.md), [PHASE-2.1.md](docs/scc/PHASE-2.1.md), [PHASE-2.2.md](docs/scc/PHASE-2.2.md), [PHASE-D1.md](docs/scc/PHASE-D1.md) | từng mốc SCC: mục tiêu, file, hook, bảo mật, test, nghiệm thu |
 | [docs/scc/ADMIN-GUIDE.md](docs/scc/ADMIN-GUIDE.md), [DEV-GUIDE.md](docs/scc/DEV-GUIDE.md) | hướng dẫn quản trị (spec §116) và lập trình (spec §115) cho saha-theme + SAHA Builder |
 | [docs/layouts/](docs/layouts/) | layout UX Builder mẫu: trang chủ, footer |
 | [saha-core/README.md](wp-content/plugins/saha-core/README.md) | plugin: file, hook, REST API, database, capability |
@@ -471,7 +471,9 @@ Chuyển từ Flatsome sang theme + builder riêng. Thiết kế: [docs/scc/TECH
 | 1.6 | WooCommerce trên `saha-theme` | ✅ |
 | 1.7 | QA Phase 1 + tài liệu, nghiệm thu MVP | ✅ (còn phần chạy trên staging) |
 | 2.1 | Mega menu ([kế hoạch Phase 2](docs/scc/PHASE-2-PLAN.md)) | ✅ |
-| 2.2 | Template Builder + điều kiện | ✅ chờ review |
+| 2.2 | Template Builder + điều kiện | ✅ |
+| D1 | Giao diện theo mẫu: font web, 5 element mới ([PHASE-D1](docs/scc/PHASE-D1.md)) | ✅ chờ review |
+| D2–D4 | Header, thẻ sản phẩm + tab lọc, trang chủ theo mẫu | ⏳ |
 | 2.3–2.8 | Trang sản phẩm nâng cao, giỏ & tìm kiếm, báo giá nhiều sản phẩm, Import/Export, element Phase 2, QA | ⏳ |
 
-Plugin: **SAHA Core 1.16.0** · **SAHA Builder 0.5.0** · Theme **SAHA Theme 0.2.3** · Database schema **1.2.0**.
+Plugin: **SAHA Core 1.17.0** · **SAHA Builder 0.5.0** · Theme **SAHA Theme 0.2.3** · Database schema **1.2.0**.
