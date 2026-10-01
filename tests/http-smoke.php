@@ -257,6 +257,9 @@ ok( 'trang kết quả form không bị cache', (bool) preg_match( '/no-cache|no
 echo "Builder (SCC)\n";
 $r = http( 'GET', $api . '/builder/elements' );
 ok( 'GET /builder/elements khi chưa đăng nhập → 401', 401 === $r['status'], 'status ' . $r['status'] );
+// Import / Export (mốc 2.6): admin-post chỉ cho người đăng nhập có manage_options — khách không tải được file xuất.
+$r = http( 'GET', $base . '/wp-admin/admin-post.php?action=saha_export' );
+ok( 'xuất giao diện khi chưa đăng nhập → không trả JSON (400)', 400 === $r['status'] && false === strpos( $r['body'], 'saha-export' ), 'status ' . $r['status'] );
 $r = http( 'GET', $api . '/builder/patterns' );
 ok( 'GET /builder/patterns (khối mẫu) khi chưa đăng nhập → 401', 401 === $r['status'], 'status ' . $r['status'] );
 $r = http( 'GET', $api . '/builder/1' );

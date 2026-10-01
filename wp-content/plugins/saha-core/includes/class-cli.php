@@ -169,6 +169,162 @@ final class Cli {
 	}
 
 	/**
+	 * Xuất giao diện (trang dựng bằng builder, Block dùng chung, template, Theme Options) ra file JSON.
+	 *
+	 * ## OPTIONS
+	 *
+	 * <file>
+	 * : Đường dẫn file JSON sẽ ghi.
+	 *
+	 * [--pages=<ids>]
+	 * : ID trang, cách nhau dấu phẩy. Mặc định: mọi trang dùng builder. "none" = không xuất trang.
+	 *
+	 * [--templates=<ids>]
+	 * : ID template (header, footer, nội dung). Mặc định: tất cả. "none" = không xuất.
+	 *
+	 * [--blocks=<ids>]
+	 * : ID block. Mặc định: tất cả (block được trang/template dùng luôn được thêm). "none" = chỉ block được dùng.
+	 *
+	 * [--[no-]theme-options]
+	 * : Xuất Theme Options (mặc định có; --no-theme-options để bỏ).
+	 *
+	 * ## EXAMPLES
+	 *
+	 *     wp saha export giao-dien.json
+	 *     wp saha export header-footer.json --pages=none --blocks=none
+	 *
+	 * @param string[]             $args       Positional.
+	 * @param array<string, mixed> $assoc_args Tuỳ chọn.
+	 */
+	public function export( array $args, array $assoc_args ): void {
+		$ids = static function ( string $key ) use ( $assoc_args ): ?array {
+			if ( ! isset( $assoc_args[ $key ] ) ) {
+				return null;
+			}
+
+			return 'none' === $assoc_args[ $key ] ? array() : array_filter( array_map( 'intval', explode( ',', (string) $assoc_args[ $key ] ) ) );
+		};
+
+		$package = ImportExport\Exporter::build(
+			array(
+				'pages'         => $ids( 'pages' ),
+				'templates'     => $ids( 'templates' ),
+				'blocks'        => $ids( 'blocks' ),
+				'theme_options' => \WP_CLI\Utils\get_flag_value( $assoc_args, 'theme-options', true ),
+			)
+		);
+
+		if ( false === file_put_contents( $args[0], ImportExport\Exporter::json( $package ) ) ) { // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_file_put_contents -- CLI ghi file người dùng chỉ định.
+			\WP_CLI::error( 'Không ghi được file ' . $args[0] );
+		}
+
+		\WP_CLI::success(
+			sprintf(
+				'Đã xuất %d trang, %d template, %d block, %d ảnh%s → %s',
+				count( $package['pages'] ),
+				count( $package['templates'] ),
+				count( $package['blocks'] ),
+				count( $package['media'] ),
+				null !== $package['theme_options'] ? ', Theme Options' : '',
+				$args[0]
+			)
+		);
+	}
+
+	/**
+	 * Nhập giao diện từ file JSON đã xuất. Luôn tạo mới (không ghi đè trang / block / template đang có).
+	 *
+	 * ## OPTIONS
+	 *
+	 * <file>
+	 * : File JSON.
+	 *
+	 * [--dry-run]
+	 * : Chỉ kiểm tra, không ghi gì.
+	 *
+	 * [--keep-page-status]
+	 * : Giữ trạng thái trang như file (mặc định: trang nhập vào là nháp).
+	 *
+	 * [--front-page]
+	 * : Đặt trang chủ theo file (trang được xuất bản).
+	 *
+	 * [--replace-templates]
+	 * : Template đang xuất bản cùng loại với template nhập → chuyển nháp.
+	 *
+	 * [--[no-]theme-options]
+	 * : Nhập Theme Options (mặc định có, bản cũ được sao lưu; --no-theme-options để bỏ).
+	 *
+	 * [--only=<kinds>]
+	 * : Chỉ nhập: blocks,pages,templates (cách nhau dấu phẩy).
+	 *
+	 * ## EXAMPLES
+	 *
+	 *     wp saha import giao-dien.json --dry-run
+	 *     wp saha import giao-dien.json --replace-templates --front-page --user=admin
+	 *
+	 * @param string[]             $args       Positional.
+	 * @param array<string, mixed> $assoc_args Tuỳ chọn.
+	 */
+	public function import( array $args, array $assoc_args ): void {
+		if ( ! current_user_can( 'manage_options' ) ) {
+			\WP_CLI::error( 'Cần chạy với --user=<quản trị viên> (quyền manage_options).' );
+		}
+
+		if ( ! is_readable( $args[0] ) ) {
+			\WP_CLI::error( 'Không đọc được file ' . $args[0] );
+		}
+
+		$data = ImportExport\Importer::parse( (string) file_get_contents( $args[0] ) ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- file cục bộ.
+
+		if ( is_wp_error( $data ) ) {
+			\WP_CLI::error( $data->get_error_message() );
+		}
+
+		$only  = isset( $assoc_args['only'] ) ? array_map( 'trim', explode( ',', (string) $assoc_args['only'] ) ) : array( 'blocks', 'pages', 'templates' );
+		$report = ( new ImportExport\Importer(
+			array(
+				'dry_run'           => ! empty( $assoc_args['dry-run'] ),
+				'blocks'            => in_array( 'blocks', $only, true ),
+				'pages'             => in_array( 'pages', $only, true ),
+				'templates'         => in_array( 'templates', $only, true ),
+				'theme_options'     => \WP_CLI\Utils\get_flag_value( $assoc_args, 'theme-options', true ),
+				'page_status'       => ! empty( $assoc_args['keep-page-status'] ) ? 'keep' : 'draft',
+				'front_page'        => ! empty( $assoc_args['front-page'] ),
+				'replace_templates' => ! empty( $assoc_args['replace-templates'] ),
+			)
+		) )->run( $data );
+
+		foreach ( $report['created'] as $row ) {
+			\WP_CLI::log( sprintf( '+ %s #%d %s (%s)', $row['kind'], $row['id'], $row['title'], $row['status'] ) );
+		}
+
+		foreach ( $report['warnings'] as $warning ) {
+			\WP_CLI::warning( $warning );
+		}
+
+		foreach ( $report['errors'] as $error ) {
+			\WP_CLI::log( 'LỖI: ' . $error );
+		}
+
+		$planned = $report['planned'];
+
+		\WP_CLI::success(
+			sprintf(
+				'%s: %d block, %d trang, %d template, %d ảnh tham chiếu%s. Đã tạo %d, cảnh báo %d, lỗi %d.',
+				! empty( $assoc_args['dry-run'] ) ? 'Chạy thử' : 'Đã nhập',
+				$planned['blocks'],
+				$planned['pages'],
+				$planned['templates'],
+				$planned['media'],
+				$planned['theme_options'] ? ', Theme Options' : '',
+				count( $report['created'] ),
+				count( $report['warnings'] ),
+				count( $report['errors'] )
+			)
+		);
+	}
+
+	/**
 	 * Xoá cache SAHA (dữ liệu catalogue + HTML render cache của builder) bằng cách tăng thế hệ cache.
 	 *
 	 * Dùng khi sửa code element/template trong lúc phát triển mà không đổi version plugin.

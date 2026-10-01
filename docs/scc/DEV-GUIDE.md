@@ -169,6 +169,8 @@ wp saha homepage [--front]     # trang chủ mẫu 14 khối dựng bằng build
 wp saha flush-cache            # xoá cache SAHA + render cache (sửa element mà không đổi version)
 wp saha starter-store [--front] [--no-palette] [--restore-options]   # bộ giao diện kiểu cửa hàng
 wp saha maintenance …          # dọn log, cache
+wp saha export <file> [--pages=<ids|none>] [--templates=…] [--blocks=…] [--no-theme-options]
+wp saha import <file> [--dry-run] [--keep-page-status] [--front-page] [--replace-templates] [--no-theme-options] [--only=blocks,pages,templates] --user=<admin>
 ```
 
 ## 11. Phát hành

@@ -800,5 +800,41 @@ check( 'danh sách: chữ ký chống trùng không phụ thuộc thứ tự dò
 check( 'danh sách: đổi số lượng → chữ ký khác', Saha\Core\Quote::signature( $saha_l1 ) === Saha\Core\Quote::signature( array( array_merge( $saha_l1[0], array( 'quantity' => 3 ) ), $saha_l1[1] ) ), false );
 check( 'element danh sách báo giá + icon header đã đăng ký', array( null !== $saha_reg->get( 'quote-list' ), null !== $saha_reg->get( 'quote-list-link' ) ), array( true, true ) );
 
+echo "Import / Export (mốc 2.6)\n";
+require_once SAHA_CORE_PATH . 'includes/ImportExport/Walker.php';
+use Saha\Core\ImportExport\Walker as SahaWalker;
+$saha_ie_doc = array(
+	'version'  => 1,
+	'elements' => array(
+		array(
+			'id'       => 'a1',
+			'type'     => 'section',
+			'props'    => array( 'background' => array( 'color' => '#fff', 'image' => array( 'id' => 10, 'size' => 'large' ) ) ),
+			'children' => array(
+				array( 'id' => 'a2', 'type' => 'image', 'props' => array( 'image' => array( 'id' => 11, 'size' => 'full' ), 'alt' => 'x' ) ),
+				array( 'id' => 'a3', 'type' => 'logo', 'props' => array( 'image' => array( 'desktop' => array( 'id' => 12, 'size' => 'medium' ) ) ) ),
+				array( 'id' => 'a4', 'type' => 'block', 'props' => array( 'blockId' => 52 ) ),
+				array( 'id' => 'a5', 'type' => 'block', 'props' => array( 'blockId' => 99 ) ),
+			),
+		),
+	),
+);
+$saha_ie_m = array();
+$saha_ie_b = array();
+SahaWalker::collect( $saha_ie_doc, $saha_ie_m, $saha_ie_b );
+sort( $saha_ie_m );
+sort( $saha_ie_b );
+check( 'xuất: gom ảnh (nền, ảnh, responsive) + block được dùng', array( $saha_ie_m, $saha_ie_b ), array( array( 10, 11, 12 ), array( 52, 99 ) ) );
+check( 'giá trị ảnh {id,size}; node có type không bị nhầm', array( SahaWalker::isMedia( array( 'id' => 3, 'size' => 'full' ) ), SahaWalker::isMedia( array( 'id' => 'a1', 'type' => 'section', 'size' => 'x' ) ), SahaWalker::isMedia( array( 'id' => 3 ) ) ), array( true, false, false ) );
+$saha_ie_w = array();
+$saha_ie_r = SahaWalker::remap( $saha_ie_doc, array( 10 => 110, 11 => 0, 12 => 112 ), array( 52 => 152 ), $saha_ie_w, 'Trang A' );
+$saha_ie_c = $saha_ie_r['elements'][0]['children'];
+check(
+	'nhập: đổi ID ảnh / block; ảnh tải lỗi + block thiếu → bỏ giá trị, có cảnh báo',
+	array( $saha_ie_r['elements'][0]['props']['background'], $saha_ie_c[0]['props'], $saha_ie_c[1]['props']['image']['desktop']['id'], $saha_ie_c[2]['props']['blockId'], $saha_ie_c[3]['props'], count( $saha_ie_w ) ),
+	array( array( 'color' => '#fff', 'image' => array( 'id' => 110, 'size' => 'large' ) ), array( 'alt' => 'x' ), 112, 152, array(), 2 )
+);
+check( 'chạy thử: strip bỏ mọi ảnh / block, giữ cấu trúc', array( SahaWalker::strip( $saha_ie_doc )['elements'][0]['props'], count( SahaWalker::strip( $saha_ie_doc )['elements'][0]['children'] ) ), array( array( 'background' => array( 'color' => '#fff' ) ), 4 ) );
+
 echo "\n$pass passed, $fail failed\n";
 exit( $fail > 0 ? 1 : 0 );

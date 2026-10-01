@@ -221,6 +221,16 @@ Danh sách lưu trong trình duyệt của khách cho tới khi gửi (đổi m�
 - Email thông báo gửi tới địa chỉ ở **SAHA → Cấu hình**. Website cần plugin SMTP để email tới được hộp thư.
 - Form có chống spam (ô ẩn, giới hạn 5 lần / 10 phút mỗi máy).
 
+## 8b. Chuyển giao diện sang website khác (Import / Export)
+
+**SAHA → Import / Export** (chỉ quản trị viên).
+
+1. **Xuất** ở website nguồn: tích Theme Options, header / footer / template, trang, block cần chuyển → **Tải file xuất (.json)**. Block mà trang / template dùng tới luôn đi kèm.
+2. **Nhập** ở website đích: chọn file → để nguyên **Chỉ chạy thử** → **Nhập** để xem báo cáo (sẽ tạo gì, cảnh báo gì). Ổn thì bỏ tích chạy thử và nhập thật.
+3. Tuỳ chọn: trang nhập vào là **nháp** (mặc định) hay giữ trạng thái; **đặt trang chủ theo file**; **thay template đang dùng** (template cùng loại hiện có chuyển nháp — mở lại được).
+
+Lưu ý: nhập luôn **tạo mới**, không ghi đè. Ảnh được tải từ website nguồn (website nguồn phải đang chạy). Menu không được chuyển — tạo menu cùng tên đường dẫn (slug) ở website đích. Theme Options cũ được sao lưu tự động.
+
 ## 9. Kiểm tra hệ thống
 
 **SAHA → Kiểm tra hệ thống** — chạy sau mỗi lần cập nhật plugin/theme hoặc đổi cấu hình lớn.

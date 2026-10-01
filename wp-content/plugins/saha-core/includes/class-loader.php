@@ -92,6 +92,7 @@ final class Loader {
 			'templates'     => Templates\Module::class,
 			'mega_menu'     => MegaMenu\Module::class,
 			'woocommerce'   => WooCommerce\Module::class,
+			'import_export' => ImportExport\Module::class,
 			'admin'      => Admin::class,
 		);
 
