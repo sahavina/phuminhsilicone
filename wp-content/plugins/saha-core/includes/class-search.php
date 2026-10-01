@@ -127,6 +127,44 @@ final class Search {
 	}
 
 	/**
+	 * Thêm giá dạng chữ (`price`) vào kết quả — tính lúc trả về, không nằm trong cache,
+	 * để đổi giá / bật tắt chế độ catalogue có hiệu lực ngay. Catalogue → chuỗi rỗng (không lộ giá).
+	 *
+	 * @param array<int, array<string, mixed>> $items Kết quả của search().
+	 * @return array<int, array<string, mixed>>
+	 */
+	public static function with_prices( array $items ): array {
+		$hide = function_exists( 'saha_is_catalogue_mode' ) && saha_is_catalogue_mode();
+
+		foreach ( $items as $i => $item ) {
+			$price   = '';
+			$product = ( ! $hide && function_exists( 'wc_get_product' ) ) ? wc_get_product( (int) ( $item['id'] ?? 0 ) ) : null;
+
+			// Tự dựng thay cho get_price_html(): bản đó có chữ ẩn cho trình đọc màn hình ("Giá gốc là…").
+			if ( $product instanceof \WC_Product_Variable ) {
+				$min   = (float) $product->get_variation_price( 'min', true );
+				$max   = (float) $product->get_variation_price( 'max', true );
+				$price = '' === $product->get_price() ? '' : ( $min === $max ? self::money( $min ) : self::money( $min ) . ' – ' . self::money( $max ) );
+			} elseif ( $product && '' !== $product->get_price() ) {
+				$price = self::money( (float) wc_get_price_to_display( $product ) );
+			}
+
+			$items[ $i ]['price'] = $price;
+		}
+
+		return $items;
+	}
+
+	/**
+	 * Số tiền dạng chữ thuần (định dạng tiền tệ của WooCommerce).
+	 *
+	 * @param float $amount Số tiền.
+	 */
+	private static function money( float $amount ): string {
+		return trim( html_entity_decode( wp_strip_all_tags( (string) wc_price( $amount ) ), ENT_QUOTES, 'UTF-8' ) );
+	}
+
+	/**
 	 * Chỉ lấy ID sản phẩm khớp — dùng cho trang kết quả của WordPress.
 	 *
 	 * @param string $term  Từ khoá.

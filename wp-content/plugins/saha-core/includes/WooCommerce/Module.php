@@ -29,5 +29,6 @@ final class Module {
 		( new Swatches() )->register();
 		( new StickyCart() )->register();
 		( new QuickView() )->register();
+		( new MiniCart() )->register();
 	}
 }

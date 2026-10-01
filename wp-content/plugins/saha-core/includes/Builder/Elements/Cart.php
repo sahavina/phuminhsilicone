@@ -13,6 +13,7 @@ use Saha\Core\Builder\CssRules;
 use Saha\Core\Builder\Icons;
 use Saha\Core\Builder\RenderContext;
 use Saha\Core\Builder\Schema\Node;
+use Saha\Core\WooCommerce\MiniCart;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -90,11 +91,13 @@ final class Cart extends Element {
 		$count = self::count();
 		$label = (string) $node->prop( 'label', '' );
 
-		return '<a href="' . esc_url( wc_get_cart_url() ) . '"' . $this->rootAttributes( $node, $ctx, array( 'saha-hb-icon', 'saha-cart-el' ) ) . '>'
+		$drawer = ! $ctx->editor && MiniCart::enabled();
+
+		return '<a href="' . esc_url( wc_get_cart_url() ) . '"' . $this->rootAttributes( $node, $ctx, array( 'saha-hb-icon', 'saha-cart-el' ) ) . ( $drawer ? ' data-saha-mini-cart aria-haspopup="dialog"' : '' ) . '>'
 			. Icons::svg( 'cart' )
 			. ( '' !== $label ? '<span class="saha-hb-icon__label">' . esc_html( $label ) . '</span>' : '' )
 			. '<span class="saha-cart-count" aria-hidden="true">' . $count . '</span>'
-			. '<span class="screen-reader-text">' . esc_html(
+			. '<span class="screen-reader-text saha-cart-sr">' . esc_html(
 				/* translators: %d: số sản phẩm */
 				sprintf( _n( 'Giỏ hàng: %d sản phẩm', 'Giỏ hàng: %d sản phẩm', $count, 'saha-core' ), $count )
 			) . '</span></a>';

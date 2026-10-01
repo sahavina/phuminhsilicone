@@ -62,7 +62,7 @@ return static function ( string $namespace ): void {
 
 				return Api::success(
 					array(
-						'items'    => $result['items'],
+						'items'    => Search::with_prices( $result['items'] ),
 						'total'    => $result['total'],
 						'page'     => $result['page'],
 						'per_page' => $result['per_page'],

@@ -723,7 +723,7 @@ check( 'tìm kiếm ô liền nút: form GET, có label, escape từ khoá, nút
 $saha_ct = $saha_r1( array( 'type' => 'contact', 'props' => array( 'style' => 'stacked', 'label' => 'Hotline tư vấn', 'value' => '0966.75.3382' ) ) );
 check( 'liên hệ xếp chồng: tel:, nhãn nhỏ + số', array( false !== strpos( $saha_ct, 'href="tel:0966753382"' ), false !== strpos( $saha_ct, 'saha-contact-el__label">Hotline tư vấn<' ), false !== strpos( $saha_ct, 'saha-contact-el--stacked' ) ), array( true, true, true ) );
 $saha_hr_css = ( new CssGenerator() )->document( ( new BuilderSanitizer() )->document( array( 'elements' => array( array( 'type' => 'site-header', 'children' => array( array( 'type' => 'header-row', 'props' => array( 'textColor' => '#ffffff' ), 'children' => array( array( 'type' => 'header-zone' ) ) ) ) ) ) ), 'header-root' )['document'] );
-check( 'hàng header: màu chữ không tô link trong menu con / mega / danh mục', false !== strpos( (string) $saha_hr_css, 'a:not(.saha-btn):not(:where(.sub-menu a, .saha-mega a, .saha-catmenu__panel a))' ), true );
+check( 'hàng header: màu chữ không tô link trong menu con / mega / danh mục / gợi ý tìm kiếm', false !== strpos( (string) $saha_hr_css, 'a:not(.saha-btn):not(:where(.sub-menu a, .saha-mega a, .saha-catmenu__panel a, .saha-ls a))' ), true );
 $saha_nav_css = ( new CssGenerator() )->document( saha_bs( array( 'elements' => array( array( 'type' => 'section', 'children' => array( array( 'type' => 'nav-menu', 'props' => array( 'color' => '#ffffff' ) ) ) ) ) ) )['document'] );
 check( 'menu: màu chữ chỉ cho mục cấp 1', array( false !== strpos( $saha_nav_css, '.saha-nav__list > .menu-item > a{color:#ffffff' ), (bool) preg_match( '/saha-e-[a-z0-9]+ \.menu-item > a\{color/', $saha_nav_css ) ), array( true, false ) );
 check( 'header kiểu cửa hàng hợp lệ với gốc header', ( new BuilderSanitizer() )->document( Saha\Core\Templates\Defaults::headerStore(), 'header-root' )['errors'], array() );
@@ -784,6 +784,11 @@ check( 'danh sách sản phẩm: bố cục lạ bị từ chối', count( saha_
 $saha_arch      = saha_bs( Saha\Core\Builder\StoreKit::archive() );
 $saha_arch_json = (string) json_encode( $saha_arch['document'] ? $saha_arch['document']->toArray() : array(), JSON_UNESCAPED_UNICODE );
 check( 'shop & danh mục kiểu cửa hàng hợp lệ: tiêu đề khung + cột lọc', array( $saha_arch['errors'], false !== strpos( $saha_arch_json, '"layout":"sidebar"' ), false !== strpos( $saha_arch_json, '"style":"card"' ) ), array( array(), true, true ) );
+
+echo "Ngăn giỏ hàng, gợi ý tìm kiếm (mốc 2.4)\n";
+check( 'Theme Options: ngăn giỏ hàng bật mặc định', Saha\Core\ThemeOptions\Schema::groups()['shop']['fields']['mini_cart']['default'], true );
+check( 'element Tìm kiếm: gợi ý khi gõ bật mặc định', $saha_reg->get( 'search' )->def()['controls']['live']['default'], true );
+check( 'gợi ý tìm kiếm: chế độ catalogue → giá rỗng (không lộ giá)', Search::with_prices( array( array( 'id' => 42, 'name' => 'Loctite 243' ) ) ), array( array( 'id' => 42, 'name' => 'Loctite 243', 'price' => '' ) ) );
 
 echo "\n$pass passed, $fail failed\n";
 exit( $fail > 0 ? 1 : 0 );

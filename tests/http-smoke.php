@@ -276,6 +276,11 @@ ok( 'canvas builder khi chưa đăng nhập / nonce sai → 403', 403 === $r['st
 $r = http( 'GET', $api . '/products/999999999/quick-view' );
 ok( 'GET /products/{id}/quick-view với ID không tồn tại → 404', 404 === $r['status'], 'status ' . $r['status'] );
 
+// Gợi ý tìm kiếm (mốc 2.4): mỗi kết quả có trường price (rỗng ở chế độ catalogue).
+$r     = http( 'GET', $api . '/search?q=keo&limit=3' );
+$items = json_decode( $r['body'], true )['data']['items'] ?? null;
+ok( 'GET /search trả price cho từng kết quả', 200 === $r['status'] && is_array( $items ) && array() === array_filter( $items, static fn( $i ) => ! array_key_exists( 'price', $i ) ), 'status ' . $r['status'] );
+
 /*
  * ---------------------------------------------------------------------------
  * REST ghi (spec §57) — chỉ khi --write

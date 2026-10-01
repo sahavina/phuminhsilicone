@@ -162,6 +162,17 @@
 					return;
 				}
 
+				// Có ngăn giỏ hàng (MiniCart): đóng hộp, mở ngăn với giỏ Store API vừa trả về.
+				if ( window.sahaMiniCart && window.sahaMiniCart.open && result.json && result.json.items ) {
+					var from = opener;
+
+					dialog.close();
+					opener = null;
+					// Đóng ngăn → focus về nút Xem nhanh trên thẻ.
+					window.sahaMiniCart.open( result.json, true, from );
+					return;
+				}
+
 				notice( cfg.i18n.added, false, true );
 
 				// Số trên icon giỏ (element Giỏ hàng / header theme): lấy từ giỏ Store API trả về —

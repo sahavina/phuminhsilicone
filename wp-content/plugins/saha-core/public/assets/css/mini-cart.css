@@ -1,0 +1,270 @@
+/**
+ * Ngăn giỏ hàng trượt (saha-core WooCommerce\MiniCart).
+ */
+
+.saha-mc {
+	position: fixed;
+	inset: 0 0 0 auto;
+	display: flex;
+	flex-direction: column;
+	width: min(420px, 100vw);
+	max-width: 100vw;
+	height: 100%;
+	max-height: 100%;
+	margin: 0 0 0 auto;
+	padding: 0;
+	border: 0;
+	background: var(--saha-background, #fff);
+	color: var(--saha-text, #1f2328);
+	box-shadow: -12px 0 40px rgb(15 23 42 / 25%);
+}
+
+.saha-mc:not([open]) {
+	display: none;
+}
+
+.saha-mc[open] {
+	animation: saha-mc-in 0.2s ease-out;
+}
+
+.saha-mc::backdrop {
+	background: rgb(15 23 42 / 55%);
+}
+
+@keyframes saha-mc-in {
+
+	from {
+		transform: translateX(100%);
+	}
+
+	to {
+		transform: none;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+	.saha-mc[open] {
+		animation: none;
+	}
+}
+
+html.saha-mc-open {
+	overflow: hidden;
+}
+
+.saha-mc__head {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 12px;
+	padding: 16px 20px;
+	border-bottom: 1px solid var(--saha-border, #e5e7eb);
+}
+
+.saha-mc__title {
+	margin: 0;
+	font-size: 18px;
+}
+
+.saha-mc__title:focus {
+	outline: none;
+}
+
+.saha-mc__count {
+	color: var(--saha-muted, #5f6b7a);
+	font-weight: 400;
+}
+
+.saha-mc__close {
+	width: 40px;
+	height: 40px;
+	border: 0;
+	border-radius: 50%;
+	background: var(--saha-surface, #f6f7f9);
+	color: var(--saha-heading, #111827);
+	font-size: 26px;
+	line-height: 1;
+	cursor: pointer;
+}
+
+.saha-mc__body {
+	flex: 1 1 auto;
+	padding: 8px 20px;
+	overflow-y: auto;
+	overscroll-behavior: contain;
+}
+
+.saha-mc.is-busy .saha-mc__body {
+	opacity: 0.6;
+	pointer-events: none;
+}
+
+.saha-mc__items {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.saha-mc__item {
+	display: grid;
+	grid-template-columns: 64px minmax(0, 1fr) auto;
+	gap: 12px;
+	align-items: start;
+	padding: 14px 0;
+	border-bottom: 1px solid var(--saha-border, #e5e7eb);
+}
+
+.saha-mc__thumb {
+	display: block;
+	width: 64px;
+	height: 64px;
+	overflow: hidden;
+	border-radius: 6px;
+	background: var(--saha-surface, #f6f7f9);
+}
+
+.saha-mc__thumb img {
+	display: block;
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+}
+
+.saha-mc__name {
+	display: block;
+	color: var(--saha-heading, #111827);
+	font-weight: 600;
+	line-height: 1.35;
+	text-decoration: none;
+}
+
+.saha-mc__name:hover {
+	color: var(--saha-primary, #0b5cab);
+}
+
+.saha-mc__variation {
+	display: block;
+	margin-top: 2px;
+	color: var(--saha-muted, #5f6b7a);
+	font-size: 13px;
+}
+
+.saha-mc__row {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px 12px;
+	align-items: center;
+	justify-content: space-between;
+	margin-top: 8px;
+}
+
+.saha-mc__qty {
+	display: inline-flex;
+	align-items: stretch;
+	overflow: hidden;
+	border: 1px solid var(--saha-border, #d1d5db);
+	border-radius: 6px;
+}
+
+.saha-mc__step {
+	width: 32px;
+	border: 0;
+	background: var(--saha-surface, #f6f7f9);
+	color: var(--saha-heading, #111827);
+	font-size: 16px;
+	cursor: pointer;
+}
+
+.saha-mc__input {
+	width: 44px;
+	min-height: 32px;
+	padding: 0;
+	border: 0;
+	background: transparent;
+	color: inherit;
+	font: inherit;
+	text-align: center;
+	-moz-appearance: textfield;
+}
+
+.saha-mc__input::-webkit-outer-spin-button,
+.saha-mc__input::-webkit-inner-spin-button {
+	margin: 0;
+	-webkit-appearance: none;
+}
+
+.saha-mc__price {
+	font-weight: 700;
+}
+
+.saha-mc__remove {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 32px;
+	height: 32px;
+	padding: 0;
+	border: 0;
+	border-radius: 50%;
+	background: none;
+	color: var(--saha-muted, #5f6b7a);
+	cursor: pointer;
+}
+
+.saha-mc__remove:hover,
+.saha-mc__remove:focus-visible {
+	background: var(--saha-surface, #f6f7f9);
+	color: var(--saha-error, #c62828);
+}
+
+.saha-mc__foot {
+	padding: 16px 20px calc(16px + env(safe-area-inset-bottom, 0px));
+	border-top: 1px solid var(--saha-border, #e5e7eb);
+	background: var(--saha-background, #fff);
+}
+
+.saha-mc__foot:empty {
+	display: none;
+}
+
+.saha-mc__subtotal {
+	display: flex;
+	justify-content: space-between;
+	margin: 0 0 12px;
+	font-size: 16px;
+}
+
+.saha-mc__actions {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 10px;
+}
+
+.saha-mc__btn {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	min-height: 44px;
+	text-align: center;
+}
+
+.saha-mc__btn--ghost {
+	border: 1px solid currentcolor;
+	background: transparent;
+	color: var(--saha-heading, #111827);
+}
+
+.saha-mc__empty,
+.saha-mc__loading {
+	padding: 48px 0;
+	text-align: center;
+}
+
+.saha-mc__error {
+	margin: 12px 0;
+	padding: 10px 12px;
+	border-radius: 8px;
+	background: var(--saha-surface, #f6f7f9);
+	color: var(--saha-error, #c62828);
+}

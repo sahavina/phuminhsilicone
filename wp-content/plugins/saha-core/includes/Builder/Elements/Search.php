@@ -46,6 +46,12 @@ final class Search extends Element {
 					'section' => 'content',
 					'default' => true,
 				),
+				'live'        => array(
+					'type'    => 'toggle',
+					'label'   => __( 'Gợi ý khi gõ (ảnh, mã, giá)', 'saha-core' ),
+					'section' => 'content',
+					'default' => true,
+				),
 				'style'       => array(
 					'type'    => 'select',
 					'label'   => __( 'Kiểu', 'saha-core' ),
@@ -101,11 +107,17 @@ final class Search extends Element {
 	 */
 	public function render( Node $node, RenderContext $ctx, string $content ): string {
 		$products = $this->prop( $node, 'products' ) && function_exists( 'get_product_search_form' );
+		$live     = '';
+
+		if ( $products && $this->prop( $node, 'live' ) && ! $ctx->editor ) {
+			self::enqueueLive();
+			$live = ' data-saha-live-search';
+		}
 
 		if ( 'joined' !== $this->prop( $node, 'style' ) ) {
 			$form = $products ? (string) get_product_search_form( false ) : (string) get_search_form( array( 'echo' => false ) );
 
-			return '<div' . $this->rootAttributes( $node, $ctx, array( 'saha-search-el' ) ) . '>' . $form . '</div>';
+			return '<div' . $this->rootAttributes( $node, $ctx, array( 'saha-search-el' ) ) . $live . '>' . $form . '</div>';
 		}
 
 		$id     = 'saha-s-' . $node->id;
@@ -118,7 +130,50 @@ final class Search extends Element {
 			. ( $products ? '<input type="hidden" name="post_type" value="product">' : '' )
 			. '<button type="submit" class="saha-search-el__button">' . $button . '</button></form>';
 
-		return '<div' . $this->rootAttributes( $node, $ctx, array( 'saha-search-el', 'saha-search-el--joined' ) ) . '>' . $form . '</div>';
+		return '<div' . $this->rootAttributes( $node, $ctx, array( 'saha-search-el', 'saha-search-el--joined' ) ) . $live . '>' . $form . '</div>';
+	}
+
+	/**
+	 * CSS/JS gợi ý khi gõ — nạp lúc element được in (in ở footer), chỉ trang có ô tìm kiếm.
+	 */
+	public static function enqueueLive(): void {
+		if ( wp_script_is( 'saha-live-search', 'enqueued' ) ) {
+			return;
+		}
+
+		wp_enqueue_style( 'saha-live-search', SAHA_CORE_URL . 'public/assets/css/live-search.css', array(), SAHA_CORE_VERSION );
+		wp_enqueue_script(
+			'saha-live-search',
+			SAHA_CORE_URL . 'public/assets/js/live-search.js',
+			array(),
+			SAHA_CORE_VERSION,
+			array(
+				'in_footer' => true,
+				'strategy'  => 'defer',
+			)
+		);
+
+		wp_localize_script(
+			'saha-live-search',
+			'sahaLiveSearch',
+			array(
+				'endpoint'  => rest_url( 'saha/v1/search' ),
+				'searchUrl' => home_url( '/' ),
+				'minLength' => \Saha\Core\Search::MIN_LENGTH,
+				'limit'     => 6,
+				'i18n'      => array(
+					'loading'   => __( 'Đang tìm…', 'saha-core' ),
+					'none'      => __( 'Không tìm thấy sản phẩm phù hợp.', 'saha-core' ),
+					'error'     => __( 'Không tìm được lúc này. Bấm Enter để tìm.', 'saha-core' ),
+					/* translators: %d: số kết quả */
+					'count'     => __( '%d gợi ý. Dùng phím mũi tên để chọn.', 'saha-core' ),
+					/* translators: %d: tổng số kết quả */
+					'all'       => __( 'Xem tất cả %d kết quả', 'saha-core' ),
+					'sku'       => __( 'Mã', 'saha-core' ),
+					'suggested' => __( 'Gợi ý sản phẩm', 'saha-core' ),
+				),
+			)
+		);
 	}
 
 	/**

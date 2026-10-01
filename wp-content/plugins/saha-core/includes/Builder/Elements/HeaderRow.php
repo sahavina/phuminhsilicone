@@ -110,7 +110,7 @@ final class HeaderRow extends Element {
 		$css->set( '', 'background-color', $node->prop( 'background' ) );
 		$css->set( '', 'color', $node->prop( 'textColor' ) );
 		// Không tô link trong bảng thả xuống (menu con, mega menu, danh mục): bảng có nền riêng.
-		$css->set( ' a:not(.saha-btn):not(:where(.sub-menu a, .saha-mega a, .saha-catmenu__panel a))', 'color', $node->prop( 'textColor' ) );
+		$css->set( ' a:not(.saha-btn):not(:where(.sub-menu a, .saha-mega a, .saha-catmenu__panel a, .saha-ls a))', 'color', $node->prop( 'textColor' ) );
 
 		if ( null !== $node->prop( 'border' ) ) {
 			$css->set( '', 'border-bottom', '1px solid ' . (string) $node->prop( 'border' ) );

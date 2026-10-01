@@ -1,0 +1,139 @@
+/**
+ * Gợi ý khi gõ (element Tìm kiếm).
+ */
+
+.saha-ls-root {
+	position: relative;
+}
+
+.saha-ls {
+	position: absolute;
+	top: calc(100% + 6px);
+	right: 0;
+	left: 0;
+	z-index: 1000;
+	min-width: min(360px, calc(100vw - 32px));
+	max-height: min(70vh, 520px);
+	overflow-y: auto;
+	border: 1px solid var(--saha-border, #e5e7eb);
+	border-radius: 10px;
+	background: var(--saha-background, #fff);
+	color: var(--saha-text, #1f2328);
+	box-shadow: 0 16px 40px rgb(15 23 42 / 18%);
+	text-align: left;
+}
+
+.saha-ls[hidden] {
+	display: none;
+}
+
+.saha-ls__list {
+	margin: 0;
+	padding: 6px;
+	list-style: none;
+}
+
+.saha-ls__list:empty {
+	display: none;
+}
+
+.saha-ls__link {
+	display: flex;
+	gap: 12px;
+	align-items: center;
+	padding: 8px;
+	border-radius: 8px;
+	color: inherit;
+	text-decoration: none;
+}
+
+.saha-ls__item[aria-selected="true"] .saha-ls__link {
+	background: var(--saha-surface, #f6f7f9);
+}
+
+.saha-ls__thumb {
+	flex: 0 0 48px;
+	width: 48px;
+	height: 48px;
+	border-radius: 6px;
+	background: var(--saha-surface, #f6f7f9);
+	object-fit: cover;
+}
+
+.saha-ls__body {
+	display: flex;
+	flex: 1 1 auto;
+	flex-direction: column;
+	min-width: 0;
+}
+
+.saha-ls__name {
+	overflow: hidden;
+	color: var(--saha-heading, #111827);
+	font-size: 14px;
+	font-weight: 600;
+	line-height: 1.35;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.saha-ls__meta {
+	color: var(--saha-muted, #5f6b7a);
+	font-size: 12px;
+}
+
+.saha-ls__price {
+	flex: 0 0 auto;
+	color: var(--saha-error, #c62828);
+	font-size: 14px;
+	font-weight: 700;
+	white-space: nowrap;
+}
+
+.saha-ls__foot {
+	border-top: 1px solid var(--saha-border, #e5e7eb);
+}
+
+.saha-ls__foot:empty {
+	display: none;
+}
+
+.saha-ls__list:empty + .saha-ls__foot {
+	border-top: 0;
+}
+
+.saha-ls__all {
+	display: block;
+	padding: 12px 14px;
+	color: var(--saha-primary, #0b5cab);
+	font-size: 14px;
+	font-weight: 600;
+	text-align: center;
+	text-decoration: none;
+}
+
+.saha-ls__all:hover,
+.saha-ls__all:focus-visible {
+	text-decoration: underline;
+}
+
+.saha-ls__msg {
+	margin: 0;
+	padding: 16px;
+	color: var(--saha-muted, #5f6b7a);
+	font-size: 14px;
+	text-align: center;
+}
+
+.saha-ls-root.is-loading .saha-search-el__button,
+.saha-ls-root.is-loading button[type="submit"] {
+	opacity: 0.7;
+}
+
+/* Màn hẹp: bằng đúng ô tìm kiếm (không tràn sát mép màn hình). */
+@media (max-width: 600px) {
+
+	.saha-ls {
+		min-width: 0;
+	}
+}

@@ -3,7 +3,7 @@
  * Plugin Name:       SAHA Core
  * Plugin URI:        https://tongkhokeodan.com
  * Description:       Business layer cho Tổng Kho Keo Dán SAHA: settings, roles, security, logger, database migration, brand, product, search, quote, lead, REST API.
- * Version:           1.22.0
+ * Version:           1.23.0
  * Requires at least: 6.4
  * Requires PHP:      8.2
  * Author:            Công ty TNHH Thương mại Dịch vụ Trực tuyến SAHA
@@ -23,7 +23,7 @@ defined( 'ABSPATH' ) || exit;
  * Constants
  * -------------------------------------------------------------------------
  */
-define( 'SAHA_CORE_VERSION', '1.22.0' );
+define( 'SAHA_CORE_VERSION', '1.23.0' );
 define( 'SAHA_CORE_DB_VERSION', '1.2.0' );
 define( 'SAHA_CORE_FILE', __FILE__ );
 define( 'SAHA_CORE_PATH', plugin_dir_path( __FILE__ ) );

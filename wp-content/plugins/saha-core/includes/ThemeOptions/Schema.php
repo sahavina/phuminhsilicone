@@ -375,6 +375,12 @@ final class Schema {
 						'label'   => __( 'Nút "Xem nhanh" trên thẻ sản phẩm', 'saha-core' ),
 						'default' => false,
 					),
+					'mini_cart'       => array(
+						'type'    => 'toggle',
+						'label'   => __( 'Bấm icon giỏ / thêm vào giỏ → mở ngăn giỏ hàng (không chuyển trang)', 'saha-core' ),
+						'default' => true,
+						'help'    => __( 'Tắt ở chế độ catalogue. Không có JavaScript thì icon giỏ vẫn mở trang giỏ hàng.', 'saha-core' ),
+					),
 				),
 			),
 			'catalog'    => array(
