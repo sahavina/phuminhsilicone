@@ -75,7 +75,7 @@ function dropOnRow( { doc, defs, node, parentId, index, event } ) {
 
 function Row( { node, parentId, index, depth, collapsed, toggle } ) {
 	const { state, dispatch, defs } = useBuilder();
-	const { insertType, moveTo } = useActions();
+	const { insertType, insertCopy, moveTo } = useActions();
 	const [ dropMode, setDropMode ] = useState( null );
 	const hasChildren = ( node.children || [] ).length > 0;
 	const isCollapsed = collapsed.has( node.id );
@@ -147,6 +147,8 @@ function Row( { node, parentId, index, depth, collapsed, toggle } ) {
 
 					if ( 'new' === payload.kind ) {
 						insertType( payload.type, result );
+					} else if ( 'node' === payload.kind ) {
+						insertCopy( payload.node, result );
 					} else {
 						moveTo( payload.id, result );
 					}

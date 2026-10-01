@@ -84,6 +84,24 @@ Trước khi commit: `php -l` file sửa · smoke · `npm run lint:js lint:css t
 
 `dynamic: true` (giá, tồn kho, user, nonce…) → không vào render cache. Cache tĩnh xoá theo thế hệ SAHA khi lưu sản phẩm/term.
 
+### Thêm khối mẫu
+
+Khối mẫu (bảng Thêm → **Khối mẫu**) lấy từ `Builder\Patterns::all()`. Thêm khối bằng filter — `node` là một section theo schema tài liệu (không cần ID, Sanitizer tự cấp; khối sai schema bị bỏ và `wp saha qa` cảnh báo):
+
+```php
+add_filter( 'saha_builder_patterns', function ( array $patterns ): array {
+	$patterns[] = array(
+		'id'          => 'my-banner',
+		'name'        => 'Banner khuyến mãi',
+		'group'       => 'basic',          // store | basic | nhóm mới (hiện theo tên)
+		'icon'        => 'megaphone',      // dashicon
+		'description' => 'Banner 1 cột + nút.',
+		'node'        => array( 'type' => 'section', 'children' => array( /* … */ ) ),
+	);
+	return $patterns;
+} );
+```
+
 ### Thêm loại control
 
 PHP: class kế thừa `Builder\Controls\Control` (`type()`, `sanitize()` ném `InvalidValue` khi sai, `forClient()`), đăng ký qua `saha_builder_register_controls`. JS: component trong `saha-builder/src/builder/controls/` và nhánh tương ứng ở `Field.js`.

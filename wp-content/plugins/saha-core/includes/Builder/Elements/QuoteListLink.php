@@ -32,7 +32,7 @@ final class QuoteListLink extends Element {
 		return array(
 			'type'           => 'quote-list-link',
 			'name'           => __( 'Icon danh sách báo giá', 'saha-core' ),
-			'icon'           => 'file-text',
+			'icon'           => 'clipboard',
 			'category'       => 'header',
 			'allowedParents' => self::CONTENT_PARENTS,
 			'dynamic'        => true,

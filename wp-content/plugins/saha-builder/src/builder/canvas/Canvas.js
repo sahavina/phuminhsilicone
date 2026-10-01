@@ -494,6 +494,8 @@ export default function Canvas( { onShortcut } ) {
 
 			if ( 'new' === payload.kind ) {
 				latest.current.actions.insertType( payload.type, result );
+			} else if ( 'node' === payload.kind ) {
+				latest.current.actions.insertCopy( payload.node, result );
 			} else {
 				latest.current.actions.moveTo( payload.id, result );
 			}

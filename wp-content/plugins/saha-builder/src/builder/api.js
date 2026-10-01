@@ -30,6 +30,9 @@ export const api = {
 			signal,
 		} ).then( ( r ) => r.data ),
 
+	patterns: () =>
+		apiFetch( { path: `${ BASE }/patterns` } ).then( ( r ) => r.data ),
+
 	blocks: () =>
 		apiFetch( { path: '/saha/v1/blocks' } ).then( ( r ) => r.data ),
 

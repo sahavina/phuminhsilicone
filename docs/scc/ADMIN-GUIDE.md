@@ -56,6 +56,13 @@ Bấm **Lưu** → toàn website đổi theo, không cần sửa CSS. Mỗi ô c
 - Thêm Hàng: tự có 2 cột; chỉnh độ rộng cột ở tab **Kiểu** của Cột.
 - Hàng có thiết lập **Xếp chồng cột trên**: Mobile / Tablet — để cột xuống dòng trên màn nhỏ.
 
+### Khối mẫu & Block đã lưu
+
+Cột **Thêm** có 3 mục ở trên cùng: **Element · Khối mẫu · Block đã lưu**.
+
+- **Khối mẫu**: section dựng sẵn (hero, danh mục, sản phẩm nổi bật, quảng bá, vì sao chọn, thương hiệu, tin tức + đánh giá, hỏi đáp, CTA báo giá, ảnh + nội dung…). Bấm hoặc kéo vào trang → được **bản sao** để sửa tự do. Trang đã có tiêu đề H1 thì H1 của khối mẫu tự thành H2. Khối "Tin tức + khách hàng nói" có đánh giá **mẫu** — thay bằng đánh giá thật.
+- **Block đã lưu**: các Block dùng chung đã tạo. Chèn vào là **liên kết** tới block — sửa block một nơi, mọi trang dùng nó cùng đổi. Tạo block: chọn element → tab **Nội dung** → **Lưu thành block**.
+
 ### Element hay dùng
 
 | Element | Ghi chú |

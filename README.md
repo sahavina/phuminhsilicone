@@ -479,7 +479,8 @@ Chuyển từ Flatsome sang theme + builder riêng. Thiết kế: [docs/scc/TECH
 | 2.3 | Trang sản phẩm nâng cao: swatches, thanh mua dính, xem nhanh ([PHASE-2.3](docs/scc/PHASE-2.3.md)) | ✅ chờ review |
 | D5 | Trang danh mục kiểu cửa hàng: cột lọc (danh mục, khoảng giá, thương hiệu…), thanh “Đang hiện · Sắp xếp”, ngăn lọc mobile ([PHASE-D5](docs/scc/PHASE-D5.md)) | ✅ chờ review |
 | 2.4 | Giỏ & tìm kiếm: ngăn giỏ hàng, gợi ý khi gõ có giá (bộ lọc AJAX ở D5) ([PHASE-2.4](docs/scc/PHASE-2.4.md)) | ✅ chờ review |
-| 2.5 | Danh sách báo giá nhiều sản phẩm: bảng `quote_items`, trang danh sách, admin theo dòng, báo cáo ([PHASE-2.5](docs/scc/PHASE-2.5.md)) | ✅ chờ review |
+| 2.5 | Danh sách báo giá nhiều sản phẩm: bảng `quote_items`, trang danh sách, admin theo dòng, báo cáo ([PHASE-2.5](docs/scc/PHASE-2.5.md)) | ✅ |
+| D6 | Bảng Thêm của builder: Khối mẫu (12 section dựng sẵn) + Block đã lưu ([PHASE-D6](docs/scc/PHASE-D6.md)) | ✅ chờ review |
 | 2.6–2.8 | Import/Export, element Phase 2, QA | ⏳ |
 
-Plugin: **SAHA Core 1.24.0** · **SAHA Builder 0.5.0** · Theme **SAHA Theme 0.2.5** · Database schema **1.3.0**.
+Plugin: **SAHA Core 1.25.0** · **SAHA Builder 0.6.0** · Theme **SAHA Theme 0.2.5** · Database schema **1.3.0**.

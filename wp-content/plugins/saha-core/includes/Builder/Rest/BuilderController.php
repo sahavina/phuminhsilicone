@@ -14,6 +14,7 @@ use Saha\Core\Builder\CssGenerator;
 use Saha\Core\Builder\ElementRegistry;
 use Saha\Core\Builder\LayoutRepository;
 use Saha\Core\Builder\LayoutService;
+use Saha\Core\Builder\Patterns;
 use Saha\Core\Builder\RenderContext;
 use Saha\Core\Builder\Renderer;
 use Saha\Core\Builder\Sanitizer;
@@ -26,6 +27,7 @@ defined( 'ABSPATH' ) || exit;
  * BuilderController (TECHNICAL-DESIGN §7).
  *
  * | GET  /builder/elements   | định nghĩa element + control                     |
+ * | GET  /builder/patterns   | khối mẫu (section dựng sẵn) cho bảng Thêm        |
  * | GET  /builder/{id}       | layout, hash, khoá chỉnh sửa                     |
  * | POST /builder/save       | {postId, data, baseHash, enabled} → lưu           |
  * | POST /builder/render     | {postId?, node} → HTML + CSS một node (canvas)   |
@@ -52,6 +54,16 @@ final class BuilderController {
 				'methods'             => \WP_REST_Server::READABLE,
 				'permission_callback' => array( $this, 'canUseBuilder' ),
 				'callback'            => array( $this, 'elements' ),
+			)
+		);
+
+		register_rest_route(
+			Api::NAMESPACE,
+			'/builder/patterns',
+			array(
+				'methods'             => \WP_REST_Server::READABLE,
+				'permission_callback' => array( $this, 'canUseBuilder' ),
+				'callback'            => static fn(): \WP_REST_Response => Api::success( Patterns::forClient() ),
 			)
 		);
 

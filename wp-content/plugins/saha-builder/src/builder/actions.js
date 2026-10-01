@@ -4,6 +4,7 @@
 import { useMemo } from '@wordpress/element';
 
 import { useBuilder } from './context';
+import { demoteH1, hasH1 } from './store/headings';
 import {
 	cloneWithNewIds,
 	collectIds,
@@ -180,6 +181,47 @@ export function useActions() {
 			return true;
 		};
 
-		return { insertType, moveTo, copy, paste, hasClipboard };
+		/**
+		 * Chèn bản sao của một cây node có sẵn (khối mẫu, block đã lưu) — ID mới hoàn toàn.
+		 * Trang đã có H1 → H1 của khối mẫu hạ thành H2 (mỗi trang một H1).
+		 *
+		 * @param {Object} node     Node gốc.
+		 * @param {Object} [target] { parentId, index, wrap } (kéo thả) — không có thì theo lựa chọn.
+		 */
+		const insertCopy = ( node, target ) => {
+			if ( ! node || ! node.type || ! defs[ node.type ] ) {
+				return false;
+			}
+
+			const where =
+				target ??
+				resolveClickInsert(
+					state.doc,
+					defs,
+					state.selectedId,
+					node.type
+				);
+
+			if ( ! where ) {
+				return false;
+			}
+
+			const taken = collectIds( state.doc );
+			const copyNode = cloneWithNewIds( node, taken );
+
+			if ( hasH1( defs, state.doc.elements ) ) {
+				demoteH1( defs, copyNode );
+			}
+
+			dispatch( {
+				type: 'APPLY',
+				doc: placeNode( defs, state.doc, where, copyNode, taken ),
+				selectId: copyNode.id,
+			} );
+
+			return true;
+		};
+
+		return { insertType, insertCopy, moveTo, copy, paste, hasClipboard };
 	}, [ state.doc, state.selectedId, defs, dispatch ] );
 }

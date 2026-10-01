@@ -32,7 +32,7 @@ final class QuoteList extends Element {
 		return array(
 			'type'           => 'quote-list',
 			'name'           => __( 'Danh sách báo giá', 'saha-core' ),
-			'icon'           => 'file-text',
+			'icon'           => 'clipboard',
 			'category'       => 'woocommerce',
 			'allowedParents' => self::CONTENT_PARENTS,
 			'controls'       => array(

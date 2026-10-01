@@ -257,6 +257,8 @@ ok( 'trang kết quả form không bị cache', (bool) preg_match( '/no-cache|no
 echo "Builder (SCC)\n";
 $r = http( 'GET', $api . '/builder/elements' );
 ok( 'GET /builder/elements khi chưa đăng nhập → 401', 401 === $r['status'], 'status ' . $r['status'] );
+$r = http( 'GET', $api . '/builder/patterns' );
+ok( 'GET /builder/patterns (khối mẫu) khi chưa đăng nhập → 401', 401 === $r['status'], 'status ' . $r['status'] );
 $r = http( 'GET', $api . '/builder/1' );
 ok( 'GET /builder/{id} khi chưa đăng nhập → 401', 401 === $r['status'], 'status ' . $r['status'] );
 $r = http( 'POST', $api . '/builder/save', array(), array( 'postId' => 1, 'data' => array( 'elements' => array() ) ) );

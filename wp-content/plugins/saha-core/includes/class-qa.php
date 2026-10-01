@@ -365,6 +365,18 @@ final class Qa {
 			self::WARN
 		);
 
+		// Khối mẫu của bảng "Thêm": mọi khối phải qua được Sanitizer (bị loại = editor không hiện khối đó).
+		$patterns_all   = count( Builder\Patterns::all() );
+		$patterns_valid = count( Builder\Patterns::forClient() );
+		$this->expect(
+			$g,
+			'Khối mẫu hợp lệ',
+			$patterns_all === $patterns_valid,
+			sprintf( '%1$d/%2$d khối hợp lệ — khối lỗi bị ẩn khỏi bảng Thêm (thường do đổi element / StoreKit).', $patterns_valid, $patterns_all ),
+			self::WARN,
+			sprintf( '%d khối', $patterns_valid )
+		);
+
 		// Render thử một tài liệu mẫu qua đúng đường sanitize → render → CSS của production.
 		$sample = ( new Builder\Sanitizer() )->document(
 			array(
@@ -613,10 +625,12 @@ final class Qa {
 			'/saha/v1/brands',
 			'/saha/v1/brands/(?P<slug>[a-z0-9\-_]+)',
 			'/saha/v1/quote',
+			'/saha/v1/quote/list',
 			'/saha/v1/contact',
 			'/saha/v1/settings',
 			'/saha/v1/blocks',
 			'/saha/v1/builder/elements',
+			'/saha/v1/builder/patterns',
 			'/saha/v1/builder/(?P<id>\d+)',
 			'/saha/v1/builder/save',
 			'/saha/v1/builder/render',
