@@ -1,0 +1,143 @@
+/*
+ * SAHA — search.css
+ * Autocomplete dropdown + trang kết quả (Phase 3 dùng tới).
+ */
+
+.saha-search {
+	position: relative;
+}
+
+.saha-search__input {
+	width: 100%;
+}
+
+.saha-search__panel {
+	position: absolute;
+	z-index: 999;
+	top: calc(100% + 4px);
+	right: 0;
+	left: 0;
+	max-height: 70vh;
+	overflow-y: auto;
+	background: var(--saha-color-surface);
+	border: 1px solid var(--saha-color-border);
+	border-radius: var(--saha-radius);
+	box-shadow: 0 6px 20px rgba(0, 0, 0, .1);
+}
+
+.saha-search__panel[hidden] {
+	display: none;
+}
+
+.saha-search__status {
+	padding: 12px 14px;
+	color: var(--saha-color-muted);
+	font-size: 14px;
+}
+
+.saha-search__list {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.saha-search-result {
+	display: flex;
+	gap: 10px;
+	padding: 10px 12px;
+	border-bottom: 1px solid var(--saha-color-border);
+	color: inherit;
+	text-decoration: none;
+}
+
+.saha-search-result:last-child {
+	border-bottom: 0;
+}
+
+.saha-search-result:hover,
+.saha-search-result:focus-visible,
+.saha-search-result[aria-selected="true"] {
+	background: var(--saha-color-surface-alt);
+}
+
+.saha-search-result__thumb {
+	flex: 0 0 48px;
+	width: 48px;
+	height: 48px;
+	object-fit: contain;
+	background: var(--saha-color-surface-alt);
+	border-radius: 4px;
+}
+
+.saha-search-result__body {
+	min-width: 0;
+}
+
+.saha-search-result__name {
+	display: block;
+	overflow: hidden;
+	font-size: 14px;
+	font-weight: 600;
+	line-height: 1.3;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.saha-search-result__meta {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px;
+	margin-top: 2px;
+	color: var(--saha-color-muted);
+	font-size: 12px;
+}
+
+/* --- Skeleton loading (spec §83) --------------------------------------- */
+
+.saha-search__skeleton {
+	padding: 12px;
+}
+
+.saha-skeleton-line {
+	height: 12px;
+	margin-bottom: 8px;
+	background: linear-gradient(90deg, #eef1f4 25%, #e2e6ea 37%, #eef1f4 63%);
+	background-size: 400% 100%;
+	border-radius: 4px;
+	animation: saha-shimmer 1.2s ease-in-out infinite;
+}
+
+@keyframes saha-shimmer {
+	0% {
+		background-position: 100% 50%;
+	}
+
+	100% {
+		background-position: 0 50%;
+	}
+}
+
+/* --- Trang kết quả ----------------------------------------------------- */
+
+.saha-search-page__summary {
+	margin-bottom: 16px;
+	color: var(--saha-color-muted);
+}
+
+/* --- Form tìm kiếm ------------------------------------------------------ */
+
+.saha-search__form {
+	display: flex;
+	gap: 6px;
+	margin: 0;
+}
+
+.saha-search__input {
+	flex: 1 1 auto;
+	margin: 0;
+}
+
+.saha-search__submit {
+	flex: 0 0 auto;
+	margin: 0;
+}

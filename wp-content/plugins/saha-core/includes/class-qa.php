@@ -48,6 +48,7 @@ final class Qa {
 		$this->check_taxonomies();
 		$this->check_rest_routes();
 		$this->check_builder();
+		$this->check_woocommerce();
 		$this->check_search();
 		$this->check_seo();
 		$this->check_security();
@@ -407,6 +408,50 @@ final class Qa {
 				null !== $id ? self::PASS : ( current_theme_supports( 'saha-theme-options' ) ? self::WARN : self::SKIP ),
 				null !== $id ? get_the_title( $id ) . ' (#' . $id . ')' : __( 'Chưa có — đang dùng bản PHP của theme. Tạo ở SAHA → Header & Footer.', 'saha-core' )
 			);
+		}
+	}
+
+	/**
+	 * WooCommerce: chế độ catalogue thật sự chặn mua, hoặc luồng mua hàng đủ điều kiện.
+	 */
+	private function check_woocommerce(): void {
+		$g = 'WooCommerce';
+
+		if ( ! class_exists( 'WooCommerce' ) || ! function_exists( 'wc_get_products' ) ) {
+			$this->add( $g, 'WooCommerce', self::SKIP, 'Chưa kích hoạt.' );
+			return;
+		}
+
+		$products = wc_get_products(
+			array(
+				'status' => 'publish',
+				'type'   => 'simple',
+				'limit'  => 1,
+			)
+		);
+		$product  = $products[0] ?? null;
+
+		if ( ! $product instanceof \WC_Product ) {
+			$this->add( $g, 'Sản phẩm mẫu để kiểm', self::SKIP, 'Chưa có sản phẩm đơn giản nào.' );
+			return;
+		}
+
+		if ( WooCommerce\CatalogMode::enabled() ) {
+			$this->add( $g, 'Chế độ catalogue', self::PASS, 'Bật — luồng báo giá' );
+			$this->expect( $g, 'Catalogue: sản phẩm không mua được (cả Store API)', ! $product->is_purchasable(), 'Vẫn mua được — kiểm saha-core WooCommerce\CatalogMode.' );
+			$this->expect( $g, 'Catalogue: giá thay bằng "Liên hệ báo giá" (HTML, không chỉ CSS)', false !== strpos( (string) $product->get_price_html(), 'saha-price-hidden' ), 'Giá vẫn in ra HTML.' );
+			$this->expect( $g, 'Catalogue: không có nút thêm vào giỏ ở trang sản phẩm', false === has_action( 'woocommerce_single_product_summary', 'woocommerce_template_single_add_to_cart' ), 'Nút vẫn còn.' );
+		} else {
+			$this->add( $g, 'Chế độ catalogue', self::PASS, 'Tắt — luồng mua hàng' );
+			$this->expect( $g, 'Sản phẩm mua được', $product->is_purchasable(), 'Sản phẩm #' . $product->get_id() . ' không mua được (chưa có giá?).', self::WARN );
+			$gateways = WC()->payment_gateways() ? WC()->payment_gateways()->get_available_payment_gateways() : array();
+			$this->expect( $g, 'Có phương thức thanh toán', ! empty( $gateways ), 'Chưa bật phương thức nào — WooCommerce → Cài đặt → Thanh toán.' );
+			$this->expect( $g, 'Nút "Mua ngay" đã gắn', false !== has_action( 'woocommerce_after_add_to_cart_button' ), 'Thiếu hook BuyNow.' );
+		}
+
+		foreach ( array( 'cart', 'checkout', 'myaccount' ) as $page ) {
+			$id = (int) wc_get_page_id( $page );
+			$this->expect( $g, "Trang {$page} đã gán", $id > 0 && 'publish' === get_post_status( $id ), 'Chưa gán — WooCommerce → Cài đặt → Nâng cao.', 'myaccount' === $page ? self::WARN : self::FAIL );
 		}
 	}
 

@@ -1,0 +1,284 @@
+/*
+ * SAHA - product.css
+ * Product card + single product presentation.
+ */
+
+.saha-product-card__sku {
+	margin: 2px 0 4px;
+	color: var(--saha-color-muted);
+	font-size: 13px;
+}
+
+.saha-product-card__sku .saha-label {
+	color: var(--saha-color-muted);
+}
+
+.saha-product-card__sku .saha-value {
+	color: var(--saha-color-text);
+	font-weight: 600;
+}
+
+/* Tieu de card khong duoc pha layout (spec 53). */
+.woocommerce-loop-product__title,
+.saha-product-card__title {
+	display: -webkit-box;
+	-webkit-line-clamp: 2;
+	-webkit-box-orient: vertical;
+	overflow: hidden;
+	min-height: 2.6em;
+	font-size: 15px;
+	line-height: 1.3;
+}
+
+.saha-product-card__brand {
+	color: var(--saha-color-primary);
+	font-size: 12px;
+	text-transform: uppercase;
+	letter-spacing: .02em;
+}
+
+/* Single product: block noi dung ky thuat. */
+.saha-product-section {
+	margin: 24px 0;
+	padding-top: 20px;
+	border-top: 1px solid var(--saha-color-border);
+}
+
+.saha-product-section__title {
+	margin-bottom: 12px;
+	font-size: 18px;
+}
+
+.saha-specs-table {
+	width: 100%;
+	border-collapse: collapse;
+}
+
+.saha-specs-table th,
+.saha-specs-table td {
+	padding: 8px 10px;
+	border: 1px solid var(--saha-color-border);
+	text-align: left;
+	vertical-align: top;
+}
+
+.saha-specs-table th {
+	width: 34%;
+	background: var(--saha-color-surface-alt);
+	font-weight: 600;
+}
+
+.saha-docs-list {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.saha-docs-list li + li {
+	margin-top: 6px;
+}
+
+/* --- Product meta (single) --------------------------------------------- */
+
+.saha-product-meta {
+	margin: 0 0 16px;
+	padding: 0;
+	list-style: none;
+	font-size: 14px;
+}
+
+.saha-product-meta__row {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 6px;
+	padding: 3px 0;
+}
+
+.saha-product-meta__label {
+	min-width: 120px;
+	color: var(--saha-color-muted);
+}
+
+.saha-product-meta__value {
+	font-weight: 600;
+}
+
+.saha-product-meta__availability {
+	color: var(--saha-color-primary);
+}
+
+/* --- Product CTA -------------------------------------------------------- */
+
+.saha-product-cta {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 12px;
+	margin: 20px 0;
+	padding: 16px;
+	background: var(--saha-color-surface-alt);
+	border: 1px solid var(--saha-color-border);
+	border-radius: var(--saha-radius);
+}
+
+.saha-product-cta__quote {
+	margin: 0;
+}
+
+.saha-product-cta__hotlines {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 12px;
+}
+
+.saha-product-cta__hotline-title {
+	width: 100%;
+	color: var(--saha-color-muted);
+	font-size: 13px;
+}
+
+.saha-product-cta__zalo {
+	font-weight: 600;
+}
+
+/* --- Sections ----------------------------------------------------------- */
+
+.saha-product-sections {
+	margin-top: 8px;
+}
+
+.saha-docs-list__type {
+	display: inline-block;
+	min-width: 90px;
+	color: var(--saha-color-muted);
+	font-size: 13px;
+}
+
+.saha-docs-list__title {
+	font-weight: 600;
+}
+
+.saha-brand-products__more {
+	margin-top: 12px;
+}
+
+@media (max-width: 575px) {
+	.saha-product-cta {
+		flex-direction: column;
+		align-items: stretch;
+	}
+
+	.saha-product-meta__label {
+		min-width: 100px;
+	}
+}
+
+/* --- Bộ lọc sản phẩm ---------------------------------------------------- */
+
+.saha-filter {
+	margin-bottom: 20px;
+	padding: 16px;
+	background: var(--saha-color-surface);
+	border: 1px solid var(--saha-color-border);
+	border-radius: var(--saha-radius);
+}
+
+.saha-filter__title {
+	margin: 0 0 12px;
+	font-size: 16px;
+}
+
+.saha-filter__group {
+	margin: 0 0 14px;
+	padding: 0;
+	border: 0;
+}
+
+.saha-filter__legend {
+	margin-bottom: 6px;
+	padding: 0;
+	color: var(--saha-color-muted);
+	font-size: 13px;
+	font-weight: 600;
+	text-transform: uppercase;
+	letter-spacing: .03em;
+}
+
+.saha-filter__list {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 6px 16px;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.saha-filter__list label {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	margin: 0;
+	font-size: 14px;
+	cursor: pointer;
+}
+
+.saha-filter__count {
+	color: var(--saha-color-muted);
+	font-size: 12px;
+}
+
+.saha-filter__price {
+	display: flex;
+	gap: 8px;
+}
+
+.saha-filter__price input {
+	max-width: 140px;
+	margin: 0;
+}
+
+.saha-filter__actions {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	margin-top: 12px;
+}
+
+.saha-filter__actions .button {
+	margin: 0;
+}
+
+.saha-filter__reset {
+	color: var(--saha-color-muted);
+	font-size: 14px;
+}
+
+.saha-filter__status {
+	margin: 8px 0 0;
+	min-height: 1em;
+	color: var(--saha-color-muted);
+	font-size: 13px;
+}
+
+/* Form đã được JS tăng cường: nút Áp dụng thành phương án dự phòng. */
+.saha-filter--enhanced .saha-filter__actions .button {
+	opacity: .85;
+}
+
+.saha-filter--loading {
+	opacity: .7;
+	pointer-events: none;
+}
+
+[aria-busy="true"] .products {
+	opacity: .5;
+	transition: opacity .15s ease;
+}
+
+@media (max-width: 767px) {
+	.saha-filter__list {
+		flex-direction: column;
+		gap: 4px;
+	}
+}

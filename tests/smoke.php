@@ -596,5 +596,23 @@ $saha_ftr_html = ( new Renderer() )->document( $saha_ftr['document'], new Render
 check( 'footer: bản quyền có năm hiện tại', false !== strpos( $saha_ftr_html, '© ' . gmdate( 'Y' ) . ' Tổng Kho Keo Dán SAHA' ), true );
 check( 'footer: email mailto', false !== strpos( $saha_ftr_html, 'href="mailto:sales@tongkhokeodan.com"' ), true );
 
+echo "WooCommerce (mốc 1.6)\n";
+function wp_unslash( $v ) { return is_string( $v ) ? stripslashes( $v ) : $v; }
+function wc_get_checkout_url() { return 'https://tongkhokeodan.com/checkout/'; }
+$saha_bn  = new Saha\Core\WooCommerce\BuyNow();
+$_REQUEST = array( 'saha-buy-now' => '34' );
+$saha_bn->prepare();
+check( 'Mua ngay (sp đơn giản): tự đặt add-to-cart = ID', $_REQUEST['add-to-cart'] ?? null, 34 );
+check( 'Mua ngay: chuyển sang trang thanh toán', $saha_bn->redirect( 'https://tongkhokeodan.com/cart/' ), 'https://tongkhokeodan.com/checkout/' );
+$_REQUEST = array( 'saha-buy-now' => '34', 'add-to-cart' => '35' );
+$saha_bn->prepare();
+check( 'Mua ngay (biến thể): giữ add-to-cart của form', $_REQUEST['add-to-cart'], '35' );
+$_REQUEST = array( 'saha-buy-now' => 'abc' );
+$saha_bn->prepare();
+check( 'Mua ngay: ID không hợp lệ → không thêm gì', isset( $_REQUEST['add-to-cart'] ), false );
+$_REQUEST = array();
+check( 'Thêm vào giỏ thường: không đổi nơi chuyển hướng', $saha_bn->redirect( 'https://tongkhokeodan.com/cart/' ), 'https://tongkhokeodan.com/cart/' );
+check( 'Catalogue: nhãn thay giá', Saha\Core\WooCommerce\CatalogMode::priceHtml(), '<span class="saha-price-hidden">Liên hệ báo giá</span>' );
+
 echo "\n$pass passed, $fail failed\n";
 exit( $fail > 0 ? 1 : 0 );

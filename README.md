@@ -180,7 +180,7 @@ wp theme activate saha-theme
 
 Kích hoạt plugin sẽ tự tạo 4 bảng `wp_saha_*`, 4 role, cấu hình mặc định và lịch dọn log. Theme Options ở **Giao diện → SAHA Theme Options**; dựng trang bằng builder: **Trang → rê chuột vào một trang → "Dựng bằng SAHA Builder"**; header/footer: **SAHA → Header & Footer → Tạo header & footer mặc định**.
 
-> `saha-theme` đang phát triển theo mốc (xem [mục 11](#11-trạng-thái-dự-án)). Đến mốc 1.6, việc ẩn giá ở chế độ catalogue mới được xử lý phía server — trước đó đừng dùng `saha-theme` trên production.
+> `saha-theme` đang phát triển theo mốc (xem [mục 11](#11-trạng-thái-dự-án)). Từ mốc 1.6, chế độ catalogue (ẩn giá, không cho mua) do `saha-core` xử lý phía server nên đúng với mọi theme; vẫn chờ QA Phase 1 (mốc 1.7) trước khi dùng trên production.
 
 Giao diện cũ trên Flatsome (đã đóng băng) — cài theme cha Flatsome rồi mới bật child theme:
 
@@ -424,7 +424,7 @@ Sửa checklist test của một phase → sửa trong `docs/PHASE-*.md`, rồi 
 | [docs/PHASE-1.md](docs/PHASE-1.md) … [docs/PHASE-8.md](docs/PHASE-8.md) | từng phase: mục tiêu, file, database, hook, bảo mật, test, cài đặt, nghiệm thu |
 | [docs/QA.md](docs/QA.md) | checklist QA tổng hợp: 188 test, ma trận thiết bị, bảng nghiệm thu |
 | [docs/scc/TECHNICAL-DESIGN.md](docs/scc/TECHNICAL-DESIGN.md) | SAHA Commerce Core: kiến trúc theme + builder riêng, quyết định, lộ trình |
-| [docs/scc/PHASE-1.0.md](docs/scc/PHASE-1.0.md), [PHASE-1.1.md](docs/scc/PHASE-1.1.md), [PHASE-1.2.md](docs/scc/PHASE-1.2.md), [PHASE-1.3.md](docs/scc/PHASE-1.3.md), [PHASE-1.4.md](docs/scc/PHASE-1.4.md), [PHASE-1.5.md](docs/scc/PHASE-1.5.md) | từng mốc SCC: mục tiêu, file, hook, bảo mật, test, nghiệm thu |
+| [docs/scc/PHASE-1.0.md](docs/scc/PHASE-1.0.md), [PHASE-1.1.md](docs/scc/PHASE-1.1.md), [PHASE-1.2.md](docs/scc/PHASE-1.2.md), [PHASE-1.3.md](docs/scc/PHASE-1.3.md), [PHASE-1.4.md](docs/scc/PHASE-1.4.md), [PHASE-1.5.md](docs/scc/PHASE-1.5.md), [PHASE-1.6.md](docs/scc/PHASE-1.6.md) | từng mốc SCC: mục tiêu, file, hook, bảo mật, test, nghiệm thu |
 | [docs/layouts/](docs/layouts/) | layout UX Builder mẫu: trang chủ, footer |
 | [saha-core/README.md](wp-content/plugins/saha-core/README.md) | plugin: file, hook, REST API, database, capability |
 | [flatsome-child/README.md](wp-content/themes/flatsome-child/README.md) | theme: file, shortcode, UX element, JS API, asset |
@@ -466,8 +466,8 @@ Chuyển từ Flatsome sang theme + builder riêng. Thiết kế: [docs/scc/TECH
 | 1.2 | Builder runtime (schema, renderer, REST) | ✅ |
 | 1.3 | Ứng dụng builder (React) | ✅ |
 | 1.4 | Element + Reusable Blocks | ✅ |
-| 1.5 | Header/Footer Builder | ✅ chờ review |
-| 1.6 | WooCommerce trên `saha-theme` | ⏳ |
+| 1.5 | Header/Footer Builder | ✅ |
+| 1.6 | WooCommerce trên `saha-theme` | ✅ chờ review |
 | 1.7 | QA Phase 1 | ⏳ |
 
-Plugin: **SAHA Core 1.12.0** · **SAHA Builder 0.4.0** · Theme **SAHA Theme 0.1.0** · Database schema **1.2.0**.
+Plugin: **SAHA Core 1.13.0** · **SAHA Builder 0.4.0** · Theme **SAHA Theme 0.2.0** · Database schema **1.2.0**.

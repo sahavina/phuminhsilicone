@@ -1,4 +1,8 @@
-// Chỉ bố cục cơ bản cho vòng lặp sản phẩm — giao diện đầy đủ ở mốc 1.6.
+// Giao diện WooCommerce trên saha-theme (mốc 1.6): thẻ sản phẩm, trang sản
+// phẩm, giỏ/thanh toán (block), tài khoản. Màu lấy từ biến --saha-* nên đổi
+// Theme Options là đổi theo. Phần catalogue (báo giá, bộ lọc, thương hiệu) ở
+// assets/css/catalog-*.css (chuyển từ flatsome-child).
+
 // Số cột desktop: class columns-N của WooCommerce. Tablet/mobile: class
 // saha-products--tablet-N / saha-products--mobile-N (inc/woocommerce.php).
 
@@ -52,15 +56,526 @@
 	}
 }
 
-.woocommerce-loop-product__title {
-	font-size: 1rem;
+/* ---------------------------------------------------------------------------
+ * Nút: ghi đè màu tím mặc định của woocommerce.css
+ * (selector WC dạng `.woocommerce a.button.alt` nên cần cụ thể tương đương).
+ * ------------------------------------------------------------------------- */
+
+.woocommerce,
+.woocommerce-page {
+
+	a.button,
+	button.button,
+	input.button,
+	#respond input#submit {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		min-height: 44px;
+		padding: 10px 20px;
+		border: 1px solid var(--saha-border);
+		border-radius: var(--saha-radius);
+		background: var(--saha-surface);
+		color: var(--saha-heading);
+		font-family: var(--saha-type-button-font);
+		font-size: var(--saha-type-button-size, 15px);
+		font-weight: var(--saha-type-button-weight);
+		line-height: 1.2;
+
+		&:hover {
+			border-color: var(--saha-primary);
+			background: var(--saha-surface);
+			color: var(--saha-primary);
+		}
+	}
+
+	a.button.alt,
+	button.button.alt,
+	input.button.alt,
+	a.button.primary,
+	button.button.primary,
+	a.checkout-button {
+		border-color: var(--saha-primary);
+		background: var(--saha-primary);
+		color: #fff;
+
+		&:hover {
+			border-color: var(--saha-primary);
+			background: var(--saha-primary);
+			color: #fff;
+			filter: brightness(0.92);
+		}
+
+		&.disabled,
+		&:disabled,
+		&:disabled[disabled] {
+			border-color: var(--saha-primary);
+			background: var(--saha-primary);
+			color: #fff;
+			opacity: 0.5;
+		}
+	}
+
+	// "Mua ngay" nổi bật hơn "Thêm vào giỏ".
+	button.button.alt.saha-buy-now {
+		border-color: var(--saha-accent);
+		background: var(--saha-accent);
+		color: var(--saha-heading);
+
+		&:hover {
+			border-color: var(--saha-accent);
+			background: var(--saha-accent);
+			color: var(--saha-heading);
+		}
+	}
+
+	.added_to_cart {
+		margin-left: 8px;
+		font-size: 14px;
+	}
 }
 
-.saha-catalog-mode {
+/* ---------------------------------------------------------------------------
+ * Thẻ sản phẩm
+ * ------------------------------------------------------------------------- */
 
-	.price,
-	.add_to_cart_button,
-	.single_add_to_cart_button {
-		display: none !important;
+.woocommerce ul.products li.product,
+.woocommerce-page ul.products li.product {
+	display: flex;
+	flex-direction: column;
+	padding: 12px;
+	border: 1px solid var(--saha-border);
+	border-radius: var(--saha-radius);
+	background: var(--saha-background);
+	transition: box-shadow 0.15s ease, border-color 0.15s ease;
+
+	&:hover {
+		border-color: transparent;
+		box-shadow: var(--saha-shadow);
 	}
+
+	a img {
+		margin: 0 0 12px;
+		border-radius: calc(var(--saha-radius) - 2px);
+		aspect-ratio: 1;
+		object-fit: contain;
+		background: var(--saha-surface);
+	}
+
+	.woocommerce-loop-product__title {
+		padding: 0;
+		color: var(--saha-heading);
+		font-size: 1rem;
+		line-height: 1.35;
+	}
+
+	.price {
+		margin-top: 4px;
+		color: var(--saha-primary);
+		font-size: 1rem;
+		font-weight: 700;
+
+		del {
+			color: var(--saha-muted);
+			font-weight: 400;
+		}
+
+		ins {
+			text-decoration: none;
+		}
+	}
+
+	.button {
+		width: 100%;
+		margin-top: auto;
+	}
+
+	.onsale {
+		top: 8px;
+		right: auto;
+		left: 8px;
+		min-width: 0;
+		min-height: 0;
+		margin: 0;
+		padding: 4px 10px;
+		border-radius: var(--saha-radius);
+		background: var(--saha-error);
+		line-height: 1.4;
+	}
+}
+
+// Nhãn "Liên hệ báo giá" (saha-core CatalogMode) thay cho giá.
+.saha-price-hidden {
+	color: var(--saha-primary);
+	font-weight: 700;
+}
+
+.woocommerce-result-count {
+	color: var(--saha-muted);
+	font-size: 14px;
+}
+
+.woocommerce .woocommerce-ordering select {
+	min-height: 40px;
+	padding: 6px 12px;
+	border: 1px solid var(--saha-border);
+	border-radius: var(--saha-radius);
+	background: var(--saha-background);
+}
+
+/* ---------------------------------------------------------------------------
+ * Trang sản phẩm
+ * ------------------------------------------------------------------------- */
+
+.woocommerce div.product {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+	gap: 40px;
+	align-items: start;
+
+	// Mọi phần dưới gallery/summary trải hết chiều ngang.
+	> * {
+		grid-column: 1 / -1;
+	}
+
+	// div.images / div.summary: phải cụ thể bằng woocommerce-layout.css (48%).
+	> div.images {
+		grid-column: 1;
+		width: auto;
+		margin: 0;
+		float: none;
+	}
+
+	> div.summary {
+		grid-column: 2;
+		width: auto;
+		margin: 0;
+		float: none;
+	}
+
+	> .onsale {
+		grid-row: 1;
+		grid-column: 1;
+	}
+
+	.product_title {
+		margin-bottom: 12px;
+		font-size: var(--saha-h1-size);
+	}
+
+	p.price,
+	span.price {
+		color: var(--saha-primary);
+		font-size: 1.5rem;
+		font-weight: 700;
+	}
+
+	.woocommerce-product-gallery__image img,
+	.woocommerce-product-gallery__wrapper img {
+		border-radius: var(--saha-radius);
+		background: var(--saha-surface);
+	}
+
+	// Cụ thể bằng selector của WooCommerce
+	// (`.woocommerce div.product div.images .flex-control-thumbs li`).
+	div.images .flex-control-thumbs {
+		display: grid;
+		grid-template-columns: repeat(5, minmax(0, 1fr));
+		gap: 8px;
+		margin-top: 8px;
+
+		li {
+			width: auto;
+			float: none;
+
+			img {
+				border: 1px solid var(--saha-border);
+				border-radius: calc(var(--saha-radius) - 2px);
+				opacity: 0.7;
+
+				&.flex-active,
+				&:hover {
+					border-color: var(--saha-primary);
+					opacity: 1;
+				}
+			}
+		}
+	}
+
+	form.cart {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 12px;
+		align-items: stretch;
+
+		&::before,
+		&::after {
+			display: none;
+		}
+
+		div.quantity {
+			margin: 0;
+			float: none;
+		}
+
+		.button {
+			margin: 0;
+			float: none;
+		}
+
+		// Biến thể: bảng chọn thuộc tính chiếm trọn hàng.
+		.variations,
+		.single_variation_wrap,
+		.woocommerce-variation {
+			flex: 1 1 100%;
+		}
+
+		.woocommerce-variation-add-to-cart {
+			display: flex;
+			flex-wrap: wrap;
+			gap: 12px;
+		}
+	}
+
+	.quantity .qty {
+		width: 72px;
+		min-height: 44px;
+		border: 1px solid var(--saha-border);
+		border-radius: var(--saha-radius);
+	}
+
+	.product_meta {
+		color: var(--saha-muted);
+		font-size: 14px;
+
+		> span {
+			display: block;
+		}
+	}
+
+	// Tab mô tả / đánh giá.
+	.woocommerce-tabs {
+		margin-top: 16px;
+
+		ul.tabs {
+			display: flex;
+			flex-wrap: wrap;
+			gap: 4px;
+			margin: 0 0 24px;
+			padding: 0;
+			border-bottom: 1px solid var(--saha-border);
+
+			&::before,
+			&::after {
+				display: none;
+			}
+
+			li {
+				margin: 0;
+				padding: 0;
+				border: 0;
+				border-radius: 0;
+				background: none;
+
+				&::before,
+				&::after {
+					display: none;
+				}
+
+				a {
+					display: block;
+					padding: 10px 16px;
+					border-bottom: 2px solid transparent;
+					color: var(--saha-muted);
+					font-weight: 600;
+				}
+
+				&.active a {
+					border-bottom-color: var(--saha-primary);
+					color: var(--saha-heading);
+				}
+			}
+		}
+
+		.panel > h2:first-child {
+			font-size: var(--saha-h3-size);
+		}
+	}
+
+	.related,
+	.upsells {
+		margin-top: 24px;
+
+		> h2 {
+			font-size: var(--saha-h2-size);
+		}
+	}
+
+	@media (max-width: 767px) {
+		grid-template-columns: minmax(0, 1fr);
+		gap: 24px;
+
+		> div.images,
+		> div.summary {
+			grid-column: 1;
+		}
+
+		.product_title {
+			font-size: var(--saha-h2-size);
+		}
+
+		form.cart .button {
+			flex: 1 1 auto;
+		}
+	}
+}
+
+/* ---------------------------------------------------------------------------
+ * Thông báo
+ * ------------------------------------------------------------------------- */
+
+.woocommerce-message,
+.woocommerce-info,
+.woocommerce-error {
+	border-top-color: var(--saha-primary);
+	border-radius: var(--saha-radius);
+	background: var(--saha-surface);
+
+	&::before {
+		color: var(--saha-primary);
+	}
+}
+
+.woocommerce-error {
+	border-top-color: var(--saha-error);
+
+	&::before {
+		color: var(--saha-error);
+	}
+}
+
+.woocommerce-message {
+	border-top-color: var(--saha-success);
+
+	&::before {
+		color: var(--saha-success);
+	}
+}
+
+/* ---------------------------------------------------------------------------
+ * Giỏ hàng & Thanh toán (block WooCommerce)
+ * ------------------------------------------------------------------------- */
+
+.wc-block-components-button:not(.is-link),
+.wp-block-woocommerce-cart .wc-block-cart__submit-button,
+.wc-block-components-checkout-place-order-button {
+	border-radius: var(--saha-radius);
+	background: var(--saha-primary);
+	color: #fff;
+	font-family: var(--saha-type-button-font);
+	font-weight: var(--saha-type-button-weight);
+
+	&:hover,
+	&:focus {
+		background: var(--saha-primary);
+		color: #fff;
+		filter: brightness(0.92);
+	}
+}
+
+.wc-block-components-text-input input,
+.wc-block-components-textarea,
+.wc-blocks-components-select .wc-blocks-components-select__select,
+.wc-block-components-combobox .wc-block-components-combobox-control input {
+	border-color: var(--saha-border);
+	border-radius: var(--saha-radius);
+}
+
+.wc-block-components-product-name {
+	color: var(--saha-heading);
+	font-weight: 600;
+}
+
+.wc-block-components-totals-footer-item .wc-block-components-totals-item__value,
+.wc-block-components-product-price__value {
+	color: var(--saha-primary);
+}
+
+.wc-block-components-radio-control__input:checked,
+.wc-block-components-checkbox .wc-block-components-checkbox__input[type="checkbox"]:checked {
+	border-color: var(--saha-primary);
+	background: var(--saha-primary);
+}
+
+/* ---------------------------------------------------------------------------
+ * Tài khoản
+ * ------------------------------------------------------------------------- */
+
+.woocommerce-account .woocommerce {
+	display: grid;
+	grid-template-columns: 240px minmax(0, 1fr);
+	gap: 32px;
+	align-items: start;
+
+	&::before,
+	&::after {
+		display: none;
+	}
+
+	> .woocommerce-notices-wrapper,
+	> .woocommerce-form-login,
+	> .u-columns,
+	> h2 {
+		grid-column: 1 / -1;
+	}
+
+	.woocommerce-MyAccount-navigation,
+	.woocommerce-MyAccount-content {
+		width: auto;
+		float: none;
+	}
+
+	@media (max-width: 767px) {
+		grid-template-columns: minmax(0, 1fr);
+	}
+}
+
+.woocommerce-MyAccount-navigation ul {
+	margin: 0;
+	padding: 8px;
+	border: 1px solid var(--saha-border);
+	border-radius: var(--saha-radius);
+	list-style: none;
+
+	a {
+		display: block;
+		padding: 8px 12px;
+		border-radius: calc(var(--saha-radius) - 2px);
+		color: var(--saha-text);
+		text-decoration: none;
+	}
+
+	.is-active a,
+	a:hover {
+		background: var(--saha-surface);
+		color: var(--saha-primary);
+	}
+}
+
+.woocommerce form .form-row {
+
+	.input-text,
+	select {
+		min-height: 44px;
+		padding: 8px 12px;
+		border: 1px solid var(--saha-border);
+		border-radius: var(--saha-radius);
+	}
+}
+
+.woocommerce form.login,
+.woocommerce form.register,
+.woocommerce table.shop_table {
+	border-color: var(--saha-border);
+	border-radius: var(--saha-radius);
 }

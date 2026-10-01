@@ -90,6 +90,7 @@ final class Loader {
 			'theme_options' => ThemeOptions\Module::class,
 			'builder'       => Builder\Module::class,
 			'templates'     => Templates\Module::class,
+			'woocommerce'   => WooCommerce\Module::class,
 			'admin'      => Admin::class,
 		);
 

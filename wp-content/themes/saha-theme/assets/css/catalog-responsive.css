@@ -1,0 +1,104 @@
+/*
+ * SAHA — responsive.css
+ * Breakpoints: <576 | 576–767 | 768–991 | 992–1199 | >=1200 (spec §54)
+ */
+
+/* --- Sticky CTA: chỉ mobile & tablet nhỏ -------------------------------- */
+
+@media (max-width: 767px) {
+	.saha-sticky-cta {
+		position: fixed;
+		right: 0;
+		bottom: 0;
+		left: 0;
+		z-index: 9999;
+		display: grid;
+		grid-template-columns: repeat(3, 1fr);
+		min-height: var(--saha-sticky-cta-height);
+		background: var(--saha-color-surface);
+		border-top: 1px solid var(--saha-color-border);
+		box-shadow: 0 -2px 8px rgba(0, 0, 0, .08);
+	}
+
+	.saha-sticky-cta__item {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		gap: 2px;
+		padding: 8px 4px;
+		background: none;
+		border: 0;
+		border-right: 1px solid var(--saha-color-border);
+		color: var(--saha-color-text);
+		font-size: 13px;
+		line-height: 1.2;
+		text-align: center;
+		text-decoration: none;
+		cursor: pointer;
+	}
+
+	.saha-sticky-cta__item:last-child {
+		border-right: 0;
+	}
+
+	.saha-sticky-cta__item--quote {
+		background: var(--saha-color-primary);
+		color: #fff;
+		font-weight: 600;
+	}
+
+	.saha-sticky-cta__icon {
+		font-size: 18px;
+	}
+
+	/* Không để CTA che nội dung (spec §17). */
+	.saha-has-sticky-cta {
+		padding-bottom: var(--saha-sticky-cta-height);
+	}
+
+	.saha-empty-state {
+		padding: 24px 12px;
+	}
+
+	.saha-hotline-group {
+		flex-direction: column;
+		gap: 6px;
+	}
+}
+
+/* --- Tablet ------------------------------------------------------------- */
+
+@media (min-width: 768px) and (max-width: 991px) {
+	.saha-empty-state__title {
+		font-size: 19px;
+	}
+}
+
+/* --- Desktop nhỏ -------------------------------------------------------- */
+
+@media (min-width: 992px) and (max-width: 1199px) {
+	:root {
+		--saha-gap: 14px;
+	}
+}
+
+/* --- Rất hẹp (320px) ---------------------------------------------------- */
+
+@media (max-width: 359px) {
+	.saha-sticky-cta__text {
+		font-size: 11px;
+	}
+}
+
+/* --- Tôn trọng prefers-reduced-motion ----------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+	.saha-site *,
+	.saha-site *::before,
+	.saha-site *::after {
+		animation-duration: .001ms;
+		animation-iteration-count: 1;
+		transition-duration: .001ms;
+	}
+}
