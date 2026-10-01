@@ -90,6 +90,32 @@ final class Products extends Element {
 					'min'     => 1,
 					'max'     => Catalog::MAX_LIMIT,
 				),
+				'tabs'        => array(
+					'type'    => 'select',
+					'label'   => __( 'Tab lọc', 'saha-core' ),
+					'section' => 'content',
+					'default' => 'none',
+					'options' => array(
+						'none'       => __( 'Không', 'saha-core' ),
+						'categories' => __( 'Theo danh mục ("Tất cả" + danh mục con)', 'saha-core' ),
+					),
+					'help'    => __( 'Danh mục con của "Danh mục" ở trên; để trống = danh mục cấp 1.', 'saha-core' ),
+				),
+				'tabsLimit'   => array(
+					'type'    => 'number',
+					'label'   => __( 'Số tab danh mục', 'saha-core' ),
+					'section' => 'content',
+					'default' => 6,
+					'min'     => 2,
+					'max'     => 8,
+				),
+				'tabAll'      => array(
+					'type'      => 'text',
+					'label'     => __( 'Chữ tab đầu', 'saha-core' ),
+					'section'   => 'content',
+					'default'   => __( 'Tất cả', 'saha-core' ),
+					'maxLength' => 40,
+				),
 				'hideOutOfStock' => array(
 					'type'    => 'toggle',
 					'label'   => __( 'Ẩn sản phẩm hết hàng', 'saha-core' ),
@@ -134,22 +160,49 @@ final class Products extends Element {
 			return $ctx->editor ? $this->notice( $node, $ctx, __( 'Cần bật WooCommerce.', 'saha-core' ) ) : '';
 		}
 
-		$ids = Catalog::product_ids(
-			array(
-				'source'            => (string) $this->prop( $node, 'source' ),
-				'category'          => (string) $node->prop( 'category', '' ),
-				'brand'             => (string) $node->prop( 'brand', '' ),
-				'application'       => (string) $node->prop( 'application', '' ),
-				'orderby'           => (string) $this->prop( $node, 'orderby' ),
-				'limit'             => (int) $this->prop( $node, 'limit' ),
-				'hide_out_of_stock' => (bool) $this->prop( $node, 'hideOutOfStock' ),
-			)
-		);
+		$args = $this->queryArgs( $node );
+		$ids  = Catalog::product_ids( $args );
+
+		if ( 'categories' === $this->prop( $node, 'tabs' ) ) {
+			$tabs = $this->tabs( $node, $ctx, $args, $ids );
+
+			if ( '' !== $tabs ) {
+				return '<div' . $this->rootAttributes( $node, $ctx, array( 'saha-products', 'saha-products--tabs', 'woocommerce' ) ) . '>' . $tabs . '</div>';
+			}
+		}
 
 		if ( ! $ids ) {
 			return $ctx->editor ? $this->notice( $node, $ctx, __( 'Không có sản phẩm phù hợp.', 'saha-core' ) ) : '';
 		}
 
+		// Bọc .woocommerce như shortcode [products] để CSS WooCommerce/theme áp dụng.
+		return '<div' . $this->rootAttributes( $node, $ctx, array( 'saha-products', 'woocommerce' ) ) . '>' . self::grid( $ids ) . '</div>';
+	}
+
+	/**
+	 * Tham số truy vấn từ thiết lập.
+	 *
+	 * @param Node $node Node.
+	 * @return array<string, mixed>
+	 */
+	private function queryArgs( Node $node ): array {
+		return array(
+			'source'            => (string) $this->prop( $node, 'source' ),
+			'category'          => (string) $node->prop( 'category', '' ),
+			'brand'             => (string) $node->prop( 'brand', '' ),
+			'application'       => (string) $node->prop( 'application', '' ),
+			'orderby'           => (string) $this->prop( $node, 'orderby' ),
+			'limit'             => (int) $this->prop( $node, 'limit' ),
+			'hide_out_of_stock' => (bool) $this->prop( $node, 'hideOutOfStock' ),
+		);
+	}
+
+	/**
+	 * Lưới thẻ sản phẩm (template content-product của WooCommerce).
+	 *
+	 * @param int[] $ids Sản phẩm.
+	 */
+	private static function grid( array $ids ): string {
 		// Nạp trước post + meta một lần (tránh N+1 khi template đọc giá, ảnh…).
 		_prime_post_caches( $ids, true, true );
 
@@ -176,8 +229,73 @@ final class Products extends Element {
 		$post = $previous; // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
 		wp_reset_postdata();
 
-		// Bọc .woocommerce như shortcode [products] để CSS WooCommerce/theme áp dụng.
-		return '<div' . $this->rootAttributes( $node, $ctx, array( 'saha-products', 'woocommerce' ) ) . '>' . (string) ob_get_clean() . '</div>';
+		return (string) ob_get_clean();
+	}
+
+	/**
+	 * Tab "Tất cả" + danh mục (ARIA tabs). Mỗi tab một lưới dựng sẵn (ẩn), không AJAX:
+	 * HTML lấy từ cache Catalog; ảnh trong tab ẩn tải lười. Danh mục không có sản phẩm khớp → bỏ tab.
+	 *
+	 * @param Node                 $node Node.
+	 * @param RenderContext        $ctx  Ngữ cảnh.
+	 * @param array<string, mixed> $args Truy vấn gốc.
+	 * @param int[]                $all  Sản phẩm tab đầu.
+	 */
+	private function tabs( Node $node, RenderContext $ctx, array $args, array $all ): string {
+		if ( ! taxonomy_exists( 'product_cat' ) ) {
+			return '';
+		}
+
+		$parent = 0;
+
+		if ( '' !== (string) $args['category'] ) {
+			$term   = get_term_by( 'slug', (string) $args['category'], 'product_cat' );
+			$parent = $term instanceof \WP_Term ? (int) $term->term_id : 0;
+		}
+
+		$skip  = (int) get_option( 'default_product_cat', 0 );
+		$limit = max( 2, min( 8, (int) $this->prop( $node, 'tabsLimit' ) ) );
+		$panes = array();
+
+		if ( $all ) {
+			$panes[] = array( (string) $this->prop( $node, 'tabAll' ), $all );
+		}
+
+		foreach ( Catalog::terms( 'product_cat', array( 'parent' => $parent, 'limit' => $limit + 1 ) ) as $term ) {
+			if ( (int) $term['id'] === $skip || count( $panes ) > $limit ) {
+				continue;
+			}
+
+			$ids = Catalog::product_ids(
+				array_merge(
+					$args,
+					array(
+						'source'   => 'featured' === $args['source'] || 'sale' === $args['source'] ? $args['source'] : 'category',
+						'category' => (string) $term['slug'],
+					)
+				)
+			);
+
+			if ( $ids ) {
+				$panes[] = array( (string) $term['name'], $ids );
+			}
+		}
+
+		if ( count( $panes ) < 2 ) {
+			return '';
+		}
+
+		$base = 'saha-pt-' . $node->id;
+		$list = '';
+		$body = '';
+
+		foreach ( $panes as $i => list( $label, $ids ) ) {
+			$first = 0 === $i;
+			$list .= '<button type="button" role="tab" class="saha-ptabs__tab" id="' . esc_attr( $base . '-t' . $i ) . '" aria-controls="' . esc_attr( $base . '-p' . $i ) . '" aria-selected="' . ( $first ? 'true' : 'false' ) . '"' . ( $first ? '' : ' tabindex="-1"' ) . '>' . esc_html( $label ) . '</button>';
+			$body .= '<div role="tabpanel" class="saha-ptabs__panel" id="' . esc_attr( $base . '-p' . $i ) . '" aria-labelledby="' . esc_attr( $base . '-t' . $i ) . '" tabindex="0"' . ( $first ? '' : ' hidden' ) . '>' . self::grid( $ids ) . '</div>';
+		}
+
+		return '<div class="saha-ptabs" data-saha-tabs><div class="saha-ptabs__list" role="tablist" aria-label="' . esc_attr__( 'Lọc theo danh mục', 'saha-core' ) . '">' . $list . '</div>' . $body . '</div>';
 	}
 
 	/**

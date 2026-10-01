@@ -586,3 +586,140 @@
 .woocommerce div.product.saha-template-product {
 	display: block;
 }
+
+/* ---------------------------------------------------------------------------
+ * Thẻ sản phẩm kiểu "Cửa hàng" (Theme Options → Cửa hàng; inc/card.php)
+ * ------------------------------------------------------------------------- */
+
+.saha-cards-store {
+
+	ul.products li.product {
+		position: relative;
+		container-type: inline-size;
+		border-radius: 8px;
+
+		.woocommerce-loop-product__title {
+			display: -webkit-box;
+			min-height: 2.7em;
+			overflow: hidden;
+			-webkit-box-orient: vertical;
+			-webkit-line-clamp: 2;
+		}
+
+		.price {
+			display: flex;
+			flex-wrap: wrap;
+			gap: 2px 8px;
+			align-items: baseline;
+			color: var(--saha-error);
+			font-size: 1.05rem;
+
+			ins {
+				order: -1;
+				color: var(--saha-error);
+			}
+
+			del {
+				font-size: 0.85em;
+			}
+		}
+
+		.onsale.saha-card__badge {
+			top: 12px;
+			left: 12px;
+			border-radius: 4px;
+			background: var(--saha-secondary);
+			font-size: 12px;
+			font-weight: 700;
+		}
+	}
+
+	// Nút tròn ở góc dưới phải của ảnh (ảnh vuông, rộng = bề ngang nội dung thẻ).
+	.saha-card__action,
+	.woocommerce ul.products li.product .saha-card__action {
+		position: absolute;
+		top: calc(12px + 100cqi - 48px);
+		right: 20px;
+		z-index: 2;
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		width: 40px;
+		min-height: 0;
+		height: 40px;
+		margin: 0;
+		padding: 0;
+		border: 0;
+		border-radius: 50%;
+		background: var(--saha-secondary);
+		color: #fff;
+		cursor: pointer;
+		box-shadow: 0 4px 12px rgb(15 23 42 / 20%);
+		transition: transform 0.15s ease, background-color 0.15s ease;
+
+		&:hover,
+		&:focus-visible {
+			background: var(--saha-accent);
+			color: var(--saha-secondary);
+			transform: scale(1.06);
+		}
+
+		&.loading {
+			opacity: 0.6;
+		}
+
+		&.added::after {
+			display: none;
+		}
+	}
+
+	.added_to_cart {
+		display: none;
+	}
+
+	.saha-card__icon {
+		width: 20px;
+		height: 20px;
+	}
+
+	.saha-card__sold {
+		position: relative;
+		height: 20px;
+		margin-top: 8px;
+		overflow: hidden;
+		border-radius: 10px;
+		background: color-mix(in srgb, var(--saha-error) 18%, #fff);
+	}
+
+	.saha-card__sold-bar {
+		position: absolute;
+		inset: 0 auto 0 0;
+		border-radius: 10px;
+		background: linear-gradient(90deg, var(--saha-accent), var(--saha-error));
+	}
+
+	.saha-card__sold-text {
+		position: relative;
+		display: block;
+		color: #fff;
+		font-size: 12px;
+		font-weight: 700;
+		line-height: 20px;
+		text-align: center;
+		text-shadow: 0 1px 1px rgb(0 0 0 / 25%);
+	}
+
+	.saha-card__specs {
+		margin: 8px 0 0;
+		padding: 0 0 0 16px;
+		color: var(--saha-muted);
+		font-size: 13px;
+		line-height: 1.5;
+
+		li {
+			overflow: hidden;
+			text-overflow: ellipsis;
+			white-space: nowrap;
+		}
+	}
+}

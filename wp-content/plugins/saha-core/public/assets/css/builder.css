@@ -1621,3 +1621,47 @@ html.saha-hb-lock {
 		opacity: 1;
 	}
 }
+
+/* ===== Tab lọc sản phẩm (D3) ===== */
+:where(.saha-ptabs__list) {
+	display: flex;
+	gap: 8px;
+	margin-bottom: 20px;
+	padding-bottom: 4px;
+	overflow-x: auto;
+	scrollbar-width: thin;
+}
+
+.saha-ptabs .saha-ptabs__tab {
+	flex: 0 0 auto;
+	padding: 8px 16px;
+	border: 1px solid var(--saha-border, #e3e6ea);
+	border-radius: 999px;
+	background: var(--saha-background, #fff);
+	color: var(--saha-heading, #111827);
+	font: inherit;
+	font-size: 14px;
+	font-weight: 600;
+	cursor: pointer;
+	white-space: nowrap;
+}
+
+.saha-ptabs .saha-ptabs__tab:hover {
+	border-color: var(--saha-accent, #f5a623);
+}
+
+.saha-ptabs .saha-ptabs__tab[aria-selected="true"] {
+	border-color: var(--saha-secondary, #1f2937);
+	background: var(--saha-secondary, #1f2937);
+	color: #fff;
+}
+
+.saha-ptabs .saha-ptabs__tab:focus-visible {
+	outline: 3px solid var(--saha-accent, #f5a623);
+	outline-offset: 2px;
+}
+
+:where(.saha-ptabs__panel):focus-visible {
+	outline: 2px dashed var(--saha-border, #e3e6ea);
+	outline-offset: 4px;
+}

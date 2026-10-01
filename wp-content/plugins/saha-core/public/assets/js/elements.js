@@ -189,9 +189,71 @@
 		} );
 	}
 
+	/**
+	 * Tab lọc sản phẩm (mẫu ARIA tabs: một tab được Tab tới, ←/→/Home/End chuyển tab).
+	 */
+	function initTabs( root ) {
+		if ( root.getAttribute( 'data-saha-ready' ) ) {
+			return;
+		}
+
+		root.setAttribute( 'data-saha-ready', '1' );
+
+		var tabs = Array.prototype.slice.call( root.querySelectorAll( '[role="tab"]' ) );
+
+		function select( tab, focus ) {
+			tabs.forEach( function ( item ) {
+				var on = item === tab;
+				var panel = document.getElementById( item.getAttribute( 'aria-controls' ) );
+
+				item.setAttribute( 'aria-selected', on ? 'true' : 'false' );
+
+				if ( on ) {
+					item.removeAttribute( 'tabindex' );
+				} else {
+					item.setAttribute( 'tabindex', '-1' );
+				}
+
+				if ( panel ) {
+					panel.hidden = ! on;
+				}
+			} );
+
+			if ( focus ) {
+				tab.focus();
+			}
+		}
+
+		tabs.forEach( function ( tab, i ) {
+			tab.addEventListener( 'click', function () {
+				select( tab, false );
+			} );
+
+			tab.addEventListener( 'keydown', function ( event ) {
+				var next = null;
+
+				if ( 'ArrowRight' === event.key ) {
+					next = tabs[ ( i + 1 ) % tabs.length ];
+				} else if ( 'ArrowLeft' === event.key ) {
+					next = tabs[ ( i - 1 + tabs.length ) % tabs.length ];
+				} else if ( 'Home' === event.key ) {
+					next = tabs[ 0 ];
+				} else if ( 'End' === event.key ) {
+					next = tabs[ tabs.length - 1 ];
+				}
+
+				if ( next ) {
+					event.preventDefault();
+					select( next, true );
+				}
+			} );
+		} );
+	}
+
 	function initAll() {
 		Array.prototype.forEach.call( document.querySelectorAll( '[data-saha-slider]' ), init );
 		Array.prototype.forEach.call( document.querySelectorAll( '[data-saha-catmenu]' ), initCatMenu );
+		Array.prototype.forEach.call( document.querySelectorAll( '[data-saha-tabs]' ), initTabs );
 	}
 
 	if ( 'loading' === document.readyState ) {

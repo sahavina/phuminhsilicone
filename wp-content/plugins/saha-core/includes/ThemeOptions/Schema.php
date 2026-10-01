@@ -342,6 +342,23 @@ final class Schema {
 					'columns_desktop' => array( 'type' => 'number', 'label' => __( 'Số cột — desktop', 'saha-core' ), 'default' => 4, 'min' => 2, 'max' => 6 ),
 					'columns_tablet'  => array( 'type' => 'number', 'label' => __( 'Số cột — tablet', 'saha-core' ), 'default' => 3, 'min' => 2, 'max' => 4 ),
 					'columns_mobile'  => array( 'type' => 'number', 'label' => __( 'Số cột — mobile', 'saha-core' ), 'default' => 2, 'min' => 1, 'max' => 2 ),
+					'card_style'      => array(
+						'type'    => 'select',
+						'label'   => __( 'Kiểu thẻ sản phẩm', 'saha-core' ),
+						'default' => 'default',
+						'options' => array(
+							'default' => __( 'Mặc định', 'saha-core' ),
+							'store'   => __( 'Cửa hàng: nhãn −%, nút giỏ/báo giá trên ảnh, thông số', 'saha-core' ),
+						),
+					),
+					'card_specs'      => array( 'type' => 'number', 'label' => __( 'Số dòng thông số trên thẻ (kiểu Cửa hàng)', 'saha-core' ), 'default' => 3, 'min' => 0, 'max' => 4 ),
+					'card_sold'       => array(
+						'type'    => 'toggle',
+						'label'   => __( 'Thanh "Đã bán" (số bán thật của WooCommerce)', 'saha-core' ),
+						'default' => false,
+						'help'    => __( 'Chỉ bật khi số bán là thật — không dùng để tạo cảm giác khan hiếm.', 'saha-core' ),
+					),
+					'card_sold_goal'  => array( 'type' => 'number', 'label' => __( 'Mốc đầy thanh "Đã bán"', 'saha-core' ), 'default' => 100, 'min' => 10, 'max' => 10000 ),
 				),
 			),
 			'catalog'    => array(

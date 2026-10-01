@@ -730,5 +730,12 @@ check( 'header kiểu cửa hàng hợp lệ với gốc header', ( new BuilderS
 $saha_cm = $saha_r1( array( 'type' => 'category-menu', 'props' => array( 'source' => 'menu', 'menu' => 'menu-chinh' ) ) );
 check( 'nút danh mục: link shop khi không JS, aria-expanded/aria-controls khớp bảng nav ẩn', array( false !== strpos( $saha_cm, 'role="button" aria-expanded="false" aria-controls="saha-catmenu-' ), (bool) preg_match( '/aria-controls="(saha-catmenu-[a-z0-9]+)".*<nav class="saha-catmenu__panel" id="\1"[^>]*hidden>/s', $saha_cm ) ), array( true, true ) );
 
+echo "Thẻ sản phẩm + tab lọc (D3)\n";
+$saha_pdef = $saha_reg->get( 'products' )->def()['controls'];
+check( 'sản phẩm: tab lọc mặc định tắt, 2–8 tab', array( $saha_pdef['tabs']['default'], $saha_pdef['tabsLimit']['min'], $saha_pdef['tabsLimit']['max'] ), array( 'none', 2, 8 ) );
+check( 'sản phẩm: giá trị tab lạ bị từ chối', count( saha_bs( array( 'elements' => array( array( 'type' => 'section', 'children' => array( array( 'type' => 'products', 'props' => array( 'tabs' => 'evil' ) ) ) ) ) ) )['errors'] ) > 0, true );
+$saha_shop = Saha\Core\ThemeOptions\Schema::groups()['shop']['fields'];
+check( 'Theme Options: thẻ mặc định, thanh "Đã bán" tắt mặc định', array( $saha_shop['card_style']['default'], $saha_shop['card_sold']['default'] ), array( 'default', false ) );
+
 echo "\n$pass passed, $fail failed\n";
 exit( $fail > 0 ? 1 : 0 );

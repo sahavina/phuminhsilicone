@@ -28,6 +28,7 @@ Element **HTML** chỉ người có quyền `unfiltered_html` (administrator) m�
 - **Màu**: màu chính (nút, giá, link), màu phụ (header, footer), màu nhấn ("Mua ngay"), chữ, viền, nền.
 - **Chữ**: font, cỡ chữ thân bài và H1–H3. Font có chữ "(Google Fonts)" (Be Vietnam Pro, Montserrat…) được tải từ Google khi chọn; font hệ thống thì không tải gì.
 - **Bố cục**: độ rộng khung, khoảng cách, số cột sản phẩm desktop / tablet / mobile.
+- **Cửa hàng → Kiểu thẻ sản phẩm**: "Cửa hàng" = nhãn giảm %, nút giỏ (hoặc báo giá) tròn trên ảnh, vài dòng thông số; thanh "Đã bán" chỉ bật khi muốn khoe số bán thật.
 - **Logo**, chiều cao header, header dính.
 
 Bấm **Lưu** → toàn website đổi theo, không cần sửa CSS. Mỗi ô có nút đặt lại mặc định.
@@ -66,7 +67,7 @@ Bấm **Lưu** → toàn website đổi theo, không cần sửa CSS. Mỗi ô c
 | Banner | ảnh nền + tiêu đề + nút. Banner đầu trang bật **Ảnh đầu trang (ưu tiên tải)** — ảnh hiện nhanh hơn |
 | Hộp icon | icon + tiêu đề + mô tả ("Vì sao chọn SAHA") |
 | CTA | khối kêu gọi; nút chính chọn **Mở form báo giá** để hiện form ngay tại trang |
-| Sản phẩm | nguồn: nổi bật, mới, khuyến mại, theo danh mục / thương hiệu / ứng dụng |
+| Sản phẩm | nguồn: nổi bật, mới, khuyến mại, theo danh mục / thương hiệu / ứng dụng; **Tab lọc: Theo danh mục** để có hàng tab "Tất cả · Keo Silicone · …" |
 | Danh mục sản phẩm | lưới danh mục, **ứng dụng** hoặc **thương hiệu** |
 | Bài viết | bài blog mới nhất / theo chuyên mục |
 | Block | chèn một Block dùng chung (mục 4) |
