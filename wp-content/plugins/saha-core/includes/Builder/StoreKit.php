@@ -480,8 +480,8 @@ final class StoreKit {
 					'color'      => $white,
 					'typography' => array(
 						'fontSize'      => array(
-							'desktop' => '46px',
-							'mobile'  => '32px',
+							'desktop' => '36px',
+							'mobile'  => '26px',
 						),
 						'fontWeight'    => '800',
 						'textTransform' => 'uppercase',
