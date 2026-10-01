@@ -472,8 +472,9 @@ Chuyển từ Flatsome sang theme + builder riêng. Thiết kế: [docs/scc/TECH
 | 1.7 | QA Phase 1 + tài liệu, nghiệm thu MVP | ✅ (còn phần chạy trên staging) |
 | 2.1 | Mega menu ([kế hoạch Phase 2](docs/scc/PHASE-2-PLAN.md)) | ✅ |
 | 2.2 | Template Builder + điều kiện | ✅ |
-| D1 | Giao diện theo mẫu: font web, 5 element mới ([PHASE-D1](docs/scc/PHASE-D1.md)) | ✅ chờ review |
-| D2–D4 | Header, thẻ sản phẩm + tab lọc, trang chủ theo mẫu | ⏳ |
+| D1 | Giao diện theo mẫu: font web, 5 element mới ([PHASE-D1](docs/scc/PHASE-D1.md)) | ✅ |
+| D2 | Header kiểu cửa hàng, nút danh mục, nút nổi ([PHASE-D2](docs/scc/PHASE-D2.md)) | ✅ chờ review |
+| D3–D4 | Thẻ sản phẩm + tab lọc, trang chủ theo mẫu | ⏳ |
 | 2.3–2.8 | Trang sản phẩm nâng cao, giỏ & tìm kiếm, báo giá nhiều sản phẩm, Import/Export, element Phase 2, QA | ⏳ |
 
-Plugin: **SAHA Core 1.17.0** · **SAHA Builder 0.5.0** · Theme **SAHA Theme 0.2.3** · Database schema **1.2.0**.
+Plugin: **SAHA Core 1.18.0** · **SAHA Builder 0.5.0** · Theme **SAHA Theme 0.2.3** · Database schema **1.2.0**.

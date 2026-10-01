@@ -357,6 +357,37 @@ final class Schema {
 					),
 				),
 			),
+			'floating'   => array(
+				'label'  => __( 'Nút nổi', 'saha-core' ),
+				'fields' => array(
+					'contact'     => array(
+						'type'    => 'toggle',
+						'label'   => __( 'Nút liên hệ nổi (Gọi · Zalo · Báo giá)', 'saha-core' ),
+						'default' => false,
+						'help'    => __( 'Hotline và Zalo lấy từ SAHA → Cấu hình.', 'saha-core' ),
+					),
+					'back_to_top' => array(
+						'type'    => 'toggle',
+						'label'   => __( 'Nút lên đầu trang', 'saha-core' ),
+						'default' => false,
+					),
+					'position'    => array(
+						'type'    => 'select',
+						'label'   => __( 'Vị trí', 'saha-core' ),
+						'default' => 'right',
+						'options' => array(
+							'right' => __( 'Góc phải', 'saha-core' ),
+							'left'  => __( 'Góc trái', 'saha-core' ),
+						),
+					),
+					'mobile'      => array(
+						'type'    => 'toggle',
+						'label'   => __( 'Hiện cả trên điện thoại', 'saha-core' ),
+						'default' => false,
+						'help'    => __( 'Tắt khi theme đã có thanh liên hệ dính ở chân màn hình điện thoại (saha-theme).', 'saha-core' ),
+					),
+				),
+			),
 			'custom_css' => array(
 				'label'  => __( 'CSS tuỳ chỉnh', 'saha-core' ),
 				'fields' => array(

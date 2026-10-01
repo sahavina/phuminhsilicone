@@ -78,6 +78,18 @@ final class NavMenu extends Element {
 					'default'   => __( 'Menu chính', 'saha-core' ),
 					'maxLength' => 60,
 				),
+				'uppercase'   => array(
+					'type'    => 'toggle',
+					'label'   => __( 'Chữ in hoa', 'saha-core' ),
+					'section' => 'style',
+					'default' => false,
+				),
+				'caret'       => array(
+					'type'    => 'toggle',
+					'label'   => __( 'Mũi tên ở mục có menu con', 'saha-core' ),
+					'section' => 'style',
+					'default' => false,
+				),
 				'typography'  => array(
 					'type'    => 'typography',
 					'label'   => __( 'Kiểu chữ', 'saha-core' ),
@@ -145,6 +157,14 @@ final class NavMenu extends Element {
 
 		$classes = array( 'saha-nav', 'vertical' === $this->prop( $node, 'orientation' ) ? 'saha-nav--vertical' : 'saha-nav--horizontal' );
 
+		if ( $this->prop( $node, 'uppercase' ) ) {
+			$classes[] = 'saha-nav--upper';
+		}
+
+		if ( $this->prop( $node, 'caret' ) ) {
+			$classes[] = 'saha-nav--caret';
+		}
+
 		return '<nav' . $this->rootAttributes( $node, $ctx, $classes, array( 'aria-label' => (string) $this->prop( $node, 'ariaLabel' ) ) ) . '>' . $html . '</nav>';
 	}
 
@@ -157,9 +177,11 @@ final class NavMenu extends Element {
 	public function styles( Node $node, CssRules $css ): void {
 		// Chỉ link của mục menu (không đụng nội dung Block trong mega menu).
 		$css->typography( ' .menu-item > a', $node->prop( 'typography' ) );
-		$css->set( ' .menu-item > a', 'color', $node->prop( 'color' ) );
+		// Màu chữ chỉ cho mục cấp 1 — menu con/mega có nền riêng (trắng).
+		$css->set( ' .saha-nav__list > .menu-item > a', 'color', $node->prop( 'color' ) );
 		$css->set( ' .menu-item > a:hover', 'color', $node->prop( 'hoverColor' ) );
 		$css->set( ' .current-menu-item > a', 'color', $node->prop( 'hoverColor' ) );
+		$css->set( ' .current-menu-ancestor > a', 'color', $node->prop( 'hoverColor' ) );
 		$css->set( ' .saha-nav__list', 'gap', $node->prop( 'gap' ) );
 	}
 }

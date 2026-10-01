@@ -113,7 +113,7 @@ Khi người khác đang mở trang trong builder, bấm Lưu sẽ báo **"… �
 
 **SAHA → Header, Footer & Templates** (chỉ administrator).
 
-- Lần đầu: **Tạo header & footer mặc định** → cả hai hiện **✓ Đang dùng**.
+- Lần đầu: **Tạo header & footer mặc định** → cả hai hiện **✓ Đang dùng**. Muốn header kiểu cửa hàng (chữ chạy, ô tìm kiếm lớn, hotline, nút "Danh mục sản phẩm"): **Tạo header kiểu cửa hàng** → sửa → **Dùng cho toàn site**.
 - Sửa: bấm tên → builder. Header gồm các **hàng** (thanh trên, hàng chính, hàng mobile), mỗi hàng 3 **vùng** trái – giữa – phải.
   - Hàng chỉ hiện trên một loại màn hình: tab Nâng cao → Ẩn trên …
   - **Header** (element ngoài cùng): **Dính khi cuộn** — luôn hiện / chỉ khi cuộn lên / không.
@@ -149,6 +149,10 @@ Template mới **chưa áp dụng**. Bấm **Điều kiện** (hoặc "Sửa đi
 Ví dụ: một template "Trang sản phẩm" cho tất cả, thêm một template riêng cho danh mục "Keo Silicone" — sản phẩm Silicone dùng template riêng, còn lại dùng template chung. Xoá hoặc chuyển template về Nháp → trang quay về giao diện mặc định của theme.
 
 > Template "Shop / danh mục" áp cho cả trang thương hiệu sẽ thay phần đầu thương hiệu (logo, mô tả) của theme. Muốn giữ phần đầu thương hiệu, chọn điều kiện là "Trang Shop" và các danh mục cụ thể thay vì "Tất cả".
+
+### Nút nổi
+
+**Giao diện → SAHA Theme Options → Nút nổi**: nút liên hệ tròn ở góc màn hình (mở Gọi hotline · Chat Zalo · Yêu cầu báo giá) và nút lên đầu trang. Mặc định không hiện trên điện thoại vì đã có thanh liên hệ ở chân màn hình.
 
 ## 6. Trang chủ
 

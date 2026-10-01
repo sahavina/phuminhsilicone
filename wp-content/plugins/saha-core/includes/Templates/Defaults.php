@@ -157,6 +157,198 @@ final class Defaults {
 	}
 
 	/**
+	 * Header kiểu cửa hàng (D2): thanh chữ chạy · logo, ô tìm kiếm lớn, hotline, tài khoản, giỏ ·
+	 * thanh menu màu phụ có nút "Danh mục sản phẩm". Mobile: ☰ · logo · giỏ + ô tìm kiếm.
+	 *
+	 * @return array<string, mixed>
+	 */
+	public static function headerStore(): array {
+		$zone = static fn( array $children, array $props = array() ): array => array(
+			'type'     => 'header-zone',
+			'props'    => $props,
+			'children' => $children,
+		);
+
+		$hotline = function_exists( 'saha_hotline' ) ? saha_hotline( 'north' ) : '';
+		$ticker  = implode(
+			"\n",
+			array_filter(
+				array(
+					__( 'Hàng chính hãng, đủ chứng từ', 'saha-core' ),
+					__( 'Tư vấn kỹ thuật miễn phí', 'saha-core' ),
+					__( 'Giá sỉ cho nhà thầu, đại lý', 'saha-core' ),
+					__( 'Giao hàng toàn quốc', 'saha-core' ),
+					'' !== $hotline ? sprintf( /* translators: %s: số điện thoại */ __( 'Hotline %s', 'saha-core' ), $hotline ) : '',
+				)
+			)
+		);
+
+		return array(
+			'version'  => 1,
+			'elements' => array(
+				array(
+					'type'     => 'site-header',
+					'props'    => array( 'sticky' => 'always' ),
+					'children' => array(
+						// Thanh chữ chạy.
+						array(
+							'type'     => 'header-row',
+							'props'    => array(
+								'height'     => array( 'desktop' => '36px' ),
+								'background' => 'var(--saha-secondary)',
+								'textColor'  => 'rgba(255,255,255,.85)',
+								'hideSticky' => true,
+								'fullWidth'  => true,
+							),
+							'children' => array(
+								$zone( array() ),
+								$zone(
+									array(
+										array(
+											'type'  => 'marquee',
+											'props' => array(
+												'items'    => $ticker,
+												'duration' => 40,
+											),
+										),
+									)
+								),
+								$zone( array() ),
+							),
+						),
+						// Logo · tìm kiếm · hotline · tài khoản · giỏ (desktop).
+						array(
+							'type'     => 'header-row',
+							'props'    => array( 'height' => array( 'desktop' => '80px' ) ),
+							'advanced' => array(
+								'hideTablet' => true,
+								'hideMobile' => true,
+							),
+							'children' => array(
+								$zone( array( array( 'type' => 'logo' ) ) ),
+								$zone(
+									array(
+										array(
+											'type'  => 'search',
+											'props' => array(
+												'style' => 'joined',
+												'width' => array( 'desktop' => '100%' ),
+											),
+										),
+									)
+								),
+								$zone(
+									array(
+										array(
+											'type'  => 'contact',
+											'props' => array(
+												'style' => 'stacked',
+												'label' => __( 'Hotline tư vấn', 'saha-core' ),
+											),
+										),
+										array( 'type' => 'account' ),
+										array( 'type' => 'cart' ),
+									),
+									array( 'gap' => array( 'desktop' => '20px' ) )
+								),
+							),
+						),
+						// Thanh menu: nút danh mục + menu chính.
+						array(
+							'type'     => 'header-row',
+							'props'    => array(
+								'height'     => array( 'desktop' => '56px' ),
+								'background' => 'var(--saha-secondary)',
+								'textColor'  => '#ffffff',
+							),
+							'advanced' => array(
+								'hideTablet' => true,
+								'hideMobile' => true,
+							),
+							'children' => array(
+								$zone( array( array( 'type' => 'category-menu' ) ) ),
+								$zone(
+									array(
+										array(
+											'type'  => 'nav-menu',
+											'props' => array(
+												'location'   => 'primary',
+												'uppercase'  => true,
+												'caret'      => true,
+												'color'      => '#ffffff',
+												'hoverColor' => 'var(--saha-accent)',
+												'gap'        => array( 'desktop' => '32px' ),
+											),
+										),
+									)
+								),
+								$zone( array() ),
+							),
+						),
+						// Mobile/tablet: ☰ · logo · giỏ, rồi ô tìm kiếm.
+						array(
+							'type'     => 'header-row',
+							'props'    => array( 'height' => array( 'desktop' => '60px' ) ),
+							'advanced' => array( 'hideDesktop' => true ),
+							'children' => array(
+								$zone( array( array( 'type' => 'menu-toggle' ) ) ),
+								$zone(
+									array(
+										array(
+											'type'  => 'logo',
+											'props' => array( 'height' => array( 'desktop' => '36px' ) ),
+										),
+									)
+								),
+								$zone( array( array( 'type' => 'cart' ) ) ),
+							),
+						),
+						array(
+							'type'     => 'header-row',
+							'props'    => array(
+								'height'     => array( 'desktop' => '56px' ),
+								'hideSticky' => true,
+							),
+							'advanced' => array( 'hideDesktop' => true ),
+							'children' => array(
+								$zone( array() ),
+								$zone(
+									array(
+										array(
+											'type'  => 'search',
+											'props' => array(
+												'style' => 'joined',
+												'width' => array( 'desktop' => '100%' ),
+											),
+										),
+									)
+								),
+								$zone( array() ),
+							),
+						),
+						array(
+							'type'     => 'header-offcanvas',
+							'children' => array(
+								array(
+									'type'  => 'nav-menu',
+									'props' => array(
+										'location'    => 'primary',
+										'orientation' => 'vertical',
+									),
+								),
+								array(
+									'type'  => 'contact',
+									'props' => array( 'style' => 'button' ),
+								),
+							),
+						),
+					),
+				),
+			),
+		);
+	}
+
+	/**
 	 * Tài liệu footer.
 	 *
 	 * @return array<string, mixed>

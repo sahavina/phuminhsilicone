@@ -42,6 +42,7 @@ final class Module {
 		add_action( 'saha_theme_options_saved', array( self::class, 'regenerateCss' ) );
 		add_action( 'wp_enqueue_scripts', array( $this, 'enqueueGlobalCss' ), 5 );
 		( new WebFonts() )->register();
+		( new FloatingActions() )->register();
 		add_action( 'enqueue_block_editor_assets', array( $this, 'enqueueGlobalCss' ) );
 	}
 

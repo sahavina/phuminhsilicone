@@ -65,9 +65,15 @@ final class Contact extends Element {
 					'section' => 'style',
 					'default' => 'text',
 					'options' => array(
-						'text'   => __( 'Chữ + icon', 'saha-core' ),
-						'button' => __( 'Nút', 'saha-core' ),
+						'text'    => __( 'Chữ + icon', 'saha-core' ),
+						'button'  => __( 'Nút', 'saha-core' ),
+						'stacked' => __( 'Xếp chồng: icon tròn + nhãn nhỏ + số đậm', 'saha-core' ),
 					),
+				),
+				'iconBg' => array(
+					'type'    => 'color',
+					'label'   => __( 'Nền vòng tròn icon (kiểu xếp chồng)', 'saha-core' ),
+					'section' => 'style',
 				),
 				'color' => array(
 					'type'    => 'color',
@@ -109,8 +115,18 @@ final class Contact extends Element {
 		$is_email = 'email' === $kind;
 		$href     = $is_email ? 'mailto:' . antispambot( $value ) : ( function_exists( 'saha_tel_href' ) ? saha_tel_href( $value ) : 'tel:' . preg_replace( '/[^\d+]/', '', $value ) );
 		$label    = (string) $node->prop( 'label', '' );
-		$button   = 'button' === $this->prop( $node, 'style' );
+		$style    = (string) $this->prop( $node, 'style' );
+		$button   = 'button' === $style;
 		$classes  = array( 'saha-contact-el' );
+
+		if ( 'stacked' === $style ) {
+			$classes[] = 'saha-contact-el--stacked';
+
+			return '<a href="' . esc_url( $href, array( 'tel', 'mailto' ) ) . '"' . $this->rootAttributes( $node, $ctx, $classes ) . '>'
+				. '<span class="saha-contact-el__icon">' . Icons::svg( $is_email ? 'mail' : 'phone' ) . '</span><span class="saha-contact-el__text">'
+				. ( '' !== $label ? '<span class="saha-contact-el__label">' . esc_html( $label ) . '</span>' : '' )
+				. '<span class="saha-contact-el__value">' . esc_html( $is_email ? antispambot( $value ) : $value ) . '</span></span></a>';
+		}
 
 		if ( $button ) {
 			$classes[] = 'saha-btn';
@@ -131,6 +147,7 @@ final class Contact extends Element {
 	 */
 	public function styles( Node $node, CssRules $css ): void {
 		$css->set( '', 'color', $node->prop( 'color' ) );
+		$css->set( ' .saha-contact-el__icon', 'background-color', $node->prop( 'iconBg' ) );
 		$css->typography( '', $node->prop( 'typography' ) );
 	}
 }

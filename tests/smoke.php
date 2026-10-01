@@ -530,7 +530,7 @@ echo "Builder — element mốc 1.4\n";
 $saha_reg   = Saha\Core\Builder\ElementRegistry::instance();
 $saha_ctrls = Saha\Core\Builder\Controls\ControlRegistry::instance();
 $saha_types = array_keys( $saha_reg->all() );
-check( 'đủ 59 element (20 nội dung + 13 header/footer + 17 động + 9 giao diện D1)', count( $saha_types ), 59 );
+check( 'đủ 60 element (20 nội dung + 14 header/footer + 17 động + 9 giao diện D1)', count( $saha_types ), 60 );
 $saha_bad_ctrl = array();
 foreach ( $saha_reg->all() as $saha_t => $saha_el ) {
 	foreach ( (array) $saha_el->def()['controls'] as $saha_k => $saha_c ) {
@@ -715,6 +715,20 @@ $saha_ac_ed = $saha_r1( array( 'type' => 'accordion', 'children' => array( array
 check( 'accordion: editor mở mọi mục, không in schema, không đặt name', array( substr_count( $saha_ac_ed, ' open="open"' ), false === strpos( $saha_ac_ed, 'ld+json' ), false === strpos( $saha_ac_ed, 'details name=' ) ), array( 2, true, true ) );
 check( 'font web: URL Google Fonts một request, display=swap; không dùng → rỗng', array( Saha\Core\ThemeOptions\WebFonts::url( array( 'Be Vietnam Pro', 'Inter' ) ), Saha\Core\ThemeOptions\WebFonts::url( array() ) ), array( 'https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800&display=swap', '' ) );
 check( 'font web: chỉ lấy font Google đang chọn, bỏ trùng', Saha\Core\ThemeOptions\WebFonts::families( array( 'typography' => array( 'body' => array( 'fontFamily' => 'be-vietnam-pro' ), 'heading' => array( 'fontFamily' => 'be-vietnam-pro' ), 'menu' => array( 'fontFamily' => 'system' ) ) ) ), array( 'Be Vietnam Pro' ) );
+
+echo "Header theo mẫu (D2)\n";
+function get_search_query() { return 'keo <b>'; }
+$saha_se = $saha_r1( array( 'type' => 'search', 'props' => array( 'style' => 'joined', 'buttonText' => '' ) ) );
+check( 'tìm kiếm ô liền nút: form GET, có label, escape từ khoá, nút icon có chữ ẩn', array( false !== strpos( $saha_se, '<form role="search" method="get" class="saha-search-el__form"' ), false !== strpos( $saha_se, '<label class="screen-reader-text"' ), false !== strpos( $saha_se, 'value="keo &lt;b&gt;"' ), false !== strpos( $saha_se, 'screen-reader-text">Tìm<' ) ), array( true, true, true, true ) );
+$saha_ct = $saha_r1( array( 'type' => 'contact', 'props' => array( 'style' => 'stacked', 'label' => 'Hotline tư vấn', 'value' => '0966.75.3382' ) ) );
+check( 'liên hệ xếp chồng: tel:, nhãn nhỏ + số', array( false !== strpos( $saha_ct, 'href="tel:0966753382"' ), false !== strpos( $saha_ct, 'saha-contact-el__label">Hotline tư vấn<' ), false !== strpos( $saha_ct, 'saha-contact-el--stacked' ) ), array( true, true, true ) );
+$saha_hr_css = ( new CssGenerator() )->document( ( new BuilderSanitizer() )->document( array( 'elements' => array( array( 'type' => 'site-header', 'children' => array( array( 'type' => 'header-row', 'props' => array( 'textColor' => '#ffffff' ), 'children' => array( array( 'type' => 'header-zone' ) ) ) ) ) ) ), 'header-root' )['document'] );
+check( 'hàng header: màu chữ không tô link trong menu con / mega / danh mục', false !== strpos( (string) $saha_hr_css, 'a:not(.saha-btn):not(:where(.sub-menu a, .saha-mega a, .saha-catmenu__panel a))' ), true );
+$saha_nav_css = ( new CssGenerator() )->document( saha_bs( array( 'elements' => array( array( 'type' => 'section', 'children' => array( array( 'type' => 'nav-menu', 'props' => array( 'color' => '#ffffff' ) ) ) ) ) ) )['document'] );
+check( 'menu: màu chữ chỉ cho mục cấp 1', array( false !== strpos( $saha_nav_css, '.saha-nav__list > .menu-item > a{color:#ffffff' ), (bool) preg_match( '/saha-e-[a-z0-9]+ \.menu-item > a\{color/', $saha_nav_css ) ), array( true, false ) );
+check( 'header kiểu cửa hàng hợp lệ với gốc header', ( new BuilderSanitizer() )->document( Saha\Core\Templates\Defaults::headerStore(), 'header-root' )['errors'], array() );
+$saha_cm = $saha_r1( array( 'type' => 'category-menu', 'props' => array( 'source' => 'menu', 'menu' => 'menu-chinh' ) ) );
+check( 'nút danh mục: link shop khi không JS, aria-expanded/aria-controls khớp bảng nav ẩn', array( false !== strpos( $saha_cm, 'role="button" aria-expanded="false" aria-controls="saha-catmenu-' ), (bool) preg_match( '/aria-controls="(saha-catmenu-[a-z0-9]+)".*<nav class="saha-catmenu__panel" id="\1"[^>]*hidden>/s', $saha_cm ) ), array( true, true ) );
 
 echo "\n$pass passed, $fail failed\n";
 exit( $fail > 0 ? 1 : 0 );

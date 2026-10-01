@@ -131,3 +131,8 @@ li.saha-mega-item > .sub-menu .sub-menu a {
 		transition: none;
 	}
 }
+
+/* Tiêu đề cột trong mega không cần mũi tên "có menu con" (element Menu bật mũi tên). */
+li.saha-mega-item .sub-menu a::after {
+	content: none;
+}

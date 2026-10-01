@@ -143,8 +143,55 @@
 		}
 	}
 
+	/**
+	 * Nút "Danh mục sản phẩm": link tới shop khi không có JS; có JS → mở/đóng bảng danh mục
+	 * (aria-expanded, Space/Enter, Esc trả focus, bấm ra ngoài để đóng).
+	 */
+	function initCatMenu( root ) {
+		var toggle = root.querySelector( '[data-saha-catmenu-toggle]' );
+		var panel = toggle ? document.getElementById( toggle.getAttribute( 'aria-controls' ) ) : null;
+
+		if ( ! toggle || ! panel || root.getAttribute( 'data-saha-ready' ) ) {
+			return;
+		}
+
+		root.setAttribute( 'data-saha-ready', '1' );
+
+		function setOpen( open ) {
+			toggle.setAttribute( 'aria-expanded', open ? 'true' : 'false' );
+			panel.hidden = ! open;
+			root.classList.toggle( 'is-open', open );
+		}
+
+		toggle.addEventListener( 'click', function ( event ) {
+			event.preventDefault();
+			setOpen( 'true' !== toggle.getAttribute( 'aria-expanded' ) );
+		} );
+
+		toggle.addEventListener( 'keydown', function ( event ) {
+			if ( ' ' === event.key ) {
+				event.preventDefault();
+				toggle.click();
+			}
+		} );
+
+		root.addEventListener( 'keydown', function ( event ) {
+			if ( 'Escape' === event.key && ! panel.hidden ) {
+				setOpen( false );
+				toggle.focus();
+			}
+		} );
+
+		document.addEventListener( 'click', function ( event ) {
+			if ( ! panel.hidden && ! root.contains( event.target ) ) {
+				setOpen( false );
+			}
+		} );
+	}
+
 	function initAll() {
 		Array.prototype.forEach.call( document.querySelectorAll( '[data-saha-slider]' ), init );
+		Array.prototype.forEach.call( document.querySelectorAll( '[data-saha-catmenu]' ), initCatMenu );
 	}
 
 	if ( 'loading' === document.readyState ) {

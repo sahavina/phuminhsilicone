@@ -1,0 +1,126 @@
+/**
+ * Nút nổi (Theme Options → Nút nổi): liên hệ + lên đầu trang.
+ */
+
+.saha-fab {
+	position: fixed;
+	right: 20px;
+	bottom: 20px;
+	z-index: 9990;
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
+	align-items: flex-end;
+}
+
+.saha-fab--left {
+	right: auto;
+	left: 20px;
+	align-items: flex-start;
+}
+
+.saha-fab .saha-fab__toggle,
+.saha-fab .saha-fab__top {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 52px;
+	height: 52px;
+	padding: 0;
+	border: 0;
+	border-radius: 50%;
+	background: var(--saha-secondary, #1f2937);
+	box-shadow: 0 6px 18px rgb(15 23 42 / 25%);
+	color: #fff;
+	cursor: pointer;
+}
+
+.saha-fab .saha-fab__top {
+	width: 44px;
+	height: 44px;
+	background: var(--saha-primary, #0b5cab);
+}
+
+.saha-fab .saha-fab__top[hidden] {
+	display: none;
+}
+
+.saha-fab__top svg {
+	transform: rotate(-90deg);
+}
+
+.saha-fab svg {
+	width: 22px;
+	height: 22px;
+}
+
+.saha-fab__close {
+	display: none;
+}
+
+.saha-fab__toggle[aria-expanded="true"] svg:first-child {
+	display: none;
+}
+
+.saha-fab__toggle[aria-expanded="true"] .saha-fab__close {
+	display: block;
+}
+
+.saha-fab__toggle:focus-visible,
+.saha-fab__top:focus-visible,
+.saha-fab__item:focus-visible {
+	outline: 3px solid var(--saha-accent, #f5a623);
+	outline-offset: 2px;
+}
+
+.saha-fab__menu {
+	display: flex;
+	flex-direction: column;
+	min-width: 220px;
+	padding: 6px;
+	border: 1px solid var(--saha-border, #e3e6ea);
+	border-radius: 12px;
+	background: var(--saha-background, #fff);
+	box-shadow: 0 10px 30px rgb(15 23 42 / 18%);
+}
+
+.saha-fab__menu[hidden] {
+	display: none;
+}
+
+.saha-fab .saha-fab__item {
+	display: flex;
+	gap: 10px;
+	align-items: center;
+	padding: 10px 12px;
+	border: 0;
+	border-radius: 8px;
+	background: none;
+	color: var(--saha-heading, #111827);
+	font: inherit;
+	font-weight: 600;
+	text-align: left;
+	text-decoration: none;
+	cursor: pointer;
+}
+
+.saha-fab .saha-fab__item:hover {
+	background: var(--saha-surface, #f6f7f9);
+	color: var(--saha-heading, #111827);
+}
+
+.saha-fab__item svg {
+	color: var(--saha-accent, #f5a623);
+}
+
+@media (max-width: 767px) {
+
+	.saha-fab--no-mobile {
+		display: none;
+	}
+
+	/* Không đè thanh liên hệ dính của theme */
+	.saha-has-sticky-cta .saha-fab {
+		bottom: 84px;
+	}
+}

@@ -15,6 +15,7 @@ use Saha\Core\Builder\Elements\Cart;
 use Saha\Core\Builder\Elements\Contact;
 use Saha\Core\Builder\Elements\Copyright;
 use Saha\Core\Builder\Elements\HeaderOffcanvas;
+use Saha\Core\Builder\Elements\CategoryMenu;
 use Saha\Core\Builder\Elements\Accordion;
 use Saha\Core\Builder\Elements\AccordionItem;
 use Saha\Core\Builder\Elements\IconList;
@@ -142,6 +143,7 @@ final class ElementRegistry {
 				new Logo(),
 				new NavMenu(),
 				new Search(),
+				new CategoryMenu(),
 				new Account(),
 				new Cart(),
 				new Contact(),

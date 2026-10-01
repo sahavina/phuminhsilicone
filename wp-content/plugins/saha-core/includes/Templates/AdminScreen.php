@@ -30,6 +30,7 @@ final class AdminScreen {
 		add_filter( 'post_row_actions', array( $this, 'rowActions' ), 10, 2 );
 		add_action( 'admin_post_saha_template_new', array( $this, 'handleNew' ) );
 		add_action( 'admin_post_saha_template_defaults', array( $this, 'handleDefaults' ) );
+		add_action( 'admin_post_saha_template_header_store', array( $this, 'handleHeaderStore' ) );
 		add_action( 'admin_post_saha_template_activate', array( $this, 'handleActivate' ) );
 		add_action( 'admin_notices', array( $this, 'notice' ) );
 	}
@@ -67,9 +68,11 @@ final class AdminScreen {
 			);
 		}
 		printf(
-			'<a class="button" href="%1$s">%2$s</a></p>',
+			'<a class="button" href="%1$s">%2$s</a> <a class="button" href="%3$s">%4$s</a></p>',
 			esc_url( self::actionUrl( 'saha_template_defaults' ) ),
-			esc_html__( 'Tạo header & footer mặc định', 'saha-core' )
+			esc_html__( 'Tạo header & footer mặc định', 'saha-core' ),
+			esc_url( self::actionUrl( 'saha_template_header_store' ) ),
+			esc_html__( 'Tạo header kiểu cửa hàng', 'saha-core' )
 		);
 
 		// Template nội dung (mốc 2.2): chọn loại → tạo từ mẫu → mở builder.
@@ -189,6 +192,22 @@ final class AdminScreen {
 
 		/* translators: %s: loại template */
 		$id = Defaults::create( $type, sprintf( __( '%s mới', 'saha-core' ), Repository::types()[ $type ] ), Defaults::starter( $type ) );
+
+		if ( is_wp_error( $id ) ) {
+			wp_die( esc_html( $id->get_error_message() ) );
+		}
+
+		wp_safe_redirect( add_query_arg( array( 'page' => 'saha-builder', 'post' => $id ), admin_url( 'admin.php' ) ) );
+		exit;
+	}
+
+	/**
+	 * Tạo header kiểu cửa hàng (chưa dùng cho toàn site) → mở builder.
+	 */
+	public function handleHeaderStore(): void {
+		$this->guard( 'saha_template_header_store' );
+
+		$id = Defaults::create( 'header', __( 'Header kiểu cửa hàng', 'saha-core' ), Defaults::headerStore() );
 
 		if ( is_wp_error( $id ) ) {
 			wp_die( esc_html( $id->get_error_message() ) );
