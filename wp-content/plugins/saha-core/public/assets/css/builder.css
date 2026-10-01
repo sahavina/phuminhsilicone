@@ -563,7 +563,10 @@ a.saha-btn--link:focus-visible {
 	color: inherit;
 }
 
-:where(.saha-logo-el) img {
+/* Chiều cao theo Theme Options (Chung → Chiều cao logo). Không bọc :where(): rule `img { height: auto }`
+ * của theme sẽ thắng. Cùng độ ưu tiên với CSS riêng của element (`.saha-e-ID img`) — CSS đó nạp sau
+ * nên ô "Chiều cao" của element Logo vẫn ghi đè được. */
+.saha-logo-el img {
 	display: block;
 	width: auto;
 	height: var(--saha-logo-height, 48px);
