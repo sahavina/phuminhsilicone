@@ -64,6 +64,17 @@ function wp_get_attachment_image( $id, $size = 'thumbnail', $icon = false, $attr
 	foreach ( (array) $attr as $k => $v ) { $html .= ' ' . $k . '="' . esc_attr( $v ) . '"'; }
 	return $html . '>';
 }
+function get_registered_nav_menus() { return array( 'primary' => 'Menu chính', 'footer' => 'Menu chân trang' ); }
+function has_nav_menu( $l ) { return 'primary' === $l; }
+function wp_nav_menu( $a ) { return '<ul class="' . $a['menu_class'] . '"><li class="current-menu-item"><a href="/">Trang chủ</a></li></ul>'; }
+function get_bloginfo( $k = '' ) { return 'description' === $k ? '' : 'Tổng Kho Keo Dán SAHA'; }
+function get_theme_mod( $k, $d = false ) { return $d; }
+function wp_date( $f ) { return gmdate( $f ); }
+function antispambot( $e ) { return $e; }
+function get_search_form( $a = array() ) { return '<form role="search"><input type="search" name="s"></form>'; }
+function wp_login_url() { return 'https://tongkhokeodan.com/wp-login.php'; }
+function _n( $s, $p, $n, $d = null ) { return 1 === $n ? $s : $p; }
+function saha_get_setting( $k, $d = '' ) { return array( 'hotline_north' => '0966.75.3382', 'email' => 'sales@tongkhokeodan.com' )[ $k ] ?? $d; }
 function wp_get_attachment_image_url( $id, $size = 'thumbnail' ) { return 99 === (int) $id ? 'https://tongkhokeodan.com/wp-content/uploads/img-99.jpg' : false; }
 function get_post_type( $id ) { return $GLOBALS['__posts'][ $id ]['type'] ?? false; }
 function get_post_status( $id ) { return $GLOBALS['__posts'][ $id ]['status'] ?? false; }
@@ -518,7 +529,7 @@ echo "Builder — element mốc 1.4\n";
 $saha_reg   = Saha\Core\Builder\ElementRegistry::instance();
 $saha_ctrls = Saha\Core\Builder\Controls\ControlRegistry::instance();
 $saha_types = array_keys( $saha_reg->all() );
-check( 'đủ 20 element Phase 1', count( $saha_types ), 20 );
+check( 'đủ 33 element (20 nội dung + 13 header/footer)', count( $saha_types ), 33 );
 $saha_bad_ctrl = array();
 foreach ( $saha_reg->all() as $saha_t => $saha_el ) {
 	foreach ( (array) $saha_el->def()['controls'] as $saha_k => $saha_c ) {
@@ -558,7 +569,32 @@ $saha_banner = saha_bs( array( 'elements' => array( array( 'type' => 'banner', '
 $saha_banner_html = ( new Renderer() )->document( $saha_banner, new RenderContext( 0, false, false ) );
 check( 'banner ưu tiên: ảnh fetchpriority=high, loading=eager', false !== strpos( $saha_banner_html, 'fetchpriority="high"' ) && false !== strpos( $saha_banner_html, 'loading="eager"' ), true );
 check( 'banner: ảnh nền alt rỗng, tiêu đề H1', false !== strpos( $saha_banner_html, 'alt=""' ) && false !== strpos( $saha_banner_html, '<h1 class="saha-banner__title">Hero</h1>' ), true );
-check( 'element động (block, products, posts, shortcode) không vào render cache', array_values( array_filter( $saha_types, static fn( $t ) => ! empty( $saha_reg->get( $t )->def()['dynamic'] ) ) ), array( 'shortcode', 'block', 'products', 'posts' ) );
+check( 'element động (shortcode, block, sản phẩm, bài viết, menu, tìm kiếm, giỏ) không vào render cache', array_values( array_filter( $saha_types, static fn( $t ) => ! empty( $saha_reg->get( $t )->def()['dynamic'] ) ) ), array( 'shortcode', 'block', 'products', 'posts', 'nav-menu', 'search', 'cart' ) );
+
+echo "Header & footer (mốc 1.5)\n";
+require_once SAHA_CORE_PATH . 'includes/functions.php'; // saha_hotline(), saha_tel_href()…
+$saha_hdr_doc = Saha\Core\Templates\Defaults::header();
+$saha_hdr     = ( new BuilderSanitizer() )->document( $saha_hdr_doc, 'header-root' );
+check( 'header mặc định hợp lệ với gốc header', $saha_hdr['errors'], array() );
+check( 'header mặc định: không hợp lệ ở gốc trang thường', count( saha_bs( $saha_hdr_doc )['errors'] ) > 0, true );
+check( 'Section không đặt được ở gốc header', count( ( new BuilderSanitizer() )->document( array( 'elements' => array( array( 'type' => 'section' ) ) ), 'header-root' )['errors'] ) > 0, true );
+$saha_ftr = saha_bs( Saha\Core\Templates\Defaults::footer() );
+check( 'footer mặc định hợp lệ (gốc trang thường)', $saha_ftr['errors'], array() );
+
+$saha_hdr_html = ( new Renderer() )->document( $saha_hdr['document'], new RenderContext( 77, false, false ) );
+check( 'header: thẻ <header> dính "always"', (bool) preg_match( '/<header class="saha-e [^"]*saha-hb--sticky-always[^"]*"[^>]*data-saha-sticky="always"/', $saha_hdr_html ), true );
+check( 'nút menu trỏ đúng bảng off-canvas (aria-controls)', false !== strpos( $saha_hdr_html, 'aria-controls="saha-offcanvas-77"' ) && false !== strpos( $saha_hdr_html, 'id="saha-offcanvas-77"' ), true );
+check( 'off-canvas: hidden, role=dialog, aria-modal', (bool) preg_match( '/id="saha-offcanvas-77" hidden><div class="saha-hb-offcanvas__backdrop" data-saha-close><\/div><div class="saha-hb-offcanvas__panel" role="dialog" aria-modal="true"/', $saha_hdr_html ), true );
+check( 'nút menu có aria-expanded=false', false !== strpos( $saha_hdr_html, 'aria-expanded="false"' ), true );
+check( 'hotline từ SAHA → Cấu hình, link tel:', false !== strpos( $saha_hdr_html, 'href="tel:0966753382"' ) && false !== strpos( $saha_hdr_html, '0966.75.3382' ), true );
+check( 'menu trong <nav aria-label>', (bool) preg_match( '/<nav [^>]*aria-label="Menu chính"/', $saha_hdr_html ), true );
+check( 'logo chưa có ảnh → tên website, link trang chủ rel=home', false !== strpos( $saha_hdr_html, 'rel="home"' ) && false !== strpos( $saha_hdr_html, 'Tổng Kho Keo Dán SAHA' ), true );
+check( 'hàng desktop ẩn ở tablet/mobile, hàng mobile ẩn ở desktop', false !== strpos( $saha_hdr_html, 'saha-hide-tablet saha-hide-mobile' ) && false !== strpos( $saha_hdr_html, 'saha-hide-desktop' ), true );
+$saha_hdr_editor = ( new Renderer() )->document( $saha_hdr['document'], new RenderContext( 77, true, false ) );
+check( 'editor: off-canvas hiện tĩnh để kéo thả, không hidden', false !== strpos( $saha_hdr_editor, 'saha-hb-offcanvas is-editor' ) && false === strpos( $saha_hdr_editor, 'hidden>' ), true );
+$saha_ftr_html = ( new Renderer() )->document( $saha_ftr['document'], new RenderContext( 78, false, false ) );
+check( 'footer: bản quyền có năm hiện tại', false !== strpos( $saha_ftr_html, '© ' . gmdate( 'Y' ) . ' Tổng Kho Keo Dán SAHA' ), true );
+check( 'footer: email mailto', false !== strpos( $saha_ftr_html, 'href="mailto:sales@tongkhokeodan.com"' ), true );
 
 echo "\n$pass passed, $fail failed\n";
 exit( $fail > 0 ? 1 : 0 );

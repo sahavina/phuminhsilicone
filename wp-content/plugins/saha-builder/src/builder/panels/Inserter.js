@@ -6,6 +6,7 @@ import { __ } from '@wordpress/i18n';
 
 import { useActions } from '../actions';
 import { drag, useBuilder } from '../context';
+import { placeableTypes } from '../store/tree';
 
 const CATEGORIES = [
 	[ 'layout', __( 'Bố cục', 'saha-builder' ) ],
@@ -13,10 +14,15 @@ const CATEGORIES = [
 	[ 'marketing', __( 'Marketing', 'saha-builder' ) ],
 	[ 'woocommerce', __( 'Sản phẩm', 'saha-builder' ) ],
 	[ 'blog', __( 'Blog', 'saha-builder' ) ],
+	[ 'header', __( 'Header & Footer', 'saha-builder' ) ],
 ];
 
 export default function Inserter() {
-	const { elements, state } = useBuilder();
+	const { elements: all, state, defs } = useBuilder();
+
+	// Chỉ element đặt được trong tài liệu này (ví dụ Section không có trong header).
+	const placeable = placeableTypes( defs );
+	const elements = all.filter( ( e ) => placeable.has( e.type ) );
 	const { insertType } = useActions();
 
 	const known = CATEGORIES.map( ( [ key ] ) => key );

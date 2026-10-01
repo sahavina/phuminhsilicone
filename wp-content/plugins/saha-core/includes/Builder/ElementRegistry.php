@@ -10,6 +10,19 @@ declare( strict_types=1 );
 namespace Saha\Core\Builder;
 
 use Saha\Core\Builder\Controls\ControlRegistry;
+use Saha\Core\Builder\Elements\Account;
+use Saha\Core\Builder\Elements\Cart;
+use Saha\Core\Builder\Elements\Contact;
+use Saha\Core\Builder\Elements\Copyright;
+use Saha\Core\Builder\Elements\HeaderOffcanvas;
+use Saha\Core\Builder\Elements\HeaderRow;
+use Saha\Core\Builder\Elements\HeaderZone;
+use Saha\Core\Builder\Elements\Logo;
+use Saha\Core\Builder\Elements\MenuToggle;
+use Saha\Core\Builder\Elements\NavMenu;
+use Saha\Core\Builder\Elements\Search;
+use Saha\Core\Builder\Elements\SiteHeader;
+use Saha\Core\Builder\Elements\Social;
 use Saha\Core\Builder\Elements\Banner;
 use Saha\Core\Builder\Elements\Block;
 use Saha\Core\Builder\Elements\Button;
@@ -85,6 +98,20 @@ final class ElementRegistry {
 				new Products(),
 				new ProductCategories(),
 				new Posts(),
+				// Header & footer (mốc 1.5).
+				new SiteHeader(),
+				new HeaderRow(),
+				new HeaderZone(),
+				new HeaderOffcanvas(),
+				new MenuToggle(),
+				new Logo(),
+				new NavMenu(),
+				new Search(),
+				new Account(),
+				new Cart(),
+				new Contact(),
+				new Social(),
+				new Copyright(),
 			);
 
 			foreach ( $core as $element ) {
@@ -227,6 +254,7 @@ final class ElementRegistry {
 				'category'        => (string) $def['category'],
 				'allowedParents'  => array_values( (array) $def['allowedParents'] ),
 				'allowedChildren' => array_values( (array) $def['allowedChildren'] ),
+				'initialChildren' => array_values( (array) $def['initialChildren'] ),
 				'dynamic'         => (bool) $def['dynamic'],
 				'controls'        => $items,
 			);

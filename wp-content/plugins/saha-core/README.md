@@ -56,6 +56,10 @@ Builder/
   Frontend, Rest/BuilderController        the_content + CSS; REST /builder/*
 ```
 
+Header & footer: `includes/Templates/` — post type `saha_template` (SAHA → Header & Footer,
+quyền `manage_saha_templates`), chỉ mục `saha_template_map`, render qua filter `saha_render_header` /
+`saha_render_footer` của saha-theme; JS `public/assets/js/header.js` (off-canvas, dính khi cuộn).
+
 Blocks dùng chung: `includes/Blocks/` — post type `saha_block` (SAHA → Blocks), REST `/blocks`,
 element Block render nội dung mới nhất (chống vòng lặp, tối đa 3 cấp).
 
@@ -68,7 +72,7 @@ Chi tiết: `docs/scc/PHASE-1.2.md`.
 Action: `saha_core_loaded`, `saha_core_activated`, `saha_core_deactivated`,
 `saha_core_upgraded`, `saha_core_migrated`, `saha_core_admin_menu`, `saha_log`,
 `saha_theme_options_saved`, `saha_builder_elements`, `saha_builder_register_controls`,
-`saha_builder_render_before`, `saha_builder_render_after`, `saha_builder_saved`.
+`saha_builder_render_before`, `saha_builder_render_after`, `saha_builder_saved`, `saha_template_saved`.
 
 ## Filters
 
@@ -77,7 +81,7 @@ Action: `saha_core_loaded`, `saha_core_activated`, `saha_core_deactivated`,
 `saha_theme_options`, `saha_theme_options_schema`, `saha_css_variables`, `saha_theme_font_stacks`,
 `saha_builder_role_caps`, `saha_builder_post_types`, `saha_builder_element_definition`,
 `saha_builder_render_element`, `saha_builder_node_classes`, `saha_builder_render_cache`,
-`saha_builder_migrate_document`, `saha_builder_enqueue_layout_css`, `saha_builder_icons`.
+`saha_builder_migrate_document`, `saha_builder_enqueue_layout_css`, `saha_builder_icons`, `saha_builder_root_type`, `saha_template_resolved`.
 
 ## API
 

@@ -23,7 +23,7 @@ import Inserter from './panels/Inserter';
 import Navigator from './panels/Navigator';
 import Settings from './panels/Settings';
 import { initialState, isDirty, reducer } from './store/reducer';
-import { createNode, locate } from './store/tree';
+import { createNode, locate, setRootType } from './store/tree';
 import Toolbar from './Toolbar';
 
 /**
@@ -100,6 +100,8 @@ export default function App() {
 	useEffect( () => {
 		Promise.all( [ api.elements(), api.load( config.postId ) ] )
 			.then( ( [ definitions, data ] ) => {
+				setRootType( config.rootType );
+
 				const map = Object.fromEntries(
 					definitions.elements.map( ( e ) => [ e.type, e ] )
 				);

@@ -35,7 +35,7 @@ final class Block extends Element {
 			'name'           => __( 'Block dùng chung', 'saha-core' ),
 			'icon'           => 'block-default',
 			'category'       => 'marketing',
-			'allowedParents' => array( 'root', 'section', 'column', 'container' ),
+			'allowedParents' => array_merge( array( 'root' ), self::CONTENT_PARENTS ),
 			'dynamic'        => true,
 			'controls'       => array(
 				'blockId' => array(

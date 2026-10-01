@@ -40,6 +40,7 @@ final class Row extends Element {
 			'category'        => 'layout',
 			'allowedParents'  => array( 'section', 'column', 'container' ),
 			'allowedChildren' => array( 'column' ),
+			'initialChildren' => array( 'column', 'column' ),
 			'controls'        => array(
 				'gap'             => array(
 					'type'       => 'size',

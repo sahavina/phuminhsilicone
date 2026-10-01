@@ -178,7 +178,7 @@ wp plugin activate saha-core saha-builder
 wp theme activate saha-theme
 ```
 
-Kích hoạt plugin sẽ tự tạo 4 bảng `wp_saha_*`, 4 role, cấu hình mặc định và lịch dọn log. Theme Options ở **Giao diện → SAHA Theme Options**; dựng trang bằng builder: **Trang → rê chuột vào một trang → "Dựng bằng SAHA Builder"**.
+Kích hoạt plugin sẽ tự tạo 4 bảng `wp_saha_*`, 4 role, cấu hình mặc định và lịch dọn log. Theme Options ở **Giao diện → SAHA Theme Options**; dựng trang bằng builder: **Trang → rê chuột vào một trang → "Dựng bằng SAHA Builder"**; header/footer: **SAHA → Header & Footer → Tạo header & footer mặc định**.
 
 > `saha-theme` đang phát triển theo mốc (xem [mục 11](#11-trạng-thái-dự-án)). Đến mốc 1.6, việc ẩn giá ở chế độ catalogue mới được xử lý phía server — trước đó đừng dùng `saha-theme` trên production.
 
@@ -317,9 +317,9 @@ Users → Add New → chọn role. Mỗi người một tài khoản riêng; kh�
 | Lệnh | Chạy ở đâu | Kiểm tra gì |
 |---|---|---|
 | **SAHA → Kiểm tra hệ thống** hoặc `wp saha qa` | trên site | môi trường, bảng + index, quyền, cấu hình, REST, tìm kiếm, SEO, bảo mật, cron — chỉ đọc, an toàn trên production |
-| `php tests/smoke.php` | máy dev, chỉ cần PHP | 153 case logic: validate, sanitize, tìm kiếm, cache, SEO, rate limit, Theme Options, builder |
+| `php tests/smoke.php` | máy dev, chỉ cần PHP | 168 case logic: validate, sanitize, tìm kiếm, cache, SEO, rate limit, Theme Options, builder |
 | `npm run lint:js` · `npm run lint:css` | máy dev có Node | chuẩn code JS/SCSS của WordPress |
-| `npm run test:js` | máy dev có Node | 37 unit test store của SAHA Builder (Vitest) |
+| `npm run test:js` | máy dev có Node | 40 unit test store của SAHA Builder (Vitest) |
 | `php tests/http-smoke.php <url>` | máy bất kỳ có PHP + curl | REST, mã HTTP, robots, noindex, no-cache từ ngoài vào — chỉ GET |
 | `php tests/http-smoke.php <url> --write` | **chỉ local/staging** | thêm test form báo giá/liên hệ (tạo 2–3 bản ghi `[Mẫu] QA`) |
 
@@ -329,7 +329,7 @@ Kết quả mong đợi trên site local có dữ liệu mẫu:
 
 ```
 wp saha qa                                    → Lỗi: 0
-php tests/smoke.php                           → 153 passed, 0 failed
+php tests/smoke.php                           → 168 passed, 0 failed
 php tests/http-smoke.php http://localhost/saha --write → 0 failed
 ```
 
@@ -424,7 +424,7 @@ Sửa checklist test của một phase → sửa trong `docs/PHASE-*.md`, rồi 
 | [docs/PHASE-1.md](docs/PHASE-1.md) … [docs/PHASE-8.md](docs/PHASE-8.md) | từng phase: mục tiêu, file, database, hook, bảo mật, test, cài đặt, nghiệm thu |
 | [docs/QA.md](docs/QA.md) | checklist QA tổng hợp: 188 test, ma trận thiết bị, bảng nghiệm thu |
 | [docs/scc/TECHNICAL-DESIGN.md](docs/scc/TECHNICAL-DESIGN.md) | SAHA Commerce Core: kiến trúc theme + builder riêng, quyết định, lộ trình |
-| [docs/scc/PHASE-1.0.md](docs/scc/PHASE-1.0.md), [PHASE-1.1.md](docs/scc/PHASE-1.1.md), [PHASE-1.2.md](docs/scc/PHASE-1.2.md), [PHASE-1.3.md](docs/scc/PHASE-1.3.md), [PHASE-1.4.md](docs/scc/PHASE-1.4.md) | từng mốc SCC: mục tiêu, file, hook, bảo mật, test, nghiệm thu |
+| [docs/scc/PHASE-1.0.md](docs/scc/PHASE-1.0.md), [PHASE-1.1.md](docs/scc/PHASE-1.1.md), [PHASE-1.2.md](docs/scc/PHASE-1.2.md), [PHASE-1.3.md](docs/scc/PHASE-1.3.md), [PHASE-1.4.md](docs/scc/PHASE-1.4.md), [PHASE-1.5.md](docs/scc/PHASE-1.5.md) | từng mốc SCC: mục tiêu, file, hook, bảo mật, test, nghiệm thu |
 | [docs/layouts/](docs/layouts/) | layout UX Builder mẫu: trang chủ, footer |
 | [saha-core/README.md](wp-content/plugins/saha-core/README.md) | plugin: file, hook, REST API, database, capability |
 | [flatsome-child/README.md](wp-content/themes/flatsome-child/README.md) | theme: file, shortcode, UX element, JS API, asset |
@@ -465,9 +465,9 @@ Chuyển từ Flatsome sang theme + builder riêng. Thiết kế: [docs/scc/TECH
 | 1.1 | `saha-theme`, capability builder, Theme Options | ✅ |
 | 1.2 | Builder runtime (schema, renderer, REST) | ✅ |
 | 1.3 | Ứng dụng builder (React) | ✅ |
-| 1.4 | Element + Reusable Blocks | ✅ chờ review |
-| 1.5 | Header/Footer Builder | ⏳ |
+| 1.4 | Element + Reusable Blocks | ✅ |
+| 1.5 | Header/Footer Builder | ✅ chờ review |
 | 1.6 | WooCommerce trên `saha-theme` | ⏳ |
 | 1.7 | QA Phase 1 | ⏳ |
 
-Plugin: **SAHA Core 1.11.0** · **SAHA Builder 0.3.0** · Theme **SAHA Theme 0.1.0** · Database schema **1.2.0**.
+Plugin: **SAHA Core 1.12.0** · **SAHA Builder 0.4.0** · Theme **SAHA Theme 0.1.0** · Database schema **1.2.0**.

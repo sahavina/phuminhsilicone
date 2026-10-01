@@ -65,10 +65,11 @@ final class Sanitizer {
 	/**
 	 * Sanitize cả tài liệu.
 	 *
-	 * @param mixed $input Mảng hoặc chuỗi JSON.
+	 * @param mixed  $input Mảng hoặc chuỗi JSON.
+	 * @param string $root  Loại gốc của tài liệu: `root` (trang, block, footer) | `header-root` (header).
 	 * @return array{document: Document|null, errors: array<string, string>}
 	 */
-	public function document( $input ): array {
+	public function document( $input, string $root = 'root' ): array {
 		$this->reset();
 
 		if ( is_string( $input ) ) {
@@ -94,7 +95,7 @@ final class Sanitizer {
 		$nodes = array();
 
 		foreach ( array_values( (array) ( $input['elements'] ?? array() ) ) as $index => $raw ) {
-			$node = $this->node( $raw, 'root', 1, 'elements.' . $index );
+			$node = $this->node( $raw, $root, 1, 'elements.' . $index );
 
 			if ( null !== $node ) {
 				$nodes[] = $node;
@@ -176,7 +177,7 @@ final class Sanitizer {
 				/* translators: 1: tên element, 2: type cha */
 				__( '"%1$s" không được đặt trong "%2$s".', 'saha-core' ),
 				(string) $def['name'],
-				'root' === $parent ? __( 'cấp gốc', 'saha-core' ) : $this->name( $parent )
+				in_array( $parent, array( 'root', 'header-root' ), true ) ? __( 'cấp gốc', 'saha-core' ) : $this->name( $parent )
 			);
 			return null;
 		}

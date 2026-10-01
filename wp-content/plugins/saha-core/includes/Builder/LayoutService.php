@@ -62,7 +62,7 @@ final class LayoutService {
 			);
 		}
 
-		$result = ( new Sanitizer() )->document( $data );
+		$result = ( new Sanitizer() )->document( $data, LayoutRepository::rootType( $post_id ) );
 
 		if ( null === $result['document'] ) {
 			return array(

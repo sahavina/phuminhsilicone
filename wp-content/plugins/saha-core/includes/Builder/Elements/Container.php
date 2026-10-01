@@ -34,7 +34,7 @@ final class Container extends Element {
 			'name'            => __( 'Hộp (Container)', 'saha-core' ),
 			'icon'            => 'screenoptions',
 			'category'        => 'layout',
-			'allowedParents'  => array( 'section', 'column', 'container' ),
+			'allowedParents'  => self::CONTENT_PARENTS,
 			'allowedChildren' => array( '*' ),
 			'controls'        => array(
 				'direction'  => array(

@@ -166,6 +166,7 @@ final class BuilderScreen {
 		return array(
 			'postId'        => $post->ID,
 			'postType'      => $post->post_type,
+			'rootType'      => LayoutRepository::rootType( $post->ID ),
 			'postTypeLabel' => $type ? (string) $type->labels->singular_name : $post->post_type,
 			'canvasUrl'     => Canvas::url( $post->ID ),
 			'exitUrl'       => admin_url( 'edit.php?post_type=' . $post->post_type ),

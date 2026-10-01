@@ -24,6 +24,7 @@ defined( 'ABSPATH' ) || exit;
  * - `allowedParents`  type cha hợp lệ; `root` = cấp gốc tài liệu
  * - `allowedChildren` type con hợp lệ; `[]` = không có con; `['*']` = bất kỳ
  * - `controls`        key => định nghĩa control (type, label, default, responsive, section)
+ * - `initialChildren` con tạo sẵn khi thêm element mới (Hàng → 2 cột)
  * - `dynamic`         true nếu HTML phụ thuộc request/dữ liệu thay đổi (không render cache)
  * - `assets`          ['script' => handles, 'style' => handles] — chỉ nạp khi có element
  */
@@ -32,7 +33,7 @@ abstract class Element {
 	/**
 	 * Cha hợp lệ của element nội dung (tiêu đề, văn bản, nút…).
 	 */
-	public const CONTENT_PARENTS = array( 'section', 'column', 'container' );
+	public const CONTENT_PARENTS = array( 'section', 'column', 'container', 'header-zone', 'header-offcanvas' );
 
 	/**
 	 * Định nghĩa đã chuẩn hoá (cache trong request).
@@ -78,6 +79,7 @@ abstract class Element {
 				'category'        => 'content',
 				'allowedParents'  => array( 'column' ),
 				'allowedChildren' => array(),
+				'initialChildren' => array(),
 				'controls'        => array(),
 				'dynamic'         => false,
 				'assets'          => array(),

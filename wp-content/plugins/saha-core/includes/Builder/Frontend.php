@@ -99,16 +99,26 @@ final class Frontend {
 			return;
 		}
 
-		$this->enqueueLayoutCss( $post_id );
+		self::enqueueDocumentCss( $post_id );
+	}
 
-		// Block dùng chung trên trang: CSS nằm ở file riêng của block (sửa block không
-		// phải sinh lại CSS mọi trang dùng nó).
+	/**
+	 * CSS của một tài liệu (trang, template…) và các block dùng chung bên trong.
+	 *
+	 * Block: CSS nằm ở file riêng của block (sửa block không phải sinh lại CSS mọi
+	 * trang dùng nó).
+	 *
+	 * @param int $post_id Post ID.
+	 */
+	public static function enqueueDocumentCss( int $post_id ): void {
+		self::enqueueLayoutCss( $post_id );
+
 		$document = LayoutRepository::get( $post_id );
 
 		if ( null !== $document ) {
 			foreach ( LayoutService::referencedBlocks( $document ) as $block_id ) {
 				if ( 'publish' === get_post_status( $block_id ) ) {
-					$this->enqueueLayoutCss( $block_id );
+					self::enqueueLayoutCss( $block_id );
 				}
 			}
 		}
@@ -119,7 +129,7 @@ final class Frontend {
 	 *
 	 * @param int $post_id Post ID.
 	 */
-	private function enqueueLayoutCss( int $post_id ): void {
+	private static function enqueueLayoutCss( int $post_id ): void {
 		$state = LayoutService::ensureCss( $post_id );
 
 		if ( '' !== $state['file'] ) {

@@ -11,6 +11,7 @@ export const defs = {
 		name: 'Hàng',
 		allowedParents: [ 'section', 'column' ],
 		allowedChildren: [ 'column' ],
+		initialChildren: [ 'column', 'column' ],
 	},
 	column: {
 		name: 'Cột',

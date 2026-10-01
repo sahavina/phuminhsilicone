@@ -67,6 +67,15 @@ final class Icons {
 				'home'          => array( __( 'Trang chủ', 'saha-core' ), '<path d="m3 11 9-7 9 7M5 10v10h14V10"/>' ),
 				'file-text'     => array( __( 'Tài liệu', 'saha-core' ), '<path d="M6 3h9l4 4v14H6zM15 3v4h4M9 12h6M9 16h6"/>' ),
 				'download'      => array( __( 'Tải về', 'saha-core' ), '<path d="M12 4v11M7 10l5 5 5-5M5 20h14"/>' ),
+				'menu'          => array( __( 'Menu', 'saha-core' ), '<path d="M3 6h18M3 12h18M3 18h18"/>' ),
+				'close'         => array( __( 'Đóng', 'saha-core' ), '<path d="M6 6l12 12M18 6 6 18"/>' ),
+				// Mạng xã hội (vẽ đơn giản, không phải logo chính thức).
+				'facebook'      => array( 'Facebook', '<path d="M14 8h3V4h-3a4 4 0 0 0-4 4v2H8v4h2v7h4v-7h3l1-4h-4V8z"/>' ),
+				'zalo'          => array( 'Zalo', '<path d="M4 5h16v11H10l-5 4v-4H4z"/><path d="M9 8.5h5l-5 5h5"/>' ),
+				'youtube'       => array( 'YouTube', '<rect x="2.5" y="5" width="19" height="14" rx="4"/><path d="m10 9 5 3-5 3z"/>' ),
+				'tiktok'        => array( 'TikTok', '<path d="M14 3v11.5a3.5 3.5 0 1 1-3.5-3.5"/><path d="M14 3c.8 2.6 2.8 4.4 6 4.5"/>' ),
+				'instagram'     => array( 'Instagram', '<rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><path d="M17.5 6.5h.01"/>' ),
+				'linkedin'      => array( 'LinkedIn', '<rect x="3" y="3" width="18" height="18" rx="3"/><path d="M8 11v5M8 8h.01M12 16v-5M12 13a2 2 0 0 1 4 0v3"/>' ),
 			);
 
 			/**

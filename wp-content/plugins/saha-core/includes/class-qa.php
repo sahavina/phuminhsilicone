@@ -398,6 +398,16 @@ final class Qa {
 			)
 		);
 		$this->add( $g, 'Trang dùng builder', self::PASS, count( $pages ) . ' trang' );
+
+		foreach ( Templates\Repository::types() as $type => $label ) {
+			$id = Templates\Repository::resolve( $type );
+			$this->add(
+				$g,
+				$label . ' dựng bằng builder',
+				null !== $id ? self::PASS : ( current_theme_supports( 'saha-theme-options' ) ? self::WARN : self::SKIP ),
+				null !== $id ? get_the_title( $id ) . ' (#' . $id . ')' : __( 'Chưa có — đang dùng bản PHP của theme. Tạo ở SAHA → Header & Footer.', 'saha-core' )
+			);
+		}
 	}
 
 	/**

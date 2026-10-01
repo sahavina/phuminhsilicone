@@ -3,7 +3,7 @@
  * Plugin Name:       SAHA Builder
  * Plugin URI:        https://tongkhokeodan.com
  * Description:       Ứng dụng soạn thảo của SAHA Commerce Core: Theme Options, page builder, header/footer builder. Dữ liệu và hiển thị nằm ở SAHA Core — tắt plugin này, website vẫn hiển thị bình thường.
- * Version:           0.3.0
+ * Version:           0.4.0
  * Requires at least: 6.6
  * Requires PHP:      8.2
  * Requires Plugins:  saha-core
@@ -19,7 +19,7 @@ declare( strict_types=1 );
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'SAHA_BUILDER_VERSION', '0.3.0' );
+define( 'SAHA_BUILDER_VERSION', '0.4.0' );
 define( 'SAHA_BUILDER_FILE', __FILE__ );
 define( 'SAHA_BUILDER_PATH', plugin_dir_path( __FILE__ ) );
 define( 'SAHA_BUILDER_URL', plugin_dir_url( __FILE__ ) );

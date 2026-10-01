@@ -58,6 +58,21 @@ final class LayoutRepository {
 	}
 
 	/**
+	 * Loại gốc của tài liệu: header có gốc riêng (chỉ nhận element Header).
+	 *
+	 * @param int $post_id Post ID.
+	 */
+	public static function rootType( int $post_id ): string {
+		/**
+		 * Loại gốc của tài liệu builder.
+		 *
+		 * @param string $root    `root` | `header-root`.
+		 * @param int    $post_id Post ID.
+		 */
+		return (string) apply_filters( 'saha_builder_root_type', 'root', $post_id );
+	}
+
+	/**
 	 * Đăng ký meta (có revision — WordPress ≥ 6.4).
 	 */
 	public static function registerMeta(): void {

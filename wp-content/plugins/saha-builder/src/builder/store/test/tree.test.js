@@ -11,9 +11,11 @@ import {
 	moveNode,
 	newId,
 	nodeLabel,
+	placeableTypes,
 	removeNode,
 	replaceNode,
 	resolveClickInsert,
+	setRootType,
 	wrapChain,
 } from '../tree';
 import { defs, sampleDoc } from './fixtures';
@@ -203,6 +205,63 @@ describe( 'replaceNode', () => {
 		expect( findNode( doc, 'c1' ).children.map( ( n ) => n.id ) ).toEqual( [
 			'bk',
 			't1',
+		] );
+	} );
+} );
+
+describe( 'tài liệu header (gốc header-root)', () => {
+	const headerDefs = {
+		...defs,
+		// Như server từ mốc 1.4: Section nhận mọi con, con tự khai báo cha hợp lệ.
+		section: { ...defs.section, allowedChildren: [ '*' ] },
+		'site-header': {
+			name: 'Header',
+			allowedParents: [ 'header-root' ],
+			allowedChildren: [ 'header-row' ],
+		},
+		'header-row': {
+			name: 'Hàng header',
+			allowedParents: [ 'site-header' ],
+			allowedChildren: [ 'header-zone' ],
+			initialChildren: [ 'header-zone', 'header-zone', 'header-zone' ],
+		},
+		'header-zone': {
+			name: 'Vùng',
+			allowedParents: [ 'header-row' ],
+			allowedChildren: [ '*' ],
+		},
+		logo: {
+			name: 'Logo',
+			allowedParents: [ 'section', 'column', 'header-zone' ],
+			allowedChildren: [],
+		},
+	};
+
+	it( 'trang thường: không đặt được element cấu trúc header', () => {
+		setRootType( 'root' );
+		const types = placeableTypes( headerDefs );
+		expect( types.has( 'section' ) ).toBe( true );
+		expect( types.has( 'site-header' ) ).toBe( false );
+		expect( types.has( 'header-row' ) ).toBe( false );
+		expect( types.has( 'logo' ) ).toBe( true );
+	} );
+
+	it( 'header: chỉ element header, không Section', () => {
+		setRootType( 'header-root' );
+		const types = placeableTypes( headerDefs );
+		expect( types.has( 'site-header' ) ).toBe( true );
+		expect( types.has( 'header-row' ) ).toBe( true );
+		expect( types.has( 'logo' ) ).toBe( true );
+		expect( types.has( 'section' ) ).toBe( false );
+		setRootType( 'root' );
+	} );
+
+	it( 'hàng header mới có sẵn 3 vùng', () => {
+		const row = createNode( headerDefs, 'header-row', new Set() );
+		expect( row.children.map( ( c ) => c.type ) ).toEqual( [
+			'header-zone',
+			'header-zone',
+			'header-zone',
 		] );
 	} );
 } );

@@ -89,6 +89,7 @@ final class Loader {
 			// SCC (PSR-4).
 			'theme_options' => ThemeOptions\Module::class,
 			'builder'       => Builder\Module::class,
+			'templates'     => Templates\Module::class,
 			'admin'      => Admin::class,
 		);
 

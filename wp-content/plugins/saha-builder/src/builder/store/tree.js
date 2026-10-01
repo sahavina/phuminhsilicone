@@ -8,7 +8,53 @@
  * allowedChildren) — cùng quy tắc mà Sanitizer PHP kiểm khi lưu.
  */
 
-export const ROOT = 'root';
+/**
+ * Loại gốc của tài liệu đang sửa: `root` (trang, block, footer) hoặc
+ * `header-root` (header — chỉ nhận element Header). Live binding: module khác
+ * import ROOT luôn thấy giá trị mới sau setRootType().
+ */
+
+export let ROOT = 'root';
+
+/**
+ * Đặt loại gốc (gọi một lần khi mở tài liệu).
+ *
+ * @param {string} type `root` | `header-root`.
+ */
+export function setRootType( type ) {
+	ROOT = type || 'root';
+}
+
+/**
+ * Các loại element đặt được ở đâu đó trong tài liệu có gốc hiện tại.
+ *
+ * @param {Object} defs Định nghĩa.
+ * @return {Set<string>} Type.
+ */
+export function placeableTypes( defs ) {
+	const seen = new Set();
+	const queue = [ ROOT ];
+
+	while ( queue.length ) {
+		const parent = queue.shift();
+
+		Object.keys( defs ).forEach( ( type ) => {
+			if ( ! seen.has( type ) && canContain( defs, parent, type ) ) {
+				seen.add( type );
+				queue.push( type );
+			}
+		} );
+	}
+
+	// Đặt được nhờ tự bọc ở cấp gốc (Tiêu đề → Section › Tiêu đề).
+	Object.keys( defs ).forEach( ( type ) => {
+		if ( ! seen.has( type ) && wrapChain( defs, ROOT, type ) ) {
+			seen.add( type );
+		}
+	} );
+
+	return seen;
+}
 
 const ID_CHARS = 'abcdefghijklmnopqrstuvwxyz0123456789';
 
@@ -230,12 +276,15 @@ export function createNode( defs, type, taken ) {
 
 	const node = { id, type, props: {} };
 
-	// Hàng mới có sẵn 2 cột — hàng rỗng không dùng được.
-	if ( 'row' === type && defs.column ) {
-		node.children = [
-			createNode( defs, 'column', taken ),
-			createNode( defs, 'column', taken ),
-		];
+	// Con tạo sẵn do server khai báo (Hàng → 2 cột, Hàng header → 3 vùng).
+	const initial = ( defs[ type ]?.initialChildren || [] ).filter(
+		( child ) => defs[ child ]
+	);
+
+	if ( initial.length ) {
+		node.children = initial.map( ( child ) =>
+			createNode( defs, child, taken )
+		);
 	}
 
 	return node;
