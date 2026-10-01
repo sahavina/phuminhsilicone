@@ -112,4 +112,6 @@ Phiên bản: SAHA Core **1.29.0**, SAHA Theme **0.2.6**.
 
 Đã xoá (sao lưu database trước khi xoá): trang thử #121, #125, #174; trang trong thùng rác #148, #149, #157; template nhập thử #159–#167; sản phẩm QA biến thể #136 + 8 biến thể; ảnh #155, #156 (chỉ trang thử dùng); 19 báo giá + 38 lead do QA tạo ("[Mẫu] QA http-smoke…", "QA …", lead liên hệ "[Mẫu]", đăng ký nhận tin `qa-nl-*`); option `saha_test_p27`, `saha_theme_options_before_import`.
 
-Giữ lại: dữ liệu mẫu của `wp saha seed --with-crm` (3 báo giá, 4 lead "[Mẫu] …" — gỡ bằng `wp saha unseed`); template "(thử)" #109–#117 (đang dùng cho bài viết, blog, tìm kiếm, trang, 404); trang Phase 1 "Builder demo" #47, "Trang thử SAHA Builder" #50, "Trang chủ" #83.
+Giữ lại: dữ liệu mẫu của `wp saha seed --with-crm` (3 báo giá, 4 lead "[Mẫu] …" — gỡ bằng `wp saha unseed`); template "(thử)" #109–#117 (đang dùng cho bài viết, blog, tìm kiếm, trang, 404).
+
+Sau đó xoá thêm trang Phase 1 "Builder demo" #47, "Trang thử SAHA Builder" #50, "Trang chủ" #83 (không nằm trong menu, điều kiện template hay link nào; trang chủ hiện là #132).
