@@ -75,6 +75,13 @@ final class ProductCategories extends Element {
 						'count'      => __( 'Nhiều sản phẩm nhất', 'saha-core' ),
 					),
 				),
+				'showName'  => array(
+					'type'    => 'toggle',
+					'label'   => __( 'Hiện tên', 'saha-core' ),
+					'section' => 'content',
+					'default' => true,
+					'help'    => __( 'Tắt để chỉ hiện ảnh/logo (mục chưa có ảnh vẫn hiện tên).', 'saha-core' ),
+				),
 				'showCount' => array(
 					'type'    => 'toggle',
 					'label'   => __( 'Hiện số sản phẩm', 'saha-core' ),
@@ -147,16 +154,30 @@ final class ProductCategories extends Element {
 
 		$count = (bool) $this->prop( $node, 'showCount' );
 		$desc  = (bool) $this->prop( $node, 'showDescription' );
+		$names = (bool) $this->prop( $node, 'showName' );
 		$items = '';
 
 		foreach ( $terms as $term ) {
 			$image = ! empty( $term['thumbnail_id'] )
-				? (string) wp_get_attachment_image( (int) $term['thumbnail_id'], 'medium', false, array( 'class' => 'saha-terms__img', 'loading' => 'lazy', 'alt' => '' ) )
+				? (string) wp_get_attachment_image(
+					(int) $term['thumbnail_id'],
+					'medium',
+					false,
+					array(
+						'class'   => 'saha-terms__img',
+						'loading' => 'lazy',
+						// Ẩn tên thì ảnh phải mang tên cho trình đọc màn hình.
+						'alt'     => $names ? '' : (string) $term['name'],
+					)
+				)
 				: '';
+
+			// Mục chưa có ảnh vẫn hiện tên, kể cả khi tắt "Hiện tên".
+			$name = $names || '' === $image;
 
 			$items .= '<li class="saha-terms__item"><a class="saha-terms__link" href="' . esc_url( (string) $term['url'] ) . '">'
 				. ( '' !== $image ? '<span class="saha-terms__media">' . $image . '</span>' : '' )
-				. '<span class="saha-terms__name">' . esc_html( (string) $term['name'] ) . '</span>'
+				. ( $name ? '<span class="saha-terms__name">' . esc_html( (string) $term['name'] ) . '</span>' : '' )
 				. ( $desc && '' !== trim( (string) ( $term['description'] ?? '' ) ) ? '<span class="saha-terms__desc">' . esc_html( wp_trim_words( wp_strip_all_tags( (string) $term['description'] ), 10 ) ) . '</span>' : '' )
 				. ( $count ? '<span class="saha-terms__count">' . esc_html(
 					/* translators: %d: số sản phẩm */
@@ -165,7 +186,10 @@ final class ProductCategories extends Element {
 				. '</a></li>';
 		}
 
-		return '<div' . $this->rootAttributes( $node, $ctx, array( 'saha-terms' ) ) . '><ul class="saha-terms__grid">' . $items . '</ul></div>';
+		// Logo thương hiệu: giữ tỷ lệ gốc thay vì khung vuông như ảnh danh mục.
+		$classes = Taxonomies::BRAND === $taxonomy ? array( 'saha-terms', 'saha-terms--logos' ) : array( 'saha-terms' );
+
+		return '<div' . $this->rootAttributes( $node, $ctx, $classes ) . '><ul class="saha-terms__grid">' . $items . '</ul></div>';
 	}
 
 	/**

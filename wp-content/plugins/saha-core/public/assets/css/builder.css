@@ -424,6 +424,26 @@ a.saha-btn--link:focus-visible {
 	object-fit: contain;
 }
 
+:where(.saha-terms--logos .saha-terms__link) {
+	justify-content: center;
+}
+
+:where(.saha-terms--logos .saha-terms__media) {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 100%;
+}
+
+/* Không dùng :where — rule `img { height: auto }` của theme nạp sau sẽ đè. */
+.saha-terms--logos .saha-terms__media img {
+	width: auto;
+	max-width: 100%;
+	height: 56px;
+	aspect-ratio: auto;
+	object-fit: contain;
+}
+
 :where(.saha-terms__name) {
 	font-weight: 600;
 }
