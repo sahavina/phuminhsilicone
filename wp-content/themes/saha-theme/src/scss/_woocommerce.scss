@@ -635,8 +635,11 @@
 	}
 
 	// Nút tròn ở góc dưới phải của ảnh (ảnh vuông, rộng = bề ngang nội dung thẻ).
+	// `&.woocommerce`: trang chi tiết sản phẩm ("Sản phẩm liên quan")
+	// gắn class woocommerce lên chính body, không có .woocommerce bên trong.
 	.saha-card__action,
-	.woocommerce ul.products li.product .saha-card__action {
+	.woocommerce ul.products li.product .saha-card__action,
+	&.woocommerce ul.products li.product .saha-card__action {
 		position: absolute;
 		top: calc(12px + 100cqi - 48px);
 		right: 20px;
