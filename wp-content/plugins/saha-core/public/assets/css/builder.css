@@ -162,12 +162,12 @@ a.saha-btn:focus-visible {
 .saha-btn--accent:visited {
 	border-color: var(--saha-accent, #f5a623);
 	background-color: var(--saha-accent, #f5a623);
-	color: var(--saha-secondary, #1f2937);
+	color: var(--saha-on-accent, var(--saha-secondary, #1f2937));
 }
 
 a.saha-btn--accent:hover,
 a.saha-btn--accent:focus-visible {
-	color: var(--saha-secondary, #1f2937);
+	color: var(--saha-on-accent, var(--saha-secondary, #1f2937));
 }
 
 /* Viền theo màu chữ: đổi màu chữ nút (ví dụ trắng trên nền tối) là viền đổi theo. */
@@ -1474,7 +1474,7 @@ html.saha-hb-lock {
 	border: 0;
 	border-radius: 0 8px 8px 0;
 	background: var(--saha-accent, #f5a623);
-	color: var(--saha-secondary, #1f2937);
+	color: var(--saha-on-accent, var(--saha-secondary, #1f2937));
 	font: inherit;
 	font-weight: 600;
 	cursor: pointer;
@@ -1561,7 +1561,7 @@ html.saha-hb-lock {
 	padding: 0 18px;
 	border-radius: 4px;
 	background: var(--saha-accent, #f5a623);
-	color: var(--saha-secondary, #1f2937);
+	color: var(--saha-on-accent, var(--saha-secondary, #1f2937));
 	font-weight: 600;
 	text-decoration: none;
 	white-space: nowrap;

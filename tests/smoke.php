@@ -363,6 +363,10 @@ $saha_out                       = CssVariables::build( $saha_vals );
 check( 'CSS có màu chính', false !== strpos( $saha_out, '--saha-primary:#127a3f' ), true );
 check( 'breakpoint mobile 767px chứa gutter mobile', (bool) preg_match( '/@media \(max-width:767px\)\{:root\{[^}]*--saha-gutter:12px/', $saha_out ), true );
 check( 'typography sinh biến --saha-type-body-font', false !== strpos( $saha_out, '--saha-type-body-font:' ), true );
+check( 'chữ trên nền nhấn vàng: dùng màu tối', CssVariables::readableOn( '#f5a623', '#1f2937' ), '#1f2937' );
+check( 'chữ trên nền nhấn đỏ: dùng trắng', CssVariables::readableOn( '#d9323e', '#1e2066' ), '#ffffff' );
+check( 'màu không phải hex: không sinh --saha-on-accent', CssVariables::readableOn( 'var(--x)', '#000' ), '' );
+check( 'CSS có --saha-on-accent', false !== strpos( $saha_out, '--saha-on-accent:' ), true );
 $saha_vals['colors']['primary'] = 'red;}body{display:none';
 check( 'giá trị bẩn trong DB không thoát khỏi khai báo', false === strpos( CssVariables::build( $saha_vals ), 'display:none' ), true );
 

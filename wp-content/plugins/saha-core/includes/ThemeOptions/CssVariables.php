@@ -68,6 +68,16 @@ final class CssVariables {
 			}
 		}
 
+		// Chữ trên nền màu nhấn: trắng hay màu phụ, chọn cái tương phản hơn (nhấn vàng → chữ tối, nhấn đỏ → chữ trắng).
+		$on_accent = self::readableOn(
+			(string) ( $vars['desktop']['--saha-accent'] ?? '' ),
+			(string) ( $vars['desktop']['--saha-secondary'] ?? '' )
+		);
+
+		if ( '' !== $on_accent ) {
+			$vars['desktop']['--saha-on-accent'] = $on_accent;
+		}
+
 		/**
 		 * Thêm/sửa biến CSS toàn cục.
 		 *
@@ -94,6 +104,49 @@ final class CssVariables {
 		}
 
 		return $css;
+	}
+
+	/**
+	 * Màu chữ dễ đọc trên nền `$background`: trắng hoặc `$dark`, lấy cái có độ tương phản WCAG cao hơn.
+	 *
+	 * @param string $background Màu nền hex.
+	 * @param string $dark       Màu chữ tối hex.
+	 * @return string '' nếu màu không phải hex 3/6 ký tự.
+	 */
+	public static function readableOn( string $background, string $dark ): string {
+		$bg = self::luminance( $background );
+		$dk = self::luminance( $dark );
+
+		if ( null === $bg || null === $dk ) {
+			return '';
+		}
+
+		$with_white = 1.05 / ( $bg + 0.05 );
+		$with_dark  = ( max( $bg, $dk ) + 0.05 ) / ( min( $bg, $dk ) + 0.05 );
+
+		return $with_white >= $with_dark ? '#ffffff' : $dark;
+	}
+
+	/**
+	 * Độ sáng tương đối (WCAG) của màu hex.
+	 *
+	 * @param string $hex Màu `#rgb` hoặc `#rrggbb`.
+	 */
+	private static function luminance( string $hex ): ?float {
+		if ( ! preg_match( '/^#([0-9a-f]{3}|[0-9a-f]{6})$/i', $hex, $m ) ) {
+			return null;
+		}
+
+		$h = 3 === strlen( $m[1] ) ? $m[1][0] . $m[1][0] . $m[1][1] . $m[1][1] . $m[1][2] . $m[1][2] : $m[1];
+		$c = array_map(
+			static function ( string $part ): float {
+				$v = hexdec( $part ) / 255;
+				return $v <= 0.03928 ? $v / 12.92 : ( ( $v + 0.055 ) / 1.055 ) ** 2.4;
+			},
+			str_split( $h, 2 )
+		);
+
+		return 0.2126 * $c[0] + 0.7152 * $c[1] + 0.0722 * $c[2];
 	}
 
 	/**

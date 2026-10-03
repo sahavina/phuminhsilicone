@@ -120,12 +120,12 @@
 	button.button.alt.saha-buy-now {
 		border-color: var(--saha-accent);
 		background: var(--saha-accent);
-		color: var(--saha-heading);
+		color: var(--saha-on-accent, var(--saha-heading));
 
 		&:hover {
 			border-color: var(--saha-accent);
 			background: var(--saha-accent);
-			color: var(--saha-heading);
+			color: var(--saha-on-accent, var(--saha-heading));
 		}
 	}
 
@@ -660,7 +660,7 @@
 		&:hover,
 		&:focus-visible {
 			background: var(--saha-accent);
-			color: var(--saha-secondary);
+			color: var(--saha-on-accent, var(--saha-secondary));
 			transform: scale(1.06);
 		}
 
