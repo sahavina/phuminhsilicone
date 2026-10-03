@@ -6,8 +6,10 @@
 
 /* --- Khoảng cách khối --------------------------------------------------- */
 
+/* Chỉ lề trên/dưới — `margin` viết tắt từng xoá `margin-inline: auto` của
+ * .saha-container (nội dung lệch trái trên màn hình rộng hơn khung). */
 .saha-section {
-	margin: 0 0 32px;
+	margin-block: 0 32px;
 }
 
 /* --- Tiêu đề khối ------------------------------------------------------- */
