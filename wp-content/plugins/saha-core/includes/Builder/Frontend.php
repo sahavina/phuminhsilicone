@@ -59,11 +59,36 @@ final class Frontend {
 			$this->enqueueFor( (int) $post->ID );
 		}
 
+		// Builder chạy sau wp_filter_content_tags, còn WP bỏ qua `loading` cho ảnh sinh trong
+		// lúc chạy the_content → không tự gắn thì ảnh (thẻ sản phẩm, tab ẩn…) tải hết ngay.
+		add_filter( 'wp_get_attachment_image_attributes', array( self::class, 'lazyImage' ), 20 );
+
 		$html = LayoutService::renderPost( (int) $post->ID );
 
+		remove_filter( 'wp_get_attachment_image_attributes', array( self::class, 'lazyImage' ), 20 );
 		unset( $this->rendering[ $post->ID ] );
 
 		return $html;
+	}
+
+	/**
+	 * Ảnh trong layout: tải lười, trừ khi element đã chọn (`loading` / `fetchpriority` cho ảnh đầu trang).
+	 *
+	 * @param array<string, mixed> $attr Thuộc tính ảnh.
+	 * @return array<string, mixed>
+	 */
+	public static function lazyImage( $attr ): array {
+		$attr = (array) $attr;
+
+		if ( ! array_key_exists( 'loading', $attr ) && empty( $attr['fetchpriority'] ) ) {
+			$attr['loading'] = 'lazy';
+		}
+
+		if ( empty( $attr['decoding'] ) ) {
+			$attr['decoding'] = 'async';
+		}
+
+		return $attr;
 	}
 
 	/**

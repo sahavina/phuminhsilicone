@@ -103,6 +103,7 @@ final class WebFonts {
 		$urls = (array) $urls;
 
 		if ( 'preconnect' === $relation_type && current_theme_supports( 'saha-theme-options' ) && self::families() ) {
+			$urls[] = 'https://fonts.googleapis.com';
 			$urls[] = array(
 				'href'        => 'https://fonts.gstatic.com',
 				'crossorigin' => 'anonymous',

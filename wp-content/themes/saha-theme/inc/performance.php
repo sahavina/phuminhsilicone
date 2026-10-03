@@ -26,6 +26,71 @@ add_action(
 );
 
 /**
+ * Script core/WooCommerce đang chặn hiển thị → `defer`.
+ *
+ * WP tự trả về chặn nếu có script phụ thuộc không defer được hoặc có inline
+ * `after` → không làm hỏng thứ tự chạy. Chỉ `-extra` (wp_localize_script) là an toàn.
+ * Lưu ý: plugin in `jQuery(...)` inline trong HTML sẽ chạy trước jQuery → tắt bằng filter.
+ */
+add_action(
+	'wp_enqueue_scripts',
+	static function (): void {
+		if ( apply_filters( 'saha_theme_keep_blocking_scripts', false ) ) {
+			return;
+		}
+
+		$scripts = wp_scripts();
+
+		// Code của dự án không dùng API jQuery đã gỡ ở 3.x.
+		if ( isset( $scripts->registered['jquery'] ) && ! apply_filters( 'saha_theme_keep_jquery_migrate', false ) ) {
+			$scripts->registered['jquery']->deps = array_values( array_diff( $scripts->registered['jquery']->deps, array( 'jquery-migrate' ) ) );
+		}
+
+		foreach ( array( 'jquery', 'jquery-core', 'jquery-migrate', 'underscore', 'wp-util', 'sourcebuster-js', 'wc-order-attribution' ) as $handle ) {
+			if ( isset( $scripts->registered[ $handle ] ) && ! $scripts->get_data( $handle, 'strategy' ) ) {
+				$scripts->add_data( $handle, 'strategy', 'defer' );
+			}
+		}
+	},
+	100
+);
+
+/**
+ * CSS không cần cho lần vẽ đầu → tải không chặn (media=print rồi đổi khi tải xong).
+ *
+ * Font Google có `display=swap` (chữ hiện bằng font hệ thống trước); giỏ hàng mini
+ * là `<dialog>` và gợi ý tìm kiếm có `hidden` → trình duyệt tự ẩn khi chưa có CSS.
+ * Swatches chỉ dùng trong quick view ở trang ngoài sản phẩm.
+ */
+add_filter(
+	'style_loader_tag',
+	static function ( string $tag, string $handle ): string {
+		$handles = array( 'saha-webfonts', 'saha-mini-cart', 'saha-live-search' );
+
+		if ( ! ( function_exists( 'is_product' ) && is_product() ) ) {
+			$handles[] = 'saha-swatches';
+		}
+
+		/**
+		 * Handle CSS tải không chặn hiển thị.
+		 *
+		 * @param string[] $handles Handle.
+		 */
+		$handles = (array) apply_filters( 'saha_theme_async_styles', $handles );
+
+		if ( is_admin() || ! in_array( $handle, $handles, true ) || ! preg_match( "/media=(['\"])([^'\"]*)\\1/", $tag, $media ) || 'print' === $media[2] ) {
+			return $tag;
+		}
+
+		$async = str_replace( $media[0], "media='print' onload=\"this.media='" . esc_attr( $media[2] ) . "';this.onload=null\"", $tag );
+
+		return $async . '<noscript>' . trim( $tag ) . "</noscript>\n";
+	},
+	10,
+	2
+);
+
+/**
  * Tắt script/style emoji của WordPress core.
  */
 add_action(
