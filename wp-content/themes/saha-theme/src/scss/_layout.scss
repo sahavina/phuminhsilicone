@@ -13,6 +13,12 @@
 	padding-block: var(--saha-space);
 }
 
+// Trang WooCommerce (sản phẩm, giỏ, thanh toán…) mở đầu bằng breadcrumb:
+// khoảng trên nhỏ, khoảng dưới giữ nguyên.
+.saha-section.saha-woocommerce {
+	padding-top: clamp(16px, 2vw, 24px);
+}
+
 .saha-main:focus {
 	outline: none;
 }
