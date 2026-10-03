@@ -126,6 +126,27 @@ final class ProductCategories extends Element {
 					'min'        => 0,
 					'max'        => 100,
 				),
+				'logoHeight' => array(
+					'type'       => 'size',
+					'label'      => __( 'Chiều cao logo (thương hiệu)', 'saha-core' ),
+					'section'    => 'style',
+					'responsive' => true,
+					'units'      => array( 'px' ),
+					'min'        => 16,
+					'max'        => 120,
+					'help'       => __( 'Logo co theo tỷ lệ gốc, không vượt khung thẻ. Mặc định 40px.', 'saha-core' ),
+				),
+				'logoEffect' => array(
+					'type'    => 'select',
+					'label'   => __( 'Hiệu ứng logo (thương hiệu)', 'saha-core' ),
+					'section' => 'style',
+					'default' => 'lift',
+					'options' => array(
+						'lift'      => __( 'Nhấc thẻ khi rê chuột', 'saha-core' ),
+						'grayscale' => __( 'Xám, rê chuột hiện màu', 'saha-core' ),
+						'none'      => __( 'Không', 'saha-core' ),
+					),
+				),
 			),
 		);
 	}
@@ -199,6 +220,10 @@ final class ProductCategories extends Element {
 		// Logo thương hiệu: giữ tỷ lệ gốc thay vì khung vuông như ảnh danh mục.
 		$classes = Taxonomies::BRAND === $taxonomy ? array( 'saha-terms', 'saha-terms--logos' ) : array( 'saha-terms' );
 
+		if ( Taxonomies::BRAND === $taxonomy && 'none' !== $this->prop( $node, 'logoEffect' ) ) {
+			$classes[] = 'saha-terms--fx-' . sanitize_html_class( (string) $this->prop( $node, 'logoEffect' ) );
+		}
+
 		if ( 'overlay' === $this->prop( $node, 'cardStyle' ) ) {
 			$classes[] = 'saha-terms--overlay';
 		}
@@ -215,5 +240,6 @@ final class ProductCategories extends Element {
 	public function styles( Node $node, CssRules $css ): void {
 		$css->set( ' .saha-terms__grid', '--saha-cols', $this->prop( $node, 'columns' ) );
 		$css->set( ' .saha-terms__grid', 'gap', $node->prop( 'gap' ) );
+		$css->set( '', '--saha-logo-h', $node->prop( 'logoHeight' ) );
 	}
 }
