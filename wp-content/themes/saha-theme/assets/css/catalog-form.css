@@ -7,6 +7,22 @@
 	margin: 0;
 }
 
+/* Form đặt thẳng trong nội dung trang (trang Báo giá, Liên hệ): hộp thẻ căn giữa.
+ * Form trong modal, sidebar hay khối builder giữ nguyên. */
+.saha-prose > .saha-form {
+	max-width: var(--saha-content, 800px);
+	margin: 8px auto 0;
+	padding: clamp(20px, 4vw, 36px);
+	border: 1px solid var(--saha-border, #e3e6ea);
+	border-radius: 12px;
+	background: var(--saha-background, #fff);
+	box-shadow: 0 8px 24px rgb(15 23 42 / 6%);
+}
+
+.saha-prose > .saha-form .saha-form__title {
+	margin-top: 0;
+}
+
 .saha-form__title {
 	margin-bottom: 12px;
 	font-size: 20px;

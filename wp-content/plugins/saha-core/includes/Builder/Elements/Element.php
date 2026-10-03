@@ -195,6 +195,9 @@ abstract class Element {
 		 * @param Node     $node Node.
 		 */
 		$list = (array) apply_filters( 'saha_builder_node_classes', $list, $node );
+		// Một phần tử có thể chứa nhiều class ("saha-prose saha-post-content") — tách trước khi
+		// sanitize_html_class, nếu không dấu cách bị xoá và các class dính liền nhau.
+		$list = preg_split( '/\s+/', implode( ' ', array_map( 'strval', $list ) ), -1, PREG_SPLIT_NO_EMPTY );
 		$list = array_unique( array_filter( array_map( 'sanitize_html_class', $list ) ) );
 
 		$html = ' class="' . esc_attr( implode( ' ', $list ) ) . '"';
