@@ -7,7 +7,7 @@
 	margin: 0;
 }
 
-/* Form đặt thẳng trong nội dung trang (trang Báo giá, Liên hệ): hộp thẻ căn giữa.
+/* Form đặt thẳng trong nội dung trang (Báo giá, Liên hệ): hộp thẻ căn giữa.
  * Form trong modal, sidebar hay khối builder giữ nguyên. */
 .saha-prose > .saha-form {
 	max-width: var(--saha-content, 800px);
