@@ -9,7 +9,10 @@
 	}
 }
 
-.saha-section {
+// Chỉ khung trang của theme. Khối Section của SAHA Builder (.saha-e) có
+// padding riêng (mặc định trong builder.css, chỉnh trong builder) — rule này
+// nạp sau và cùng độ ưu tiên nên từng đè mất padding đặt trong builder.
+.saha-section:not(.saha-e) {
 	padding-block: var(--saha-space);
 }
 
