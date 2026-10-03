@@ -114,6 +114,46 @@
 			} );
 	}
 
+	/**
+	 * POST add-item. Nonce in trong trang có thể đã cũ (trang lấy từ cache): khi Store API
+	 * báo lỗi nonce, GET giỏ để nhận header Nonce mới rồi gửi lại một lần.
+	 *
+	 * @param {Object}  payload Dữ liệu add-item.
+	 * @param {boolean} isRetry Đã thử lại chưa.
+	 * @return {Promise<{ok: boolean, json: Object}>} Kết quả.
+	 */
+	function addItem( payload, isRetry ) {
+		return window.fetch( cfg.storeApi, {
+			method: 'POST',
+			credentials: 'same-origin',
+			headers: { 'Content-Type': 'application/json', Nonce: cfg.nonce },
+			body: JSON.stringify( payload )
+		} ).then( function ( response ) {
+			var nonce = response.headers.get( 'Nonce' );
+
+			if ( nonce ) {
+				cfg.nonce = nonce;
+			}
+
+			return response.json().then( function ( json ) {
+				if ( ! response.ok && ! isRetry && json && json.code && /_nonce$/.test( json.code ) ) {
+					return window.fetch( cfg.storeApi.replace( /\/add-item\/?$/, '' ), { credentials: 'same-origin', headers: { Accept: 'application/json' } } )
+						.then( function ( fresh ) {
+							var renewed = fresh.headers.get( 'Nonce' );
+
+							if ( renewed ) {
+								cfg.nonce = renewed;
+							}
+
+							return addItem( payload, true );
+						} );
+				}
+
+				return { ok: response.ok, json: json };
+			} );
+		} );
+	}
+
 	function submit( event ) {
 		var form = event.target;
 
@@ -141,17 +181,7 @@
 			b.disabled = true;
 		} );
 
-		window.fetch( cfg.storeApi, {
-			method: 'POST',
-			credentials: 'same-origin',
-			headers: { 'Content-Type': 'application/json', Nonce: cfg.nonce },
-			body: JSON.stringify( { id: id, quantity: parseFloat( data.get( 'quantity' ) || '1' ), variation: variation } )
-		} )
-			.then( function ( response ) {
-				return response.json().then( function ( json ) {
-					return { ok: response.ok, json: json };
-				} );
-			} )
+		addItem( { id: id, quantity: parseFloat( data.get( 'quantity' ) || '1' ), variation: variation }, false )
 			.then( function ( result ) {
 				if ( ! result.ok ) {
 					throw new Error( ( result.json && result.json.message ) || cfg.i18n.error );

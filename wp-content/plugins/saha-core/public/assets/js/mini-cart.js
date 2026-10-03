@@ -59,7 +59,12 @@
 		return String( template ).replace( /%[sd]/, value );
 	}
 
-	function request( path, method, data ) {
+	/** Lỗi nonce Store API (nonce in trong trang đã cũ — trang lấy từ cache). */
+	function isNonceError( json ) {
+		return !! ( json && json.code && /_nonce$/.test( json.code ) );
+	}
+
+	function request( path, method, data, isRetry ) {
 		var init = {
 			method: method || 'GET',
 			credentials: 'same-origin',
@@ -80,6 +85,13 @@
 			}
 
 			return response.json().then( function ( json ) {
+				// Nonce cũ: GET giỏ (header Nonce mới đã được nhận ở trên) rồi gửi lại một lần.
+				if ( ! response.ok && data && ! isRetry && isNonceError( json ) ) {
+					return request( '', 'GET' ).then( function () {
+						return request( path, method, data, true );
+					} );
+				}
+
 				if ( ! response.ok ) {
 					throw new Error( decode( ( json && json.message ) || cfg.i18n.error ).replace( /<[^>]*>/g, '' ) );
 				}
