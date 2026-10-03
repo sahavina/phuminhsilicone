@@ -93,6 +93,7 @@ final class Loader {
 			'mega_menu'     => MegaMenu\Module::class,
 			'woocommerce'   => WooCommerce\Module::class,
 			'import_export' => ImportExport\Module::class,
+			'cloudflare'    => Performance\CloudflarePurge::class,
 			'admin'      => Admin::class,
 		);
 

@@ -347,6 +347,36 @@ final class Cli {
 	}
 
 	/**
+	 * Xoá cache Cloudflare (cần SAHA_CF_ZONE_ID + SAHA_CF_API_TOKEN trong wp-config.php).
+	 *
+	 * ## OPTIONS
+	 *
+	 * [<url>...]
+	 * : URL cần xoá. Bỏ trống = xoá toàn bộ zone.
+	 *
+	 * ## EXAMPLES
+	 *
+	 *     wp saha cf-purge
+	 *     wp saha cf-purge https://siliconephuminh.com/ https://siliconephuminh.com/shop/
+	 *
+	 * @subcommand cf-purge
+	 *
+	 * @param string[]             $args       URL.
+	 * @param array<string, mixed> $assoc_args Tuỳ chọn.
+	 */
+	public function cf_purge( array $args, array $assoc_args ): void {
+		unset( $assoc_args );
+
+		if ( ! Performance\CloudflarePurge::configured() ) {
+			\WP_CLI::error( 'Chưa cấu hình SAHA_CF_ZONE_ID / SAHA_CF_API_TOKEN trong wp-config.php.' );
+		}
+
+		$result = Performance\CloudflarePurge::send( Performance\CloudflarePurge::payloads( $args, array() === $args ) );
+
+		$result['ok'] ? \WP_CLI::success( $result['message'] ) : \WP_CLI::error( 'Cloudflare: ' . $result['message'] );
+	}
+
+	/**
 	 * Tạo trang chủ mẫu 14 khối dựng bằng SAHA Builder (không shortcode).
 	 *
 	 * ## OPTIONS

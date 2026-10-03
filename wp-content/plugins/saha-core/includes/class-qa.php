@@ -848,6 +848,20 @@ final class Qa {
 
 		$this->add( $g, 'Thế hệ cache hiện tại', self::PASS, (string) Cache::generation() );
 
+		if ( Performance\CloudflarePurge::configured() ) {
+			$last = get_option( Performance\CloudflarePurge::STATUS_OPTION );
+			$this->add(
+				$g,
+				'Tự xoá cache Cloudflare khi lưu',
+				is_array( $last ) && empty( $last['ok'] ) ? self::WARN : self::PASS,
+				is_array( $last )
+					? sprintf( 'Lần gần nhất %s: %s%s', wp_date( 'd/m H:i', (int) $last['time'] ), (string) $last['scope'], empty( $last['ok'] ) ? ' — lỗi: ' . (string) $last['message'] : '' )
+					: 'Đã cấu hình, chưa có lần xoá nào.'
+			);
+		} else {
+			$this->add( $g, 'Tự xoá cache Cloudflare khi lưu', self::SKIP, 'Chưa cấu hình SAHA_CF_ZONE_ID / SAHA_CF_API_TOKEN trong wp-config.php.' );
+		}
+
 		if ( function_exists( 'saha_is_catalogue_mode' ) && saha_is_catalogue_mode() ) {
 			$this->add( $g, 'Cart fragments bị tắt ở chế độ catalogue', self::PASS, 'Xem tab Network: không có ?wc-ajax=get_refreshed_fragments.' );
 		}

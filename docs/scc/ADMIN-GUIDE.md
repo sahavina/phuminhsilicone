@@ -247,6 +247,28 @@ Danh sách lưu trong trình duyệt của khách cho tới khi gửi (đổi m�
 
 Lưu ý: nhập luôn **tạo mới**, không ghi đè. Ảnh được tải từ website nguồn (website nguồn phải đang chạy). Menu không được chuyển — tạo menu cùng tên đường dẫn (slug) ở website đích. Theme Options cũ được sao lưu tự động.
 
+## 8c. Cache Cloudflare
+
+Site để Cloudflare cache trang cho khách (chưa đăng nhập, giỏ trống) tối đa 2 giờ. SAHA **tự xoá cache** những trang liên quan mỗi khi lưu:
+
+| Bạn lưu | Cache bị xoá |
+|---|---|
+| Sản phẩm (kể cả tồn kho đổi do có đơn) | trang sản phẩm, trang chủ, cửa hàng, trang danh mục / thương hiệu / ứng dụng của sản phẩm |
+| Trang, bài viết | trang đó, trang chủ (bài viết: thêm trang blog, chuyên mục) |
+| Danh mục, thương hiệu, ứng dụng | trang của nó, trang chủ, cửa hàng |
+| Header / footer / template, block dùng chung, menu, Theme Options | **toàn bộ** |
+
+Cần xoá ngay mọi thứ: thanh admin → **Xoá cache Cloudflare**. Đang đăng nhập bạn luôn thấy bản mới; muốn xem như khách, mở cửa sổ ẩn danh.
+
+**Cài đặt (một lần):** Cloudflare → *My Profile → API Tokens → Create Token → Custom token*, quyền **Zone → Cache Purge → Purge**, giới hạn zone `siliconephuminh.com`. Thêm vào `wp-config.php` (trên dòng `/* That's all, stop editing! */`, hoặc trước `require_once ABSPATH . 'wp-settings.php';`):
+
+```php
+define( 'SAHA_CF_ZONE_ID', 'zone id ở Cloudflare → Overview, cột phải' );
+define( 'SAHA_CF_API_TOKEN', 'token vừa tạo' );
+```
+
+**SAHA → Kiểm tra hệ thống** → dòng *Tự xoá cache Cloudflare khi lưu* cho biết lần xoá gần nhất và lỗi (nếu có).
+
 ## 9. Kiểm tra hệ thống
 
 **SAHA → Kiểm tra hệ thống** — chạy sau mỗi lần cập nhật plugin/theme hoặc đổi cấu hình lớn.

@@ -915,5 +915,13 @@ $saha_x_html = $saha_x['document'] ? ( new Renderer() )->document( $saha_x['docu
 check( 'element Phase 2: chuỗi tấn công trong mọi ô chữ không thành thẻ / thuộc tính HTML', array( '' !== $saha_x_html, false === stripos( $saha_x_html, '<script' ), false === stripos( $saha_x_html, '<img src=x' ), 0 === preg_match( '/\sonerror=/i', $saha_x_html ) ), array( true, true, true, true ) );
 check( 'video: link javascript: / data: không được nhận', array( SahaVideo::parse( 'javascript:alert(1)' ), SahaVideo::parse( 'data:text/html,<script>' ) ), array( null, null ) );
 
+echo "Performance\\CloudflarePurge\n";
+$saha_cf_urls = array_map( static fn( $i ) => 'https://siliconephuminh.com/p-' . $i . '/', range( 1, 65 ) );
+$saha_cf_pay  = \Saha\Core\Performance\CloudflarePurge::payloads( array_merge( $saha_cf_urls, array( $saha_cf_urls[0], '' ) ), false );
+check( 'purge theo URL: bỏ trùng/rỗng, chia lô ≤ 30', array( count( $saha_cf_pay ), count( $saha_cf_pay[0]['files'] ), count( $saha_cf_pay[2]['files'] ) ), array( 3, 30, 5 ) );
+check( 'purge toàn bộ: một lệnh purge_everything', \Saha\Core\Performance\CloudflarePurge::payloads( $saha_cf_urls, true ), array( array( 'purge_everything' => true ) ) );
+check( 'không có URL: không gửi gì', \Saha\Core\Performance\CloudflarePurge::payloads( array(), false ), array() );
+check( 'chưa định nghĩa hằng số: module tắt', \Saha\Core\Performance\CloudflarePurge::configured(), false );
+
 echo "\n$pass passed, $fail failed\n";
 exit( $fail > 0 ? 1 : 0 );

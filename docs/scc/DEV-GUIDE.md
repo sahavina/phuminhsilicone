@@ -168,6 +168,8 @@ Tuỳ chọn cửa hàng (Theme Options → Cửa hàng): `swatches`, `sticky_ca
 | `saha_quote_created` | action | sau khi tạo báo giá — `$data['items']` có các dòng khi là danh sách nhiều sản phẩm |
 | `saha_search_results` | filter | kết quả `/search` (giá thêm ở `Search::with_prices`, ngoài cache) |
 | `saha_theme_script_config` | filter (theme) | `SAHA_CONFIG` cho JS catalogue |
+| `saha_cf_purge_post_urls` | filter | thêm URL cần xoá cache Cloudflare khi một bài đổi (`Performance\CloudflarePurge`) |
+| `saha_cf_purge_everything_post_types` | filter | post type mà lưu là xoá toàn bộ cache Cloudflare (mặc định template, block…) |
 
 Danh sách đủ: README của `saha-core`.
 
@@ -194,6 +196,7 @@ wp saha qa [--strict]          # kiểm tra hệ thống (exit 1 khi lỗi; --st
 wp saha seed [--with-crm]      # dữ liệu mẫu (local/staging) — gỡ: wp saha unseed
 wp saha homepage [--front]     # trang chủ mẫu 14 khối dựng bằng builder
 wp saha flush-cache            # xoá cache SAHA + render cache (sửa element mà không đổi version)
+wp saha cf-purge [<url>...]    # xoá cache Cloudflare (không URL = toàn bộ); cần SAHA_CF_ZONE_ID + SAHA_CF_API_TOKEN
 wp saha starter-store [--front] [--no-palette] [--restore-options]   # bộ giao diện kiểu cửa hàng
 wp saha maintenance …          # dọn log, cache
 wp saha export <file> [--pages=<ids|none>] [--templates=…] [--blocks=…] [--no-theme-options]
