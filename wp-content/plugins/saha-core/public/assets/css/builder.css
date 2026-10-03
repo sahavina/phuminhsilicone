@@ -444,6 +444,55 @@ a.saha-btn--link:focus-visible {
 	object-fit: contain;
 }
 
+/* Thẻ ảnh phủ: ảnh 4:3 phủ kín, tên chữ trắng trên dải tối ở đáy. */
+:where(.saha-terms--overlay .saha-terms__link) {
+	position: relative;
+	display: block;
+	overflow: hidden;
+	padding: 0;
+	border: 0;
+	border-radius: 12px;
+	background: var(--saha-secondary, #1f2937);
+}
+
+:where(.saha-terms--overlay .saha-terms__media) {
+	display: block;
+}
+
+.saha-terms--overlay .saha-terms__media img {
+	width: 100%;
+	height: auto;
+	aspect-ratio: 4 / 3;
+	object-fit: cover;
+	transition: transform 0.3s ease;
+}
+
+:where(.saha-terms--overlay .saha-terms__link):hover img {
+	transform: scale(1.05);
+}
+
+:where(.saha-terms--overlay .saha-terms__name, .saha-terms--overlay .saha-terms__desc, .saha-terms--overlay .saha-terms__count) {
+	position: relative;
+	z-index: 1;
+	display: block;
+	padding: 0 14px;
+	color: #fff;
+	text-align: left;
+}
+
+:where(.saha-terms--overlay .saha-terms__media) + :where(.saha-terms__name) {
+	position: absolute;
+	right: 0;
+	bottom: 0;
+	left: 0;
+	padding: 40px 14px 14px;
+	background: linear-gradient(to top, rgb(10 14 30 / 85%), rgb(10 14 30 / 0%));
+}
+
+:where(.saha-terms--overlay .saha-terms__media) ~ :where(.saha-terms__desc, .saha-terms__count) {
+	display: none;
+}
+
 :where(.saha-terms__name) {
 	font-weight: 600;
 }

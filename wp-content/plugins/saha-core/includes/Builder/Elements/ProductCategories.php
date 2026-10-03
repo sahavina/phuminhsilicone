@@ -75,6 +75,16 @@ final class ProductCategories extends Element {
 						'count'      => __( 'Nhiều sản phẩm nhất', 'saha-core' ),
 					),
 				),
+				'cardStyle' => array(
+					'type'    => 'select',
+					'label'   => __( 'Kiểu thẻ', 'saha-core' ),
+					'section' => 'content',
+					'default' => 'card',
+					'options' => array(
+						'card'    => __( 'Ảnh trên, tên dưới', 'saha-core' ),
+						'overlay' => __( 'Ảnh phủ kín, tên đè lên ảnh', 'saha-core' ),
+					),
+				),
 				'showName'  => array(
 					'type'    => 'toggle',
 					'label'   => __( 'Hiện tên', 'saha-core' ),
@@ -188,6 +198,10 @@ final class ProductCategories extends Element {
 
 		// Logo thương hiệu: giữ tỷ lệ gốc thay vì khung vuông như ảnh danh mục.
 		$classes = Taxonomies::BRAND === $taxonomy ? array( 'saha-terms', 'saha-terms--logos' ) : array( 'saha-terms' );
+
+		if ( 'overlay' === $this->prop( $node, 'cardStyle' ) ) {
+			$classes[] = 'saha-terms--overlay';
+		}
 
 		return '<div' . $this->rootAttributes( $node, $ctx, $classes ) . '><ul class="saha-terms__grid">' . $items . '</ul></div>';
 	}
