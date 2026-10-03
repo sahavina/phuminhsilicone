@@ -1,0 +1,30 @@
+// Chuyển trang mượt (View Transitions giữa hai trang — Chrome/Edge 126+,
+// Safari 18.2+; trình duyệt khác chuyển trang như cũ, không lỗi).
+// Trang cũ mờ sang trang mới thay vì chớp trắng; header giữ nguyên chỗ.
+
+@view-transition {
+	navigation: auto;
+}
+
+// Header (Header Builder) là một lớp riêng: không mờ theo nội dung.
+.saha-hb {
+	view-transition-name: saha-header;
+}
+
+::view-transition-old(root),
+::view-transition-new(root) {
+	animation-duration: 0.2s;
+	animation-timing-function: ease-out;
+}
+
+::view-transition-group(saha-header) {
+	animation-duration: 0s;
+}
+
+// Người dùng tắt hiệu ứng chuyển động → chuyển trang tức thì.
+@media (prefers-reduced-motion: reduce) {
+
+	@view-transition {
+		navigation: none;
+	}
+}

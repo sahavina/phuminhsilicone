@@ -91,6 +91,57 @@ add_filter(
 );
 
 /**
+ * Tải trước trang khi rê chuột / chạm vào link (Speculation Rules của WP core).
+ *
+ * Core mặc định `conservative` (chỉ khi bắt đầu bấm) → `moderate` (rê chuột ~200ms).
+ * Giữ `prefetch` (chỉ tải HTML), không `prerender`: prerender chạy cả JS của trang
+ * (đếm lượt xem sản phẩm, analytics) khi khách chưa thực sự mở.
+ */
+add_filter(
+	'wp_speculation_rules_configuration',
+	static function ( $config ) {
+		if ( ! is_array( $config ) || apply_filters( 'saha_theme_conservative_prefetch', false ) ) {
+			return $config;
+		}
+
+		$config['mode']      = 'prefetch';
+		$config['eagerness'] = 'moderate';
+
+		return $config;
+	}
+);
+
+/**
+ * Không tải trước trang theo phiên khách (giỏ, thanh toán, tài khoản, danh sách báo giá)
+ * và link có thao tác (thêm vào giỏ, wc-ajax).
+ */
+add_filter(
+	'wp_speculation_rules_href_exclude_paths',
+	static function ( array $paths ): array {
+		if ( function_exists( 'wc_get_page_id' ) ) {
+			foreach ( array( 'cart', 'checkout', 'myaccount' ) as $page ) {
+				$id = wc_get_page_id( $page );
+
+				if ( $id > 0 ) {
+					$paths[] = wp_make_link_relative( (string) get_permalink( $id ) ) . '*';
+				}
+			}
+		}
+
+		$quote_list = (int) get_option( 'saha_quote_list_page' );
+
+		if ( $quote_list > 0 ) {
+			$paths[] = wp_make_link_relative( (string) get_permalink( $quote_list ) ) . '*';
+		}
+
+		$paths[] = '/*\\?*add-to-cart=*';
+		$paths[] = '/*\\?*wc-ajax=*';
+
+		return $paths;
+	}
+);
+
+/**
  * Tắt script/style emoji của WordPress core.
  */
 add_action(
