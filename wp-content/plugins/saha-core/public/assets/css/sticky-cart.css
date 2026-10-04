@@ -66,6 +66,12 @@
 	gap: 8px;
 }
 
+/* Nút gọi + biểu tượng giỏ chỉ dùng trên điện thoại. */
+.saha-sticky-cart__call,
+.saha-sticky-cart__icon {
+	display: none;
+}
+
 /* Nút nổi không bị thanh che */
 .saha-sticky-cart-open .saha-fab {
 	bottom: 90px;
@@ -73,17 +79,52 @@
 
 @media (max-width: 767px) {
 
-	.saha-sticky-cart__img {
+	/* [Gọi] [giá] [giỏ] [Mua ngay] — một hàng, nút cao 44px. */
+	.saha-sticky-cart__inner {
+		gap: 8px;
+		padding: 8px 12px calc(8px + env(safe-area-inset-bottom, 0px));
+	}
+
+	.saha-sticky-cart__img,
+	.saha-sticky-cart__name,
+	.saha-sticky-cart__label {
 		display: none;
 	}
 
-	.saha-sticky-cart__actions .saha-btn {
-		padding-inline: 12px;
+	.saha-sticky-cart__call {
+		display: inline-flex;
+		flex: 0 0 44px;
+		align-items: center;
+		justify-content: center;
+		height: 44px;
+		border: 1px solid var(--saha-border, #e3e6ea);
+		border-radius: var(--saha-radius, 6px);
+		color: var(--saha-primary, #0b5cab);
 	}
 
-	/* Theme có thanh liên hệ dính (Gọi · Báo giá): đặt thanh mua phía trên nó. */
+	.saha-sticky-cart__price {
+		font-size: 15px;
+		line-height: 1.25;
+	}
+
+	.saha-sticky-cart__actions .saha-btn {
+		min-height: 44px;
+		padding-inline: 14px;
+	}
+
+	.saha-sticky-cart__icon {
+		display: block;
+	}
+
+	.saha-sticky-cart__actions .saha-sticky-cart__add {
+		width: 44px;
+		padding-inline: 0;
+	}
+
+	/* Thanh này thay thanh "Gọi · Báo giá" của theme (theme ẩn thanh của nó khi
+	   body có .saha-sticky-cart-open) → nằm sát đáy. */
 	.saha-has-sticky-cta .saha-sticky-cart {
-		bottom: 64px;
+		bottom: 0;
 	}
 
 	/* Không bán trực tuyến: thanh của theme đã có nút báo giá. */

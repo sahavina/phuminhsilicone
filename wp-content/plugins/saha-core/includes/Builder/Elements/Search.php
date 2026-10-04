@@ -126,7 +126,7 @@ final class Search extends Element {
 
 		$form = '<form role="search" method="get" class="saha-search-el__form" action="' . esc_url( home_url( '/' ) ) . '">'
 			. '<label class="screen-reader-text" for="' . esc_attr( $id ) . '">' . esc_html__( 'Tìm kiếm', 'saha-core' ) . '</label>'
-			. '<input type="search" id="' . esc_attr( $id ) . '" class="saha-search-el__input" name="s" value="' . esc_attr( $ctx->editor ? '' : get_search_query() ) . '" placeholder="' . esc_attr( (string) $this->prop( $node, 'placeholder' ) ) . '" autocomplete="off">'
+			. '<input type="search" id="' . esc_attr( $id ) . '" class="saha-search-el__input" name="s" value="' . esc_attr( $ctx->editor ? '' : get_search_query() ) . '" placeholder="' . esc_attr( (string) $this->prop( $node, 'placeholder' ) ) . '" autocomplete="off" required>'
 			. ( $products ? '<input type="hidden" name="post_type" value="product">' : '' )
 			. '<button type="submit" class="saha-search-el__button">' . $button . '</button></form>';
 

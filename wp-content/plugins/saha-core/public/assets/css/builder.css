@@ -834,7 +834,10 @@ a.saha-btn--link:focus-visible {
 :where(.saha-menu-toggle) {
 	display: inline-flex;
 	align-items: center;
+	justify-content: center;
 	gap: 6px;
+	min-width: 44px; /* vùng chạm tối thiểu trên điện thoại */
+	min-height: 44px;
 	padding: 8px;
 	border: 0;
 	background: none;

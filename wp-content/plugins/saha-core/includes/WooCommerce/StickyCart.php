@@ -78,7 +78,9 @@ final class StickyCart {
 		$image = (string) $product->get_image( 'thumbnail', array( 'class' => 'saha-sticky-cart__img', 'alt' => '' ) );
 
 		if ( $buy ) {
-			$actions = '<button type="button" class="saha-btn saha-btn--outline saha-sticky-cart__add" data-saha-sticky-add>' . esc_html__( 'Thêm vào giỏ', 'saha-core' ) . '</button>';
+			// Điện thoại: chỉ hiện biểu tượng giỏ (chữ vẫn là tên nút cho trình đọc màn hình).
+			$cart_icon = '<svg class="saha-sticky-cart__icon" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="9" cy="20" r="1.5"/><circle cx="18" cy="20" r="1.5"/><path d="M3 4h2l2.4 11h11.2L21 7H6.2"/></svg>';
+			$actions   = '<button type="button" class="saha-btn saha-btn--outline saha-sticky-cart__add" data-saha-sticky-add>' . $cart_icon . '<span class="saha-sticky-cart__label">' . esc_html__( 'Thêm vào giỏ', 'saha-core' ) . '</span></button>';
 
 			if ( ! $product->is_type( 'external' ) && (bool) apply_filters( 'saha_buy_now_enabled', ! CatalogMode::enabled(), $product ) ) {
 				$actions .= '<button type="button" class="saha-btn saha-btn--accent saha-sticky-cart__buy" data-saha-sticky-buy>' . esc_html__( 'Mua ngay', 'saha-core' ) . '</button>';
@@ -91,6 +93,19 @@ final class StickyCart {
 				esc_attr( $product->get_name() ),
 				esc_attr( (string) $product->get_sku() ),
 				esc_html__( 'Yêu cầu báo giá', 'saha-core' )
+			);
+		}
+
+		// Điện thoại: thanh này thay thanh "Gọi · Báo giá" của theme → giữ nút gọi.
+		$phone = function_exists( 'saha_hotline' ) ? saha_hotline() : '';
+		$tel   = '' !== $phone && function_exists( 'saha_tel_href' ) ? saha_tel_href( $phone ) : '';
+
+		if ( '' !== $tel ) {
+			$image .= sprintf(
+				'<a class="saha-sticky-cart__call" href="%1$s" aria-label="%2$s" data-saha-event="click_phone"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.4 1.8.7 2.7a2 2 0 0 1-.5 2.1L8 9.8a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.7.7a2 2 0 0 1 1.7 2z"/></svg></a>',
+				esc_url( $tel ),
+				/* translators: %s: số điện thoại */
+				esc_attr( sprintf( __( 'Gọi %s', 'saha-core' ), $phone ) )
 			);
 		}
 

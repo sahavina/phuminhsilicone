@@ -215,6 +215,16 @@ add_action(
 			return;
 		}
 
+		$sku = (string) $product->get_sku();
+
+		// SKU nhập từ đường dẫn sản phẩm ("keo-cha-ron-epoxy-…") hoặc quá dài: không giúp khách,
+		// chỉ làm thẻ dài 3–4 dòng → không in trên thẻ (trang chi tiết vẫn hiện).
+		$is_slug = 1 === preg_match( '/^[a-z0-9]+(?:-[a-z0-9]+){2,}$/', $sku ) || $sku === get_post_field( 'post_name', $product->get_id() );
+
+		if ( ! (bool) apply_filters( 'saha_theme_card_show_sku', ! $is_slug && strlen( $sku ) <= 24, $product ) ) {
+			return;
+		}
+
 		printf(
 			'<div class="saha-product-card__sku"><span class="saha-label">%1$s</span> <span class="saha-value">%2$s</span></div>',
 			esc_html__( 'Mã:', 'saha' ),

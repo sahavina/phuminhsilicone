@@ -13,7 +13,9 @@
 		left: 0;
 		z-index: 9999;
 		display: grid;
-		grid-template-columns: repeat(3, 1fr);
+		/* Chia đều theo số nút thực có (chưa nhập Zalo → 2 nút, không để ô trống). */
+		grid-auto-columns: 1fr;
+		grid-auto-flow: column;
 		min-height: var(--saha-sticky-cta-height);
 		background: var(--saha-color-surface);
 		border-top: 1px solid var(--saha-color-border);
@@ -50,6 +52,12 @@
 
 	.saha-sticky-cta__icon {
 		font-size: 18px;
+	}
+
+	/* Menu di động đang mở / thanh mua hàng (trang sản phẩm) đang hiện → ẩn thanh liên hệ. */
+	.saha-hb-lock .saha-sticky-cta,
+	.saha-sticky-cart-open .saha-sticky-cta {
+		display: none;
 	}
 
 	/* Không để CTA che nội dung (spec §17). */

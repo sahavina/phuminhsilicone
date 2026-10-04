@@ -142,6 +142,28 @@ add_filter(
 );
 
 /**
+ * Tìm kiếm rỗng (`?s=`) → về trang cửa hàng thay vì trang "Kết quả tìm kiếm cho “”" trống.
+ * Ô tìm kiếm đã `required`; đây là lưới an toàn khi JS/HTML5 bị bỏ qua hoặc link cũ.
+ */
+add_action(
+	'template_redirect',
+	static function (): void {
+		// Đọc từ khoá khách gõ (?s=) — get_search_query() có thể rỗng vì tìm kiếm của
+		// SAHA tự xử lý lại query sản phẩm.
+		$term = isset( $_GET['s'] ) ? trim( sanitize_text_field( wp_unslash( (string) $_GET['s'] ) ) ) : null; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- chỉ đọc để chuyển hướng.
+
+		if ( null === $term || '' !== $term || ! is_search() || is_admin() ) {
+			return;
+		}
+
+		$shop = function_exists( 'wc_get_page_permalink' ) ? (string) wc_get_page_permalink( 'shop' ) : '';
+
+		wp_safe_redirect( '' !== $shop ? $shop : home_url( '/' ), 302 );
+		exit;
+	}
+);
+
+/**
  * Tắt script/style emoji của WordPress core.
  */
 add_action(

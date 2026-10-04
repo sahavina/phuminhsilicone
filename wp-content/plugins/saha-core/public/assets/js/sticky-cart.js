@@ -20,12 +20,18 @@
 		return;
 	}
 
+	// Điện thoại: nút mua thường nằm dưới màn hình đầu → hiện cả khi CHƯA cuộn tới
+	// (thay thanh "Gọi · Báo giá" của theme). Máy tính: chỉ hiện khi đã cuộn qua.
+	var mobile = window.matchMedia ? window.matchMedia( '(max-width: 767px)' ) : null;
+
 	new IntersectionObserver( function ( entries ) {
 		var entry = entries[ 0 ];
+		var below = entry.boundingClientRect.top > 0;
 
-		// Chỉ hiện khi khối mua nằm phía trên màn hình (đã cuộn qua), không phải chưa tới.
-		bar.hidden = entry.isIntersecting || entry.boundingClientRect.top > 0;
-		document.body.classList.toggle( 'saha-sticky-cart-open', ! bar.hidden );
+		bar.hidden = entry.isIntersecting || ( below && ! ( mobile && mobile.matches ) );
+
+		// Thanh có thể bị CSS ẩn (bản báo giá trên điện thoại) → chỉ báo "đang mở" khi thật sự hiện.
+		document.body.classList.toggle( 'saha-sticky-cart-open', ! bar.hidden && 'none' !== window.getComputedStyle( bar ).display );
 	} ).observe( anchor );
 
 	function needsChoice() {

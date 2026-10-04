@@ -37,6 +37,7 @@ $saha_panel_id    = $saha_id . '-panel';
 			placeholder="<?php echo esc_attr( $saha_placeholder ); ?>"
 			aria-controls="<?php echo esc_attr( $saha_panel_id ); ?>"
 			<?php echo $saha_autofocus ? 'autofocus' : ''; ?>
+			required
 			data-saha-search-input
 		>
 

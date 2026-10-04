@@ -4,9 +4,12 @@
  */
 
 .saha-product-card__sku {
+	overflow: hidden;
 	margin: 2px 0 4px;
 	color: var(--saha-color-muted);
 	font-size: 13px;
+	text-overflow: ellipsis;
+	white-space: nowrap; /* luôn một dòng, mã dài thì "…" */
 }
 
 .saha-product-card__sku .saha-label {
