@@ -481,6 +481,50 @@ a.saha-btn--link:focus-visible {
 	}
 }
 
+/* Điện thoại: một hàng vuốt ngang, thấy --saha-mvis mục (mặc định 4), dừng đúng từng mục. */
+@media (max-width: 767px) {
+	.saha-terms.saha-terms--mslide .saha-terms__grid {
+		grid-template-columns: none;
+		grid-auto-columns: calc((100% - (var(--saha-mvis, 4) - 1) * 10px) / var(--saha-mvis, 4));
+		grid-auto-flow: column;
+		gap: 10px;
+		overflow-x: auto;
+		overscroll-behavior-x: contain;
+		padding-bottom: 6px;
+		scroll-snap-type: x mandatory;
+		scrollbar-width: none;
+		-webkit-overflow-scrolling: touch;
+	}
+
+	.saha-terms.saha-terms--mslide .saha-terms__grid::-webkit-scrollbar {
+		display: none;
+	}
+
+	.saha-terms--mslide .saha-terms__item {
+		min-width: 0;
+		scroll-snap-align: start;
+	}
+
+	:where(.saha-terms--mslide .saha-terms__link) {
+		gap: 6px;
+		height: 100%;
+		padding: 6px;
+	}
+
+	:where(.saha-terms--mslide .saha-terms__name) {
+		display: -webkit-box;
+		overflow: hidden;
+		font-size: 12px;
+		line-height: 1.3;
+		-webkit-box-orient: vertical;
+		-webkit-line-clamp: 2;
+	}
+
+	:where(.saha-terms--mslide .saha-terms__count, .saha-terms--mslide .saha-terms__desc) {
+		font-size: 11px;
+	}
+}
+
 @media (prefers-reduced-motion: reduce) {
 	:where(.saha-terms--logos .saha-terms__link) {
 		transition: none;

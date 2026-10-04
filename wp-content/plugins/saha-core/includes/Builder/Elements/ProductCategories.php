@@ -117,6 +117,21 @@ final class ProductCategories extends Element {
 					'min'        => 1,
 					'max'        => 8,
 				),
+				'mobileSlide' => array(
+					'type'    => 'toggle',
+					'label'   => __( 'Điện thoại: trượt ngang một hàng', 'saha-core' ),
+					'section' => 'style',
+					'default' => false,
+					'help'    => __( 'Màn hình < 768px: thay lưới bằng một hàng vuốt ngang (bỏ qua "Số cột" ở điện thoại).', 'saha-core' ),
+				),
+				'mobileVisible' => array(
+					'type'    => 'number',
+					'label'   => __( 'Số mục thấy cùng lúc (điện thoại)', 'saha-core' ),
+					'section' => 'style',
+					'default' => 4,
+					'min'     => 2,
+					'max'     => 6,
+				),
 				'gap'       => array(
 					'type'       => 'size',
 					'label'      => __( 'Khoảng cách', 'saha-core' ),
@@ -228,7 +243,14 @@ final class ProductCategories extends Element {
 			$classes[] = 'saha-terms--overlay';
 		}
 
-		return '<div' . $this->rootAttributes( $node, $ctx, $classes ) . '><ul class="saha-terms__grid">' . $items . '</ul></div>';
+		$attrs = array();
+
+		if ( $this->prop( $node, 'mobileSlide' ) ) {
+			$classes[]      = 'saha-terms--mslide';
+			$attrs['style'] = '--saha-mvis:' . max( 2, min( 6, (int) $this->prop( $node, 'mobileVisible' ) ) );
+		}
+
+		return '<div' . $this->rootAttributes( $node, $ctx, $classes, $attrs ) . '><ul class="saha-terms__grid">' . $items . '</ul></div>';
 	}
 
 	/**
