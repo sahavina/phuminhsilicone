@@ -47,11 +47,13 @@ final class Crm {
 	 * @param string $parent Slug menu gốc.
 	 */
 	public function add_menu( string $parent ): void {
-		if ( post_type_exists( 'product' ) ) {
+		// Lối tắt Sản phẩm / Thương hiệu chỉ cho tài khoản KHÔNG thấy menu "Sản phẩm" của
+		// WooCommerce — người thấy rồi thì đây là mục trùng.
+		if ( post_type_exists( 'product' ) && ! current_user_can( 'edit_products' ) ) {
 			add_submenu_page( $parent, __( 'Sản phẩm', 'saha-core' ), __( 'Sản phẩm', 'saha-core' ), Roles::CAP_PRODUCTS, 'edit.php?post_type=product' );
 		}
 
-		if ( taxonomy_exists( Taxonomies::BRAND ) ) {
+		if ( taxonomy_exists( Taxonomies::BRAND ) && ! current_user_can( 'manage_product_terms' ) ) {
 			add_submenu_page( $parent, __( 'Thương hiệu', 'saha-core' ), __( 'Thương hiệu', 'saha-core' ), Roles::CAP_BRANDS, 'edit-tags.php?taxonomy=' . Taxonomies::BRAND . '&post_type=product' );
 		}
 

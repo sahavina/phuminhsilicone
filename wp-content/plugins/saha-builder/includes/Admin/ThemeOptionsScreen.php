@@ -68,6 +68,15 @@ final class ThemeOptionsScreen {
 			'edit_theme_options',
 			'themes.php?page=' . self::SLUG
 		);
+
+		// Có menu SAHA → bỏ mục trùng ở Giao diện (trang vẫn ở URL cũ, chỉ ẩn dòng menu).
+		add_action(
+			'admin_menu',
+			static function (): void {
+				remove_submenu_page( 'themes.php', self::SLUG );
+			},
+			999
+		);
 	}
 
 	/**
