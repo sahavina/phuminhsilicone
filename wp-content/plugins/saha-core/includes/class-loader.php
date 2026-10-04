@@ -95,6 +95,7 @@ final class Loader {
 			'import_export' => ImportExport\Module::class,
 			'cloudflare'    => Performance\CloudflarePurge::class,
 			'card_images'   => Performance\CardImageSizes::class,
+			'page_cache'    => Performance\PageCachePurge::class,
 			'admin'      => Admin::class,
 		);
 
