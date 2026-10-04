@@ -94,6 +94,7 @@ final class Loader {
 			'woocommerce'   => WooCommerce\Module::class,
 			'import_export' => ImportExport\Module::class,
 			'cloudflare'    => Performance\CloudflarePurge::class,
+			'card_images'   => Performance\CardImageSizes::class,
 			'admin'      => Admin::class,
 		);
 

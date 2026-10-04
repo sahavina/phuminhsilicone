@@ -13,6 +13,7 @@ use Saha\Core\Builder\CssRules;
 use Saha\Core\Builder\RenderContext;
 use Saha\Core\Builder\Schema\Node;
 use Saha\Core\Catalog;
+use Saha\Core\Performance\CardImageSizes;
 use Saha\Core\Taxonomies;
 
 defined( 'ABSPATH' ) || exit;
@@ -157,6 +158,17 @@ final class Products extends Element {
 	 * @param string        $content HTML con (không dùng).
 	 */
 	public function render( Node $node, RenderContext $ctx, string $content ): string {
+		// Ảnh thẻ lấy `sizes` theo số cột của element (không phải 400px mặc định của WooCommerce).
+		return CardImageSizes::run( $this->prop( $node, 'columns' ), fn (): string => $this->renderProducts( $node, $ctx ) );
+	}
+
+	/**
+	 * Render lưới / băng chuyền / tab.
+	 *
+	 * @param Node          $node Node.
+	 * @param RenderContext $ctx  Ngữ cảnh.
+	 */
+	private function renderProducts( Node $node, RenderContext $ctx ): string {
 		if ( ! function_exists( 'wc_get_template_part' ) ) {
 			return $ctx->editor ? $this->notice( $node, $ctx, __( 'Cần bật WooCommerce.', 'saha-core' ) ) : '';
 		}
