@@ -1127,7 +1127,8 @@ html.saha-hb-lock {
 	display: flex;
 	flex-wrap: wrap;
 	gap: 8px 24px;
-	align-items: flex-end;
+	/* Link "Xem tất cả" ngang dòng tiêu đề (không tụt xuống khi có mô tả). */
+	align-items: flex-start;
 	justify-content: space-between;
 	margin-bottom: 24px;
 }
@@ -1168,10 +1169,23 @@ html.saha-hb-lock {
 	color: var(--saha-muted, #5f6b7a);
 }
 
+/* Căn trái: chữ (tiêu đề + mô tả) co lại, link giữ một chỗ bên phải dòng tiêu đề —
+   mô tả dài không đẩy link xuống hàng dưới (điện thoại). */
+:where(.saha-stitle--left) :where(.saha-stitle__text) {
+	flex: 1 1 0%;
+	min-width: 0;
+}
+
+.saha-stitle--left .saha-stitle__more {
+	flex-shrink: 0;
+}
+
 .saha-stitle .saha-stitle__more {
 	display: inline-flex;
 	gap: 6px;
 	align-items: center;
+	/* Cao bằng một dòng tiêu đề (cỡ × line-height 1.3) → chữ link canh giữa dòng h2. */
+	min-height: calc(var(--saha-stitle-size, 20px) * 1.3);
 	color: var(--saha-heading, #111827);
 	font-weight: 600;
 	text-decoration: none;
@@ -1569,6 +1583,10 @@ html.saha-hb-lock {
 
 	.saha-stitle__title {
 		font-size: var(--saha-stitle-size-mobile, 18px);
+	}
+
+	.saha-stitle .saha-stitle__more {
+		min-height: calc(var(--saha-stitle-size-mobile, 18px) * 1.3);
 	}
 }
 
