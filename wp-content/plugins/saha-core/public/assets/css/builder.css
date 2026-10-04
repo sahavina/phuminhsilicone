@@ -1138,10 +1138,15 @@ html.saha-hb-lock {
 	text-align: center;
 }
 
-:where(.saha-stitle__title) {
+/* Không :where — phải thắng rule h2 của theme (đậm 700, cỡ H2). Màu / kiểu chữ chỉnh
+   trong builder (.saha-e-xxx .saha-stitle__title) vẫn ưu tiên hơn. */
+.saha-stitle__title {
 	margin: 0;
-	color: var(--saha-heading, #111827);
-	font-size: var(--saha-h2-size, 28px);
+	color: var(--saha-text, #1f2328);
+	font-size: var(--saha-stitle-size, 20px);
+	font-weight: 600;
+	letter-spacing: 0;
+	line-height: 1.3;
 }
 
 :where(.saha-stitle--bar) :where(.saha-stitle__title)::after {
@@ -1562,8 +1567,8 @@ html.saha-hb-lock {
 		grid-template-columns: repeat(var(--saha-cols, 1), minmax(0, 1fr));
 	}
 
-	:where(.saha-stitle__title) {
-		font-size: var(--saha-h3-size, 22px);
+	.saha-stitle__title {
+		font-size: var(--saha-stitle-size-mobile, 18px);
 	}
 }
 

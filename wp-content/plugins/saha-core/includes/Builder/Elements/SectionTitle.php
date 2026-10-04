@@ -78,7 +78,7 @@ final class SectionTitle extends Element {
 					'type'    => 'select',
 					'label'   => __( 'Trang trí', 'saha-core' ),
 					'section' => 'style',
-					'default' => 'bar',
+					'default' => 'none',
 					'options' => array(
 						'bar'  => __( 'Gạch ngắn dưới tiêu đề', 'saha-core' ),
 						'none' => __( 'Không', 'saha-core' ),
