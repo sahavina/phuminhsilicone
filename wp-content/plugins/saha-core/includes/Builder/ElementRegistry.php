@@ -295,6 +295,12 @@ final class ElementRegistry {
 				'label'   => __( 'Class CSS', 'saha-core' ),
 				'section' => 'advanced',
 			),
+			'hidden'      => array(
+				'type'    => 'toggle',
+				'label'   => __( 'Tắt khối (không hiển thị trên website)', 'saha-core' ),
+				'section' => 'advanced',
+				'help'    => __( 'Khối vẫn nằm trong bố cục (hiện mờ trong builder) để bật lại khi cần; website không xuất HTML của khối và các khối con.', 'saha-core' ),
+			),
 			'hideDesktop' => array(
 				'type'    => 'toggle',
 				'label'   => __( 'Ẩn trên desktop', 'saha-core' ),

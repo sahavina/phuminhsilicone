@@ -5,6 +5,9 @@ export const CANVAS_UI_CSS = `
 .saha-builder-canvas a { cursor: default; }
 .saha-builder-canvas [data-saha-id].saha-is-hover { outline: 1px dashed rgba(56, 88, 233, .7); outline-offset: -1px; }
 .saha-builder-canvas [data-saha-id].saha-is-selected { outline: 2px solid #3858e9 !important; outline-offset: -2px; }
+.saha-builder-canvas .saha-is-off { position: relative; opacity: .4; filter: grayscale(1); }
+.saha-builder-canvas .saha-is-off::before { content: "Đã tắt — không hiển thị trên website"; position: absolute; z-index: 5; top: 6px; left: 6px; padding: 2px 8px; border-radius: 3px; background: #d63638; color: #fff; font: 600 11px/1.6 system-ui, sans-serif; pointer-events: none; }
+.saha-canvas-toolbar [data-saha-action="toggle-hidden"].is-off { color: #ffb4b4; }
 .saha-builder-canvas .saha-section__inner:empty,
 .saha-builder-canvas .saha-row:empty,
 .saha-builder-canvas .saha-column:empty {

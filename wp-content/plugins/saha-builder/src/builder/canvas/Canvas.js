@@ -12,6 +12,7 @@ import { api } from '../api';
 import { DEVICES, config, drag, useBuilder } from '../context';
 import { useActions } from '../actions';
 import { findNode, nodeLabel, walk } from '../store/tree';
+import { toggleHiddenAction } from '../store/outline';
 import { inheritedAt, setAt, valueAt } from '../controls/responsive';
 import { CANVAS_UI_CSS } from './canvas-ui';
 import { computeDrop } from './drop';
@@ -247,6 +248,18 @@ export default function Canvas( { onShortcut } ) {
 		toolbar.querySelector( 'span' ).textContent = node
 			? nodeLabel( latest.current.defs, node ).slice( 0, 40 )
 			: '';
+
+		// Nút bật / tắt khối: ◉ đang hiện trên website, ◌ đã tắt.
+		const eye = toolbar.querySelector(
+			'[data-saha-action="toggle-hidden"]'
+		);
+		const off = !! node?.advanced?.hidden;
+		eye.textContent = off ? '◌' : '◉';
+		eye.title = off
+			? __( 'Đang tắt — bấm để hiện lại trên website', 'saha-builder' )
+			: __( 'Tắt khối (ẩn khỏi website)', 'saha-builder' );
+		eye.classList.toggle( 'is-off', off );
+
 		toolbar.hidden = false;
 		toolbar.style.top =
 			Math.max(
@@ -479,6 +492,7 @@ export default function Canvas( { onShortcut } ) {
 			`<button type="button" data-saha-action="parent" title="${ esc( __( 'Chọn element cha', 'saha-builder' ) ) }">⤒</button>`,
 			`<button type="button" data-saha-action="up" title="${ esc( __( 'Lên trên', 'saha-builder' ) ) }">↑</button>`,
 			`<button type="button" data-saha-action="down" title="${ esc( __( 'Xuống dưới', 'saha-builder' ) ) }">↓</button>`,
+			`<button type="button" data-saha-action="toggle-hidden" title="${ esc( __( 'Tắt khối (ẩn khỏi website)', 'saha-builder' ) ) }">◉</button>`,
 			`<button type="button" data-saha-action="duplicate" title="${ esc( __( 'Nhân bản', 'saha-builder' ) ) }">⧉</button>`,
 			`<button type="button" data-saha-action="remove" title="${ esc( __( 'Xoá', 'saha-builder' ) ) }">✕</button>`,
 		].join( '' );
@@ -548,6 +562,14 @@ export default function Canvas( { onShortcut } ) {
 						case 'duplicate':
 							d( { type: 'DUPLICATE', id } );
 							break;
+						case 'toggle-hidden': {
+							const current = findNode( s.doc, id );
+
+							if ( current ) {
+								d( toggleHiddenAction( current ) );
+							}
+							break;
+						}
 						case 'remove':
 							d( { type: 'REMOVE', id } );
 							break;

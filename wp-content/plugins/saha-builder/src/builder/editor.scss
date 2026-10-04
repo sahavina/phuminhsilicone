@@ -365,6 +365,42 @@ html.wp-toolbar:has(body.saha-builder-fullscreen) {
 		line-height: 18px;
 	}
 
+	// Bật / tắt khối (◉ đang hiện, ◌ đã tắt).
+	&__eye {
+		flex: 0 0 26px;
+		height: 26px;
+		padding: 0;
+		border: 0;
+		border-radius: 4px;
+		background: none;
+		color: #8c8f94;
+		font-size: 14px;
+		cursor: pointer;
+
+		&:hover,
+		&:focus-visible {
+			background: rgba(0, 0, 0, 0.06);
+			color: #1e1e1e;
+		}
+
+		&.is-off {
+			color: #d63638;
+		}
+	}
+
+	&__row.is-off:not(.is-selected) {
+		.saha-b-nav__type,
+		.saha-b-nav__caption {
+			opacity: 0.55;
+			text-decoration: line-through;
+		}
+	}
+
+	&__tag.is-off {
+		color: #d63638;
+		font-weight: 600;
+	}
+
 	&__gear {
 		flex: 0 0 26px;
 		height: 26px;

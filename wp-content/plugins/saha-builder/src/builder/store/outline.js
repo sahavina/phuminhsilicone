@@ -76,10 +76,11 @@ export function hasCustomLabel( node ) {
 }
 
 /**
- * Trạng thái ẩn theo thiết bị (tab Nâng cao).
+ * Trạng thái ẩn (tab Nâng cao).
  *
  * @param {Object} node Node.
- * @return {{ all: boolean, devices: string[] }} all = ẩn trên mọi thiết bị.
+ * @return {{ off: boolean, all: boolean, devices: string[] }} off = đã tắt khối
+ *         (không xuất ra website); all = ẩn trên mọi thiết bị.
  */
 export function hiddenState( node ) {
 	const a = node.advanced || {};
@@ -89,5 +90,22 @@ export function hiddenState( node ) {
 		a.hideMobile && 'mobile',
 	].filter( Boolean );
 
-	return { all: 3 === devices.length, devices };
+	return { off: !! a.hidden, all: 3 === devices.length, devices };
+}
+
+/**
+ * Action bật / tắt khối (Nâng cao → Tắt khối).
+ *
+ * @param {Object} node Node.
+ * @return {Object} Action UPDATE cho reducer.
+ */
+export function toggleHiddenAction( node ) {
+	return {
+		type: 'UPDATE',
+		id: node.id,
+		scope: 'advanced',
+		key: 'hidden',
+		// Bật lại = xoá cờ (không lưu `hidden: false`).
+		value: node.advanced?.hidden ? null : true,
+	};
 }

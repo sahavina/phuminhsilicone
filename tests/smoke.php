@@ -693,6 +693,11 @@ $saha_r1 = static function ( array $element, bool $editor = false ): string {
 	$doc = saha_bs( array( 'elements' => array( array( 'type' => 'section', 'children' => array( $element ) ) ) ) );
 	return null === $doc['document'] ? 'INVALID ' . json_encode( $doc['errors'] ) : ( new Renderer() )->document( $doc['document'], new RenderContext( 0, $editor, false ) );
 };
+$saha_off_el = array( 'type' => 'section-title', 'props' => array( 'title' => 'Khối tắt' ), 'advanced' => array( 'hidden' => true ) );
+check( 'tắt khối: website không in HTML của khối', false === strpos( $saha_r1( $saha_off_el ), 'Khối tắt' ), true );
+check( 'tắt khối: canvas editor vẫn in, có class saha-is-off', array( false !== strpos( $saha_r1( $saha_off_el, true ), 'Khối tắt' ), false !== strpos( $saha_r1( $saha_off_el, true ), 'saha-is-off' ) ), array( true, true ) );
+$saha_off_doc = saha_bs( array( 'elements' => array( array( 'type' => 'section', 'advanced' => array( 'hidden' => true ), 'children' => array( array( 'type' => 'section-title', 'props' => array( 'title' => 'Con của khối tắt' ) ) ) ) ) ) );
+check( 'tắt section: khối con cũng không in', ( new Renderer() )->document( $saha_off_doc['document'], new RenderContext( 0, false, false ) ), '' );
 $saha_mq = $saha_r1( array( 'type' => 'marquee', 'props' => array( 'items' => "Miễn phí vận chuyển\nTư vấn miễn phí" ) ) );
 check( 'chữ chạy: tách dòng đúng với chữ có dấu (ễ chứa byte 0x85)', array( substr_count( $saha_mq, '<li class="saha-marquee__item">' ), false !== strpos( $saha_mq, '>Miễn phí vận chuyển<' ) ), array( 4, true ) );
 check( 'chữ chạy: bản lặp aria-hidden (đọc một lần)', 1, substr_count( $saha_mq, '<ul class="saha-marquee__list" aria-hidden="true">' ) );

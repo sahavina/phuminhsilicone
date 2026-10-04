@@ -13,7 +13,12 @@ import { __, sprintf } from '@wordpress/i18n';
 
 import { useActions } from '../actions';
 import { drag, useBuilder } from '../context';
-import { hasCustomLabel, hiddenState, nodeCaption } from '../store/outline';
+import {
+	hasCustomLabel,
+	hiddenState,
+	nodeCaption,
+	toggleHiddenAction,
+} from '../store/outline';
 import { ROOT, ancestors, canContain, findNode, isWithin } from '../store/tree';
 
 const DEVICE_LABELS = {
@@ -118,7 +123,8 @@ function Row( { node, parentId, index, depth, collapsed, toggle, onAdd } ) {
 					'saha-b-nav__row',
 					0 === depth && 'is-top',
 					isSelected && 'is-selected',
-					hidden.all && 'is-hidden',
+					( hidden.all || hidden.off ) && 'is-hidden',
+					hidden.off && 'is-off',
 					dropMode && 'is-drop-' + dropMode,
 					hasError && 'has-error',
 				]
@@ -219,12 +225,17 @@ function Row( { node, parentId, index, depth, collapsed, toggle, onAdd } ) {
 							{ caption }
 						</span>
 					) : null }
-					{ hidden.all ? (
+					{ hidden.off ? (
+						<span className="saha-b-nav__tag is-off">
+							{ __( 'Đã tắt', 'saha-builder' ) }
+						</span>
+					) : null }
+					{ ! hidden.off && hidden.all ? (
 						<span className="saha-b-nav__tag">
 							{ __( 'Ẩn', 'saha-builder' ) }
 						</span>
 					) : null }
-					{ ! hidden.all && hidden.devices.length ? (
+					{ ! hidden.off && ! hidden.all && hidden.devices.length ? (
 						<span className="saha-b-nav__tag">
 							{ sprintf(
 								/* translators: %s: danh sách thiết bị */
@@ -236,6 +247,45 @@ function Row( { node, parentId, index, depth, collapsed, toggle, onAdd } ) {
 						</span>
 					) : null }
 				</button>
+				{ ! state.readOnly && (
+					<button
+						type="button"
+						className={
+							'saha-b-nav__eye' + ( hidden.off ? ' is-off' : '' )
+						}
+						aria-pressed={ hidden.off }
+						aria-label={
+							hidden.off
+								? sprintf(
+										/* translators: %s: tên element */
+										__( 'Bật lại %s', 'saha-builder' ),
+										name
+									)
+								: sprintf(
+										/* translators: %s: tên element */
+										__(
+											'Tắt %s (không hiển thị trên website)',
+											'saha-builder'
+										),
+										name
+									)
+						}
+						title={
+							hidden.off
+								? __(
+										'Đang tắt — bấm để hiện lại trên website',
+										'saha-builder'
+									)
+								: __(
+										'Tắt khối (ẩn khỏi website)',
+										'saha-builder'
+									)
+						}
+						onClick={ () => dispatch( toggleHiddenAction( node ) ) }
+					>
+						{ hidden.off ? '◌' : '◉' }
+					</button>
+				) }
 				{ /* Cùng việc với bấm tên (mở thiết lập) — chỉ là điểm bấm quen tay, không thêm vào thứ tự Tab. */ }
 				<button
 					type="button"

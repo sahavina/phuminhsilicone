@@ -184,6 +184,11 @@ abstract class Element {
 			}
 		}
 
+		// Canvas editor: khối đã tắt hiện mờ (website không render — Renderer::node).
+		if ( $ctx->editor && ! empty( $advanced['hidden'] ) ) {
+			$list[] = 'saha-is-off';
+		}
+
 		if ( ! empty( $advanced['cssClass'] ) && is_string( $advanced['cssClass'] ) ) {
 			$list = array_merge( $list, explode( ' ', $advanced['cssClass'] ) );
 		}

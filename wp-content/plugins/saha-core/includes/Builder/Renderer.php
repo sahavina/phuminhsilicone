@@ -65,6 +65,12 @@ final class Renderer {
 			return $ctx->editor ? '<!-- saha: element "' . esc_html( $node->type ) . '" chưa được cài -->' : '';
 		}
 
+		// Khối đã tắt (Nâng cao → Tắt khối): website bỏ qua cả khối lẫn khối con;
+		// canvas editor vẫn render (hiện mờ) để bật lại.
+		if ( ! $ctx->editor && ! empty( $node->advanced['hidden'] ) ) {
+			return '';
+		}
+
 		$ctx->addAssets( (array) ( $element->def()['assets'] ?? array() ) );
 
 		if ( 0 === $ctx->depth && $this->cache->allows( $node, $ctx ) ) {

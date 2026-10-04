@@ -1,6 +1,11 @@
 import { describe, expect, it } from 'vitest';
 
-import { hasCustomLabel, hiddenState, nodeCaption } from '../outline';
+import {
+	hasCustomLabel,
+	hiddenState,
+	nodeCaption,
+	toggleHiddenAction,
+} from '../outline';
 
 const section = {
 	type: 'section',
@@ -62,11 +67,44 @@ describe( 'hiddenState', () => {
 					hideMobile: true,
 				},
 			} )
-		).toEqual( { all: true, devices: [ 'desktop', 'tablet', 'mobile' ] } );
+		).toEqual( {
+			off: false,
+			all: true,
+			devices: [ 'desktop', 'tablet', 'mobile' ],
+		} );
 		expect( hiddenState( { advanced: { hideMobile: true } } ) ).toEqual( {
+			off: false,
 			all: false,
 			devices: [ 'mobile' ],
 		} );
-		expect( hiddenState( {} ) ).toEqual( { all: false, devices: [] } );
+		expect( hiddenState( {} ) ).toEqual( {
+			off: false,
+			all: false,
+			devices: [],
+		} );
+	} );
+
+	it( 'khối đã tắt', () => {
+		expect( hiddenState( { advanced: { hidden: true } } ).off ).toBe(
+			true
+		);
+	} );
+} );
+
+describe( 'toggleHiddenAction', () => {
+	it( 'đang hiện → tắt (hidden: true)', () => {
+		expect( toggleHiddenAction( { id: 'a1' } ) ).toEqual( {
+			type: 'UPDATE',
+			id: 'a1',
+			scope: 'advanced',
+			key: 'hidden',
+			value: true,
+		} );
+	} );
+
+	it( 'đang tắt → bật lại (xoá cờ, value null)', () => {
+		expect(
+			toggleHiddenAction( { id: 'a1', advanced: { hidden: true } } ).value
+		).toBeNull();
 	} );
 } );
