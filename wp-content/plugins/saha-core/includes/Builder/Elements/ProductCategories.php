@@ -117,6 +117,13 @@ final class ProductCategories extends Element {
 					'min'        => 1,
 					'max'        => 8,
 				),
+				'display'   => array_merge(
+					self::displayControl(),
+					array(
+						'section' => 'style',
+						'help'    => __( 'Băng chuyền: một hàng trượt ngang trên mọi màn hình, số mục thấy cùng lúc = "Số cột".', 'saha-core' ),
+					)
+				),
 				'mobileSlide' => array(
 					'type'    => 'toggle',
 					'label'   => __( 'Điện thoại: trượt ngang một hàng', 'saha-core' ),
@@ -245,6 +252,18 @@ final class ProductCategories extends Element {
 
 		$attrs = array();
 
+		// Băng chuyền mọi màn hình: dùng JS / CSS của Slider (nút ‹ ›, cuộn theo từng mục).
+		if ( 'carousel' === $this->prop( $node, 'display' ) ) {
+			$classes[]               = 'saha-slider';
+			$classes[]               = 'saha-terms--carousel';
+			$attrs['data-saha-slider'] = '1';
+
+			return '<div' . $this->rootAttributes( $node, $ctx, $classes, $attrs ) . '>'
+				. '<ul class="saha-terms__grid saha-slider__track" tabindex="0" aria-label="' . esc_attr__( 'Danh mục (cuộn ngang)', 'saha-core' ) . '">' . $items . '</ul>'
+				. self::carouselArrows( __( 'danh mục', 'saha-core' ) )
+				. '</div>';
+		}
+
 		if ( $this->prop( $node, 'mobileSlide' ) ) {
 			$classes[]      = 'saha-terms--mslide';
 			$attrs['style'] = '--saha-mvis:' . max( 2, min( 6, (int) $this->prop( $node, 'mobileVisible' ) ) );
@@ -263,5 +282,9 @@ final class ProductCategories extends Element {
 		$css->set( ' .saha-terms__grid', '--saha-cols', $this->prop( $node, 'columns' ) );
 		$css->set( ' .saha-terms__grid', 'gap', $node->prop( 'gap' ) );
 		$css->set( '', '--saha-logo-h', $node->prop( 'logoHeight' ) );
+
+		// Băng chuyền: số mục thấy cùng lúc = Số cột (theo từng màn hình).
+		$css->set( '', '--saha-slider-per-view', $this->prop( $node, 'columns' ) );
+		$css->set( '', '--saha-slider-gap', $node->prop( 'gap' ) );
 	}
 }

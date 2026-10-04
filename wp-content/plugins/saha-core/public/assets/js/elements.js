@@ -48,6 +48,14 @@
 			track.scrollTo( { left: target * step(), behavior: reduce ? 'auto' : 'smooth' } );
 		}
 
+		// Mọi mục đã vừa khung (vd. 5 danh mục, khung 8 ô) → ẩn nút ‹ ›.
+		function fit() {
+			root.classList.toggle( 'saha-slider--static', track.scrollWidth <= track.clientWidth + 1 );
+		}
+
+		fit();
+		window.addEventListener( 'resize', fit );
+
 		var prev = root.querySelector( '[data-saha-slider-prev]' );
 		var next = root.querySelector( '[data-saha-slider-next]' );
 

@@ -505,13 +505,13 @@ a.saha-btn--link:focus-visible {
 		scroll-snap-align: start;
 	}
 
-	:where(.saha-terms--mslide .saha-terms__link) {
+	:where(.saha-terms--mslide .saha-terms__link, .saha-terms--carousel .saha-terms__link) {
 		gap: 6px;
 		height: 100%;
 		padding: 6px;
 	}
 
-	:where(.saha-terms--mslide .saha-terms__name) {
+	:where(.saha-terms--mslide .saha-terms__name, .saha-terms--carousel .saha-terms__name) {
 		display: -webkit-box;
 		overflow: hidden;
 		font-size: 12px;
@@ -2666,7 +2666,8 @@ html.saha-shop-locked {
 /* Băng chuyền: Logo / Sản phẩm / Bài viết (dùng track của Slider, mỗi lần thấy N mục) */
 .saha-logos--carousel .saha-logos__list.saha-slider__track,
 .saha-products.woocommerce.saha-pcarousel ul.saha-products-grid.saha-slider__track,
-.saha-posts-el--carousel .saha-posts-el__grid.saha-slider__track {
+.saha-posts-el--carousel .saha-posts-el__grid.saha-slider__track,
+.saha-terms.saha-terms--carousel .saha-terms__grid.saha-slider__track {
 	grid-template-columns: none;
 	grid-auto-columns: calc((100% - (var(--saha-slider-per-view, 4) - 1) * var(--saha-slider-gap, 16px)) / var(--saha-slider-per-view, 4));
 	grid-auto-flow: column;
@@ -2678,26 +2679,36 @@ html.saha-shop-locked {
 
 .saha-logos--carousel .saha-slider__track > *,
 .saha-pcarousel .saha-slider__track > li,
-.saha-posts-el--carousel .saha-slider__track > li {
+.saha-posts-el--carousel .saha-slider__track > li,
+.saha-terms--carousel .saha-slider__track > li {
+	min-width: 0;
 	scroll-snap-align: start;
 }
 
 .saha-logos--carousel .saha-slider__arrow,
 .saha-pcarousel .saha-slider__arrow,
-.saha-posts-el--carousel .saha-slider__arrow {
+.saha-posts-el--carousel .saha-slider__arrow,
+.saha-terms--carousel .saha-slider__arrow {
 	box-shadow: 0 2px 10px rgb(15 23 42 / 18%);
 }
 
 .saha-logos--carousel .saha-slider__arrow--prev,
 .saha-pcarousel .saha-slider__arrow--prev,
-.saha-posts-el--carousel .saha-slider__arrow--prev {
+.saha-posts-el--carousel .saha-slider__arrow--prev,
+.saha-terms--carousel .saha-slider__arrow--prev {
 	left: -6px;
 }
 
 .saha-logos--carousel .saha-slider__arrow--next,
 .saha-pcarousel .saha-slider__arrow--next,
-.saha-posts-el--carousel .saha-slider__arrow--next {
+.saha-posts-el--carousel .saha-slider__arrow--next,
+.saha-terms--carousel .saha-slider__arrow--next {
 	right: -6px;
+}
+
+/* Băng chuyền vừa khung (ít mục hơn số mục thấy) → bỏ nút ‹ › (elements.js gắn class). */
+.saha-slider--static .saha-slider__arrow {
+	display: none;
 }
 
 /* Countdown */
